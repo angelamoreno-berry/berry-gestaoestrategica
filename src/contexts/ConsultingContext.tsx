@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { ConsultingData, BlockStatus } from '@/types/consulting';
+import { ConsultingData, BlockStatus, Project } from '@/types/consulting';
 
 const initialData: ConsultingData = {
   clienteNome: '',
@@ -106,40 +106,79 @@ const initialBlocks: BlockStatus[] = [
   { id: 'agendaCEO', name: 'Agenda Estratégica', icon: '📅', completed: false, progress: 0 },
 ];
 
+interface ProjectData {
+  project: Project;
+  data: ConsultingData;
+  blocks: BlockStatus[];
+}
+
 interface ConsultingContextType {
   data: ConsultingData;
   blocks: BlockStatus[];
   currentBlock: string;
+  projects: Project[];
+  currentProject: Project | null;
   setCurrentBlock: (id: string) => void;
   updateData: <K extends keyof ConsultingData>(key: K, value: ConsultingData[K]) => void;
   updateBlockProgress: (id: string, progress: number) => void;
   markBlockComplete: (id: string) => void;
   getTotalProgress: () => number;
   resetAll: () => void;
+  createProject: (projectData: Omit<Project, 'id' | 'dataCriacao'>) => void;
+  selectProject: (id: string) => void;
+  deleteProject: (id: string) => void;
+  goToProjectList: () => void;
 }
 
 const ConsultingContext = createContext<ConsultingContextType | undefined>(undefined);
 
 export function ConsultingProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<ConsultingData>(initialData);
-  const [blocks, setBlocks] = useState<BlockStatus[]>(initialBlocks);
+  const [projectsData, setProjectsData] = useState<ProjectData[]>([]);
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [currentBlock, setCurrentBlock] = useState('diagnostico');
 
+  const currentProjectData = projectsData.find(p => p.project.id === currentProjectId);
+  const data = currentProjectData?.data || initialData;
+  const blocks = currentProjectData?.blocks || initialBlocks;
+  const projects = projectsData.map(p => p.project);
+  const currentProject = currentProjectData?.project || null;
+
   const updateData = useCallback(<K extends keyof ConsultingData>(key: K, value: ConsultingData[K]) => {
-    setData(prev => ({ ...prev, [key]: value }));
-  }, []);
+    if (!currentProjectId) return;
+    setProjectsData(prev => prev.map(pd => 
+      pd.project.id === currentProjectId 
+        ? { ...pd, data: { ...pd.data, [key]: value } }
+        : pd
+    ));
+  }, [currentProjectId]);
 
   const updateBlockProgress = useCallback((id: string, progress: number) => {
-    setBlocks(prev => prev.map(block => 
-      block.id === id ? { ...block, progress: Math.min(100, Math.max(0, progress)) } : block
+    if (!currentProjectId) return;
+    setProjectsData(prev => prev.map(pd => 
+      pd.project.id === currentProjectId 
+        ? { 
+            ...pd, 
+            blocks: pd.blocks.map(block => 
+              block.id === id ? { ...block, progress: Math.min(100, Math.max(0, progress)) } : block
+            )
+          }
+        : pd
     ));
-  }, []);
+  }, [currentProjectId]);
 
   const markBlockComplete = useCallback((id: string) => {
-    setBlocks(prev => prev.map(block => 
-      block.id === id ? { ...block, completed: true, progress: 100 } : block
+    if (!currentProjectId) return;
+    setProjectsData(prev => prev.map(pd => 
+      pd.project.id === currentProjectId 
+        ? { 
+            ...pd, 
+            blocks: pd.blocks.map(block => 
+              block.id === id ? { ...block, completed: true, progress: 100 } : block
+            )
+          }
+        : pd
     ));
-  }, []);
+  }, [currentProjectId]);
 
   const getTotalProgress = useCallback(() => {
     const total = blocks.reduce((acc, block) => acc + block.progress, 0);
@@ -147,9 +186,39 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
   }, [blocks]);
 
   const resetAll = useCallback(() => {
-    setData(initialData);
-    setBlocks(initialBlocks);
+    setProjectsData([]);
+    setCurrentProjectId(null);
     setCurrentBlock('diagnostico');
+  }, []);
+
+  const createProject = useCallback((projectData: Omit<Project, 'id' | 'dataCriacao'>) => {
+    const newProject: Project = {
+      ...projectData,
+      id: crypto.randomUUID(),
+      dataCriacao: new Date().toISOString()
+    };
+    const newProjectData: ProjectData = {
+      project: newProject,
+      data: { ...initialData, clienteNome: projectData.nomeEmpresa },
+      blocks: initialBlocks.map(b => ({ ...b }))
+    };
+    setProjectsData(prev => [...prev, newProjectData]);
+  }, []);
+
+  const selectProject = useCallback((id: string) => {
+    setCurrentProjectId(id);
+    setCurrentBlock('diagnostico');
+  }, []);
+
+  const deleteProject = useCallback((id: string) => {
+    setProjectsData(prev => prev.filter(pd => pd.project.id !== id));
+    if (currentProjectId === id) {
+      setCurrentProjectId(null);
+    }
+  }, [currentProjectId]);
+
+  const goToProjectList = useCallback(() => {
+    setCurrentProjectId(null);
   }, []);
 
   return (
@@ -157,12 +226,18 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
       data,
       blocks,
       currentBlock,
+      projects,
+      currentProject,
       setCurrentBlock,
       updateData,
       updateBlockProgress,
       markBlockComplete,
       getTotalProgress,
       resetAll,
+      createProject,
+      selectProject,
+      deleteProject,
+      goToProjectList,
     }}>
       {children}
     </ConsultingContext.Provider>

@@ -1,14 +1,34 @@
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { ProgressRing } from './ProgressRing';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check, ArrowLeft, Building2 } from 'lucide-react';
 
 export function Sidebar() {
-  const { blocks, currentBlock, setCurrentBlock, getTotalProgress } = useConsulting();
+  const { blocks, currentBlock, setCurrentBlock, getTotalProgress, currentProject, goToProjectList } = useConsulting();
   const totalProgress = getTotalProgress();
 
   return (
     <aside className="w-80 bg-card border-r border-border h-screen sticky top-0 flex flex-col">
+      {/* Project Header */}
+      <div className="p-4 border-b border-border">
+        <button 
+          onClick={goToProjectList}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar aos projetos
+        </button>
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Building2 className="h-5 w-5 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="font-semibold text-foreground truncate">{currentProject?.nomeEmpresa}</h2>
+            <p className="text-xs text-muted-foreground">{currentProject?.segmento}</p>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="p-6 border-b border-border">
         <h1 className="font-display text-xl font-bold text-foreground">
