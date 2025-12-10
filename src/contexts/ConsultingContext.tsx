@@ -126,6 +126,7 @@ interface ConsultingContextType {
   getTotalProgress: () => number;
   resetAll: () => void;
   createProject: (projectData: Omit<Project, 'id' | 'dataCriacao'>) => void;
+  createDemoProject: () => void;
   selectProject: (id: string) => void;
   deleteProject: (id: string) => void;
   goToProjectList: () => void;
@@ -206,6 +207,240 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     setProjectsData(prev => [...prev, newProjectData]);
   }, []);
 
+  const createDemoProject = useCallback(() => {
+    const demoProject: Project = {
+      id: crypto.randomUUID(),
+      nomeEmpresa: 'TechFlow Solutions',
+      responsavel: 'Carlos Eduardo Silva',
+      segmento: 'Tecnologia e Software',
+      faturamentoMedio: 180000,
+      quantidadeColaboradores: 25,
+      emailResponsavel: 'carlos@techflow.com.br',
+      dataCriacao: new Date().toISOString()
+    };
+
+    const demoData: ConsultingData = {
+      clienteNome: 'TechFlow Solutions',
+      consultorNome: 'Ana Consultoria',
+      dataInicio: new Date().toISOString().split('T')[0],
+      diagnostico: {
+        pessoas: { area: 'Pessoas', level: 3, notes: 'Equipe engajada, mas falta estrutura de carreira e treinamento contínuo.' },
+        processos: { area: 'Processos', level: 2, notes: 'Processos existentes mas não documentados. Alta dependência de pessoas-chave.' },
+        financas: { area: 'Finanças', level: 4, notes: 'Controles financeiros sólidos, DRE mensal implementado, boa margem.' },
+        mercado: { area: 'Mercado', level: 3, notes: 'Posicionamento razoável, mas falta diferenciação clara da concorrência.' },
+      },
+      identidade: {
+        visao: 'Ser a principal referência em soluções tecnológicas para PMEs no Brasil até 2028, impactando positivamente mais de 5.000 empresas.',
+        missao: 'Transformar a gestão de pequenas e médias empresas através de tecnologia acessível, simples e eficiente, democratizando o acesso à inovação.',
+        valores: ['Inovação Contínua', 'Foco no Cliente', 'Simplicidade', 'Transparência', 'Colaboração'],
+        posicionamento: 'Somos a ponte entre a tecnologia complexa e a gestão simples. Entregamos soluções que funcionam sem complicação.',
+      },
+      concorrentes: {
+        concorrentes: [
+          { nome: 'SoftGest', pontoForte: 'Marca consolidada e grande base de clientes', pontoFraco: 'Sistema legado, interface ultrapassada' },
+          { nome: 'CloudBiz', pontoForte: 'Preço agressivo e marketing digital forte', pontoFraco: 'Suporte deficiente e muitos bugs' },
+          { nome: 'GestãoPro', pontoForte: 'Funcionalidades completas e integrações', pontoFraco: 'Complexidade excessiva, curva de aprendizado alta' },
+        ],
+        diferenciais: ['Implementação em 48h', 'Suporte humano 24/7', 'Interface intuitiva', 'Preço justo sem surpresas'],
+        publicoAlvo: 'PMEs de serviços com 10-100 funcionários que buscam modernizar a gestão',
+        propostaValor: 'Gestão descomplicada que funciona desde o primeiro dia, com suporte humano sempre que você precisar.',
+      },
+      icp: {
+        caracteristicasDemograficas: 'Empresários de 35-55 anos, donos de empresas de serviços com faturamento entre R$100k-500k/mês, 10-50 funcionários, atuando há mais de 5 anos no mercado.',
+        dores: [
+          'Perde tempo demais com planilhas e controles manuais',
+          'Não consegue ver os números da empresa em tempo real',
+          'Tem medo de tecnologia complexa que a equipe não vai usar',
+          'Já tentou outros sistemas e desistiu pela dificuldade',
+          'Sente que está perdendo dinheiro mas não sabe onde'
+        ],
+        desejos: [
+          'Ter controle total da empresa na palma da mão',
+          'Tomar decisões baseadas em dados confiáveis',
+          'Ter tempo para focar no estratégico, não no operacional',
+          'Escalar o negócio com processos organizados',
+          'Dormir tranquilo sabendo que está tudo sob controle'
+        ],
+        comportamento: 'Pesquisa muito antes de comprar, valoriza indicações de outros empresários, prefere ver demonstração antes de fechar, sensível a preço mas paga mais por qualidade comprovada.',
+        ondeEncontrar: 'LinkedIn, grupos de empresários no WhatsApp, eventos da ACSP, podcasts de negócios, YouTube (canais de gestão)',
+      },
+      estrategiasValor: {
+        novasOfertas: [
+          'Consultoria de Implementação Premium (acompanhamento de 90 dias)',
+          'Treinamento in-company para equipes',
+          'Dashboard personalizado para o segmento do cliente'
+        ],
+        novosServicos: [
+          'Integração com sistemas contábeis',
+          'Automação de cobranças e boletos',
+          'Relatórios personalizados sob demanda'
+        ],
+        pacotes: [
+          { nome: 'Starter', descricao: 'Ideal para começar: CRM + Financeiro básico', preco: 'R$ 297/mês' },
+          { nome: 'Professional', descricao: 'Mais vendido: Todos os módulos + suporte prioritário', preco: 'R$ 597/mês' },
+          { nome: 'Enterprise', descricao: 'Para escalar: Customizações + consultoria mensal', preco: 'R$ 1.497/mês' }
+        ],
+      },
+      precificacao: {
+        modelo: 'SaaS com assinatura mensal',
+        estrategia: 'Valor percebido com ancoragem no plano Enterprise',
+        ancoragem: 'Mostrar economia vs. contratar funcionário para fazer o mesmo trabalho',
+        margemDesejada: '70%',
+        produtos: [
+          { id: '1', nome: 'Módulo CRM', precoAtual: 197, descricao: 'Gestão completa de clientes e oportunidades' },
+          { id: '2', nome: 'Módulo Financeiro', precoAtual: 247, descricao: 'Contas a pagar/receber, fluxo de caixa, DRE' },
+          { id: '3', nome: 'Módulo RH', precoAtual: 147, descricao: 'Gestão de colaboradores, ponto e férias' },
+          { id: '4', nome: 'Consultoria de Implementação', precoAtual: 2500, descricao: 'Setup completo + treinamento da equipe' }
+        ],
+      },
+      motoresCrescimento: {
+        motoresPrincipais: ['Indicação de clientes satisfeitos', 'Marketing de conteúdo', 'Parcerias com contadores'],
+        canais: ['LinkedIn Ads', 'Google Ads', 'Programa de Afiliados', 'Webinars educativos', 'SEO orgânico'],
+        metricas: [
+          { nome: 'MRR (Receita Recorrente Mensal)', meta: 'R$ 250.000 até dez/2025' },
+          { nome: 'Churn Rate', meta: 'Manter abaixo de 3% ao mês' },
+          { nome: 'CAC (Custo de Aquisição)', meta: 'Máximo R$ 800 por cliente' },
+          { nome: 'LTV (Lifetime Value)', meta: 'Mínimo R$ 8.000 por cliente' },
+          { nome: 'NPS', meta: 'Acima de 70' }
+        ],
+      },
+      organograma: {
+        cargos: [
+          { titulo: 'CEO / Fundador', nivel: 1, responsabilidades: ['Visão estratégica', 'Relacionamento com investidores', 'Cultura organizacional'], kpis: ['Crescimento MRR', 'Satisfação da equipe'], subordinadoA: '' },
+          { titulo: 'Head de Produto', nivel: 2, responsabilidades: ['Roadmap do produto', 'Priorização de features', 'UX/UI'], kpis: ['NPS do produto', 'Tempo de entrega'], subordinadoA: 'CEO' },
+          { titulo: 'Head Comercial', nivel: 2, responsabilidades: ['Estratégia de vendas', 'Gestão do time comercial', 'Parcerias'], kpis: ['Meta de vendas', 'Conversão', 'Ticket médio'], subordinadoA: 'CEO' },
+          { titulo: 'Head de CS', nivel: 2, responsabilidades: ['Sucesso do cliente', 'Onboarding', 'Retenção'], kpis: ['Churn', 'NPS', 'Tempo de resposta'], subordinadoA: 'CEO' },
+          { titulo: 'Desenvolvedores', nivel: 3, responsabilidades: ['Desenvolvimento de features', 'Correção de bugs', 'Code review'], kpis: ['Velocidade de entrega', 'Qualidade do código'], subordinadoA: 'Head de Produto' },
+          { titulo: 'SDRs', nivel: 3, responsabilidades: ['Prospecção', 'Qualificação de leads', 'Agendamento de demos'], kpis: ['Leads qualificados', 'Taxa de agendamento'], subordinadoA: 'Head Comercial' }
+        ],
+      },
+      processos: {
+        processos: [
+          { nome: 'Onboarding de Cliente', descricao: 'Processo de ativação e treinamento de novos clientes', responsavel: 'Head de CS', frequencia: 'A cada novo cliente' },
+          { nome: 'Sprint de Desenvolvimento', descricao: 'Ciclo de 2 semanas para entrega de novas funcionalidades', responsavel: 'Head de Produto', frequencia: 'Quinzenal' },
+          { nome: 'Reunião de Pipeline', descricao: 'Revisão das oportunidades comerciais e forecast', responsavel: 'Head Comercial', frequencia: 'Semanal' },
+          { nome: 'Review Financeiro', descricao: 'Análise de DRE, fluxo de caixa e indicadores', responsavel: 'CEO', frequencia: 'Mensal' },
+          { nome: 'All Hands', descricao: 'Reunião geral da empresa para alinhamento e celebrações', responsavel: 'CEO', frequencia: 'Mensal' }
+        ],
+      },
+      financeiro: {
+        despesasFixas: 95000,
+        despesasVariaveis: 25000,
+        faturamentoAtual: 180000,
+        margemAtual: 33,
+        metaFaturamento: 300000,
+        oportunidades: [
+          'Aumentar ticket médio com upsell de módulos adicionais',
+          'Reduzir churn com programa de sucesso do cliente',
+          'Expandir para novos segmentos (varejo, saúde)',
+          'Criar modelo de implementação self-service para reduzir CAC',
+          'Lançar marketplace de integrações com parceiros'
+        ],
+      },
+      swot: {
+        forcas: [
+          'Produto intuitivo e fácil de usar',
+          'Equipe técnica experiente e engajada',
+          'Suporte diferenciado e humanizado',
+          'Boa reputação no mercado (NPS 72)',
+          'Base de clientes fiéis com baixo churn'
+        ],
+        fraquezas: [
+          'Marketing ainda incipiente',
+          'Dependência do fundador em vendas enterprise',
+          'Falta documentação de processos internos',
+          'Time de CS subdimensionado',
+          'Poucas integrações com outros sistemas'
+        ],
+        oportunidades: [
+          'Mercado de PMEs em digitalização acelerada',
+          'Concorrentes com produtos defasados',
+          'Possibilidade de parcerias com grandes contabilidades',
+          'Demanda crescente por automação',
+          'Expansão para América Latina'
+        ],
+        ameacas: [
+          'Entrada de players internacionais no Brasil',
+          'Crise econômica afetando PMEs',
+          'Dificuldade de contratar devs qualificados',
+          'Mudanças regulatórias (LGPD, fiscal)',
+          'Comoditização de funcionalidades básicas'
+        ],
+        horizontes: {
+          curto: 'Dobrar a base de clientes e atingir 500 empresas ativas',
+          medio: 'Lançar versão para novos segmentos e expandir para 3 países da LATAM',
+          longo: 'Ser líder em gestão para PMEs no Brasil com 10.000+ clientes e preparar para rodada Série A',
+        },
+      },
+      goldenCircle: {
+        why: 'Acreditamos que toda empresa merece ter acesso a ferramentas de gestão de qualidade, independente do tamanho. A tecnologia deve simplificar, não complicar a vida do empreendedor.',
+        how: 'Desenvolvemos software com obsessão por simplicidade, ouvimos atentamente nossos clientes e entregamos suporte humano de verdade. Cada feature passa pelo teste: "minha mãe conseguiria usar?".',
+        what: 'Um sistema de gestão completo (CRM, Financeiro, RH) em uma única plataforma, com implementação em 48h e suporte humano 24/7.',
+      },
+      swotPessoal: {
+        forcas: [
+          'Visão estratégica clara e inspiradora',
+          'Capacidade de recrutar e reter talentos',
+          'Conhecimento técnico profundo do produto',
+          'Resiliência e persistência em momentos difíceis',
+          'Boa comunicação e relacionamento'
+        ],
+        fraquezas: [
+          'Dificuldade de delegar tarefas importantes',
+          'Tendência ao perfeccionismo que atrasa entregas',
+          'Pouco tempo dedicado a networking',
+          'Gestão do tempo ainda precisa melhorar',
+          'Evita conflitos mesmo quando necessário'
+        ],
+        oportunidades: [
+          'Participar de programas de mentoria para founders',
+          'Desenvolver habilidades de vendas enterprise',
+          'Construir marca pessoal no LinkedIn',
+          'Fazer MBA executivo para expandir network'
+        ],
+        ameacas: [
+          'Burnout por excesso de responsabilidades',
+          'Distanciamento da família pelo trabalho',
+          'Dependência excessiva da empresa para identidade pessoal',
+          'Falta de exercício e cuidado com saúde'
+        ],
+      },
+      agendaCEO: {
+        prioridades: [
+          { descricao: 'Fechar 3 contas enterprise este trimestre', importancia: 'alta' },
+          { descricao: 'Contratar Head de Marketing', importancia: 'alta' },
+          { descricao: 'Implementar OKRs na empresa', importancia: 'media' },
+          { descricao: 'Documentar processos críticos', importancia: 'media' },
+          { descricao: 'Redesign da página de vendas', importancia: 'baixa' }
+        ],
+        alocacaoTempo: [
+          { atividade: 'Vendas e relacionamento com clientes', percentual: 35 },
+          { atividade: 'Gestão e desenvolvimento da equipe', percentual: 25 },
+          { atividade: 'Produto e estratégia', percentual: 20 },
+          { atividade: 'Financeiro e administrativo', percentual: 10 },
+          { atividade: 'Desenvolvimento pessoal e networking', percentual: 10 }
+        ],
+        focoTrimestre: 'Dobrar o MRR de R$180k para R$300k através de vendas enterprise e redução de churn.',
+      },
+    };
+
+    const demoBlocks: BlockStatus[] = initialBlocks.map(b => ({
+      ...b,
+      completed: true,
+      progress: 100
+    }));
+
+    const newProjectData: ProjectData = {
+      project: demoProject,
+      data: demoData,
+      blocks: demoBlocks
+    };
+
+    setProjectsData(prev => [...prev, newProjectData]);
+    setCurrentProjectId(demoProject.id);
+    setCurrentBlock('goldenCircle');
+  }, []);
+
   const selectProject = useCallback((id: string) => {
     setCurrentProjectId(id);
     setCurrentBlock('goldenCircle');
@@ -236,6 +471,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
       getTotalProgress,
       resetAll,
       createProject,
+      createDemoProject,
       selectProject,
       deleteProject,
       goToProjectList,
