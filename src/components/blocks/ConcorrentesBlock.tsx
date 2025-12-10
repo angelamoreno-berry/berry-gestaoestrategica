@@ -1,0 +1,222 @@
+import { useState, useEffect } from 'react';
+import { useConsulting } from '@/contexts/ConsultingContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { X, Plus, Trash2 } from 'lucide-react';
+
+export function ConcorrentesBlock() {
+  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const [localData, setLocalData] = useState(data.concorrentes);
+  const [newDiferencial, setNewDiferencial] = useState('');
+
+  useEffect(() => {
+    const hasConcorrentes = localData.concorrentes.length > 0 ? 1 : 0;
+    const hasDiferenciais = localData.diferenciais.length > 0 ? 1 : 0;
+    const hasPublico = localData.publicoAlvo.trim().length > 0 ? 1 : 0;
+    const hasProposta = localData.propostaValor.trim().length > 0 ? 1 : 0;
+    const progress = Math.round(((hasConcorrentes + hasDiferenciais + hasPublico + hasProposta) / 4) * 100);
+    updateBlockProgress('concorrentes', progress);
+    
+    if (progress === 100) {
+      markBlockComplete('concorrentes');
+    }
+  }, [localData, updateBlockProgress, markBlockComplete]);
+
+  const addConcorrente = () => {
+    const newConcorrente = { nome: '', pontoForte: '', pontoFraco: '' };
+    const newData = { ...localData, concorrentes: [...localData.concorrentes, newConcorrente] };
+    setLocalData(newData);
+    updateData('concorrentes', newData);
+  };
+
+  const updateConcorrente = (index: number, field: string, value: string) => {
+    const newConcorrentes = [...localData.concorrentes];
+    newConcorrentes[index] = { ...newConcorrentes[index], [field]: value };
+    const newData = { ...localData, concorrentes: newConcorrentes };
+    setLocalData(newData);
+    updateData('concorrentes', newData);
+  };
+
+  const removeConcorrente = (index: number) => {
+    const newConcorrentes = localData.concorrentes.filter((_, i) => i !== index);
+    const newData = { ...localData, concorrentes: newConcorrentes };
+    setLocalData(newData);
+    updateData('concorrentes', newData);
+  };
+
+  const addDiferencial = () => {
+    if (newDiferencial.trim()) {
+      const newData = { ...localData, diferenciais: [...localData.diferenciais, newDiferencial.trim()] };
+      setLocalData(newData);
+      updateData('concorrentes', newData);
+      setNewDiferencial('');
+    }
+  };
+
+  const removeDiferencial = (index: number) => {
+    const newDiferenciais = localData.diferenciais.filter((_, i) => i !== index);
+    const newData = { ...localData, diferenciais: newDiferenciais };
+    setLocalData(newData);
+    updateData('concorrentes', newData);
+  };
+
+  const handleChange = (field: string, value: string) => {
+    const newData = { ...localData, [field]: value };
+    setLocalData(newData);
+    updateData('concorrentes', newData);
+  };
+
+  return (
+    <div className="space-y-6">
+      <p className="text-muted-foreground">
+        Mapeie o cenário competitivo, identifique seus diferenciais e defina claramente seu público e proposta de valor.
+      </p>
+
+      {/* Concorrentes */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <span className="text-2xl">🎭</span>
+              Principais Concorrentes
+            </span>
+            <Button onClick={addConcorrente} size="sm">
+              <Plus className="w-4 h-4 mr-1" /> Adicionar
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {localData.concorrentes.map((concorrente, index) => (
+            <div key={index} className="p-4 border rounded-lg space-y-3 bg-muted/30">
+              <div className="flex items-center justify-between">
+                <Input
+                  placeholder="Nome do concorrente"
+                  value={concorrente.nome}
+                  onChange={(e) => updateConcorrente(index, 'nome', e.target.value)}
+                  className="font-medium"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeConcorrente(index)}
+                  className="ml-2 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Ponto Forte</label>
+                  <Input
+                    placeholder="O que fazem bem?"
+                    value={concorrente.pontoForte}
+                    onChange={(e) => updateConcorrente(index, 'pontoForte', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Ponto Fraco</label>
+                  <Input
+                    placeholder="Onde falham?"
+                    value={concorrente.pontoFraco}
+                    onChange={(e) => updateConcorrente(index, 'pontoFraco', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+          {localData.concorrentes.length === 0 && (
+            <p className="text-center text-muted-foreground py-4">
+              Clique em "Adicionar" para mapear seus concorrentes
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Diferenciais */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">⭐</span>
+            Seus Diferenciais
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            O que torna sua empresa única no mercado?
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Digite um diferencial..."
+              value={newDiferencial}
+              onChange={(e) => setNewDiferencial(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addDiferencial()}
+            />
+            <Button onClick={addDiferencial} size="icon">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {localData.diferenciais.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {localData.diferenciais.map((diferencial, index) => (
+                <Badge key={index} className="px-3 py-1.5 text-sm bg-primary/10 text-primary hover:bg-primary/20">
+                  {diferencial}
+                  <button
+                    onClick={() => removeDiferencial(index)}
+                    className="ml-2 hover:text-destructive"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Público Alvo */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">👥</span>
+            Público-Alvo
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="Descreva seu público-alvo ideal: quem são, onde estão, o que fazem..."
+            value={localData.publicoAlvo}
+            onChange={(e) => handleChange('publicoAlvo', e.target.value)}
+            className="resize-none"
+            rows={3}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Proposta de Valor */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">💡</span>
+            Proposta de Valor
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            O que você oferece que resolve o problema do seu cliente de forma única?
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="Ex: Ajudamos pequenas empresas a triplicar seu faturamento em 12 meses através de..."
+            value={localData.propostaValor}
+            onChange={(e) => handleChange('propostaValor', e.target.value)}
+            className="resize-none"
+            rows={4}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

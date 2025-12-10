@@ -1,0 +1,226 @@
+import { useState, useEffect } from 'react';
+import { useConsulting } from '@/contexts/ConsultingContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { X, Plus } from 'lucide-react';
+
+export function ICPBlock() {
+  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const [localData, setLocalData] = useState(data.icp);
+  const [newDor, setNewDor] = useState('');
+  const [newDesejo, setNewDesejo] = useState('');
+
+  useEffect(() => {
+    const hasCaracteristicas = localData.caracteristicasDemograficas.trim().length > 0 ? 1 : 0;
+    const hasDores = localData.dores.length > 0 ? 1 : 0;
+    const hasDesejos = localData.desejos.length > 0 ? 1 : 0;
+    const hasComportamento = localData.comportamento.trim().length > 0 ? 1 : 0;
+    const hasOnde = localData.ondeEncontrar.trim().length > 0 ? 1 : 0;
+    const progress = Math.round(((hasCaracteristicas + hasDores + hasDesejos + hasComportamento + hasOnde) / 5) * 100);
+    updateBlockProgress('icp', progress);
+    
+    if (progress === 100) {
+      markBlockComplete('icp');
+    }
+  }, [localData, updateBlockProgress, markBlockComplete]);
+
+  const handleChange = (field: string, value: string | string[]) => {
+    const newData = { ...localData, [field]: value };
+    setLocalData(newData);
+    updateData('icp', newData);
+  };
+
+  const addDor = () => {
+    if (newDor.trim()) {
+      handleChange('dores', [...localData.dores, newDor.trim()]);
+      setNewDor('');
+    }
+  };
+
+  const removeDor = (index: number) => {
+    handleChange('dores', localData.dores.filter((_, i) => i !== index));
+  };
+
+  const addDesejo = () => {
+    if (newDesejo.trim()) {
+      handleChange('desejos', [...localData.desejos, newDesejo.trim()]);
+      setNewDesejo('');
+    }
+  };
+
+  const removeDesejo = (index: number) => {
+    handleChange('desejos', localData.desejos.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="space-y-6">
+      <p className="text-muted-foreground">
+        Defina o Perfil de Cliente Ideal (ICP) para direcionar suas estratégias de marketing e vendas com precisão.
+      </p>
+
+      {/* Avatar Visual */}
+      <Card className="bg-gradient-to-br from-primary/5 to-accent/5">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-4xl">👤</span>
+            </div>
+            <div>
+              <h3 className="font-display text-xl font-bold">Seu Cliente Ideal</h3>
+              <p className="text-sm text-muted-foreground">
+                Quanto mais detalhado, melhor será sua comunicação
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Características Demográficas */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            Características Demográficas
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Idade, gênero, localização, renda, profissão, segmento de empresa...
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="Ex: Empresários entre 30-50 anos, donos de pequenas empresas de serviços com faturamento entre R$50k-500k/mês, localizados em grandes centros urbanos..."
+            value={localData.caracteristicasDemograficas}
+            onChange={(e) => handleChange('caracteristicasDemograficas', e.target.value)}
+            className="resize-none"
+            rows={4}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Dores */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">😰</span>
+            Dores e Problemas
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Quais são os maiores desafios e frustrações do seu cliente ideal?
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Digite uma dor do cliente..."
+              value={newDor}
+              onChange={(e) => setNewDor(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addDor()}
+            />
+            <Button onClick={addDor} size="icon">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {localData.dores.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {localData.dores.map((dor, index) => (
+                <Badge key={index} variant="destructive" className="px-3 py-1.5 text-sm">
+                  {dor}
+                  <button onClick={() => removeDor(index)} className="ml-2">
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Desejos */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">✨</span>
+            Desejos e Aspirações
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            O que seu cliente ideal quer conquistar? Quais são seus sonhos?
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Digite um desejo do cliente..."
+              value={newDesejo}
+              onChange={(e) => setNewDesejo(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addDesejo()}
+            />
+            <Button onClick={addDesejo} size="icon">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {localData.desejos.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {localData.desejos.map((desejo, index) => (
+                <Badge key={index} className="px-3 py-1.5 text-sm bg-green-500/10 text-green-600 hover:bg-green-500/20">
+                  {desejo}
+                  <button onClick={() => removeDesejo(index)} className="ml-2">
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Comportamento */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">🧠</span>
+            Comportamento de Compra
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Como ele toma decisões? O que influencia suas escolhas?
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="Ex: Pesquisa bastante antes de comprar, valoriza indicações, busca provas de resultado, sensível a preço mas paga por qualidade..."
+            value={localData.comportamento}
+            onChange={(e) => handleChange('comportamento', e.target.value)}
+            className="resize-none"
+            rows={3}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Onde Encontrar */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <span className="text-2xl">📍</span>
+            Onde Encontrar
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Quais canais, redes sociais, eventos ou lugares seu cliente frequenta?
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="Ex: LinkedIn, eventos de negócios, associações comerciais, Instagram profissional, podcasts de empreendedorismo..."
+            value={localData.ondeEncontrar}
+            onChange={(e) => handleChange('ondeEncontrar', e.target.value)}
+            className="resize-none"
+            rows={3}
+          />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
