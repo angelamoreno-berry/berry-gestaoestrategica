@@ -3529,60 +3529,294 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       ` : ''}
       
       <!-- ===== FINANCEIRO ===== -->
-      ${data.financeiro.faturamentoMensal > 0 || data.financeiro.margemLucro > 0 ? `
+      ${data.financeiro.faturamentoMensal > 0 || data.financeiro.faturamentoAtual > 0 || data.financeiro.margemLucro > 0 ? `
       <div class="section page-break">
         <div class="section-header">
           <div class="section-badge">
             <span class="section-icon">💰</span>
             Finanças
           </div>
-          <h2 class="section-title">Análise Financeira</h2>
-          <p class="section-description">Visão dos principais indicadores financeiros e saúde econômica do negócio.</p>
+          <h2 class="section-title">Análise Financeira Completa</h2>
+          <p class="section-description">Visão abrangente da saúde financeira, indicadores de desempenho e análise de endividamento.</p>
         </div>
         
-        <div class="data-grid">
-          ${data.financeiro.faturamentoMensal > 0 ? `
-          <div class="data-item">
-            <div class="data-label">Faturamento Mensal</div>
-            <div class="data-value">${formatCurrency(data.financeiro.faturamentoMensal)}</div>
+        <!-- Indicadores Principais -->
+        <div class="card" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-icon">📊</div>
+            <span class="card-title">Indicadores Principais</span>
           </div>
-          ` : ''}
-          ${data.financeiro.margemLucro > 0 ? `
-          <div class="data-item">
-            <div class="data-label">Margem de Lucro</div>
-            <div class="data-value">${data.financeiro.margemLucro}%</div>
+          <div class="data-grid">
+            ${data.financeiro.faturamentoAtual > 0 || data.financeiro.faturamentoMensal > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Faturamento Mensal</div>
+              <div class="data-value" style="color: #16a34a;">${formatCurrency(data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal)}</div>
+            </div>
+            ` : ''}
+            ${(data.financeiro.despesasFixas > 0 || data.financeiro.despesasVariaveis > 0) ? `
+            <div class="data-item">
+              <div class="data-label">Despesas Totais</div>
+              <div class="data-value" style="color: #dc2626;">${formatCurrency(data.financeiro.despesasFixas + data.financeiro.despesasVariaveis)}</div>
+            </div>
+            ` : ''}
+            ${(data.financeiro.faturamentoAtual > 0 || data.financeiro.faturamentoMensal > 0) && (data.financeiro.despesasFixas > 0 || data.financeiro.despesasVariaveis > 0) ? `
+            <div class="data-item">
+              <div class="data-label">Lucro Líquido Estimado</div>
+              <div class="data-value" style="color: ${(data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal) - data.financeiro.despesasFixas - data.financeiro.despesasVariaveis >= 0 ? '#16a34a' : '#dc2626'};">
+                ${formatCurrency((data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal) - data.financeiro.despesasFixas - data.financeiro.despesasVariaveis)}
+              </div>
+            </div>
+            ` : ''}
+            ${data.financeiro.margemLucro > 0 || data.financeiro.margemAtual > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Margem de Lucro</div>
+              <div class="data-value" style="color: ${(data.financeiro.margemLucro || data.financeiro.margemAtual) >= 20 ? '#16a34a' : (data.financeiro.margemLucro || data.financeiro.margemAtual) >= 10 ? '#ea580c' : '#dc2626'};">
+                ${data.financeiro.margemLucro || data.financeiro.margemAtual}%
+              </div>
+            </div>
+            ` : ''}
+            ${data.financeiro.pontoEquilibrio > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Ponto de Equilíbrio</div>
+              <div class="data-value">${formatCurrency(data.financeiro.pontoEquilibrio)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.metaFaturamento > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Meta de Faturamento</div>
+              <div class="data-value" style="color: #7c3aed;">${formatCurrency(data.financeiro.metaFaturamento)}</div>
+            </div>
+            ` : ''}
           </div>
-          ` : ''}
-          ${data.financeiro.custoFixoMensal > 0 ? `
-          <div class="data-item">
-            <div class="data-label">Custo Fixo Mensal</div>
-            <div class="data-value">${formatCurrency(data.financeiro.custoFixoMensal)}</div>
+        </div>
+        
+        <!-- Indicadores de Clientes -->
+        ${(data.financeiro.ticketMedio > 0 || data.financeiro.quantidadeClientes > 0 || data.financeiro.cac > 0 || data.financeiro.ltv > 0) ? `
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-icon">👥</div>
+            <span class="card-title">Indicadores de Clientes</span>
           </div>
-          ` : ''}
-          ${data.financeiro.pontoEquilibrio > 0 ? `
-          <div class="data-item">
-            <div class="data-label">Ponto de Equilíbrio</div>
-            <div class="data-value">${formatCurrency(data.financeiro.pontoEquilibrio)}</div>
+          <div class="data-grid">
+            ${data.financeiro.quantidadeClientes > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Clientes Ativos</div>
+              <div class="data-value">${data.financeiro.quantidadeClientes}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.ticketMedio > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Ticket Médio</div>
+              <div class="data-value">${formatCurrency(data.financeiro.ticketMedio)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.cac > 0 ? `
+            <div class="data-item">
+              <div class="data-label">CAC (Custo de Aquisição)</div>
+              <div class="data-value">${formatCurrency(data.financeiro.cac)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.ltv > 0 ? `
+            <div class="data-item">
+              <div class="data-label">LTV (Lifetime Value)</div>
+              <div class="data-value">${formatCurrency(data.financeiro.ltv)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.cac > 0 && data.financeiro.ltv > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Ratio LTV/CAC</div>
+              <div class="data-value" style="color: ${(data.financeiro.ltv / data.financeiro.cac) >= 3 ? '#16a34a' : '#ea580c'};">
+                ${(data.financeiro.ltv / data.financeiro.cac).toFixed(1)}x
+              </div>
+            </div>
+            ` : ''}
+          </div>
+          ${data.financeiro.cac > 0 && data.financeiro.ltv > 0 ? `
+          <div class="insight-box" style="margin-top: 16px;">
+            <div class="insight-box-title">💡 Análise LTV/CAC</div>
+            <div class="insight-box-text">
+              ${(data.financeiro.ltv / data.financeiro.cac) >= 3 
+                ? `<strong style="color: #16a34a;">Excelente!</strong> O ratio de ${(data.financeiro.ltv / data.financeiro.cac).toFixed(1)}x indica que cada real investido em aquisição retorna mais de 3x em valor ao longo do tempo. Continue investindo em aquisição.`
+                : (data.financeiro.ltv / data.financeiro.cac) >= 2
+                  ? `<strong style="color: #ea580c;">Atenção:</strong> O ratio de ${(data.financeiro.ltv / data.financeiro.cac).toFixed(1)}x está abaixo do ideal (3x). Trabalhe para aumentar o LTV (upsell, retenção) ou reduzir o CAC.`
+                  : `<strong style="color: #dc2626;">Crítico:</strong> O ratio de ${(data.financeiro.ltv / data.financeiro.cac).toFixed(1)}x é insustentável. Revise urgentemente sua estratégia de aquisição e retenção de clientes.`}
+            </div>
           </div>
           ` : ''}
         </div>
+        ` : ''}
         
-        ${data.financeiro.faturamentoMensal > 0 && data.financeiro.margemLucro > 0 ? `
-        <div class="insight-box" style="margin-top: 32px;">
-          <div class="insight-box-title">💡 Análise de Resultado</div>
-          <div class="insight-box-text">
-            <strong>Lucro líquido estimado: ${formatCurrency(data.financeiro.faturamentoMensal * data.financeiro.margemLucro / 100)}/mês</strong><br><br>
-            ${data.financeiro.margemLucro < 10 
-              ? 'Margem abaixo de 10% é considerada arriscada. Priorize: redução de custos ou aumento de preços. Uma crise pode rapidamente transformar lucro em prejuízo.'
-              : data.financeiro.margemLucro < 20
-                ? 'Margem saudável, mas há espaço para melhoria. Foque em eficiência operacional e estratégias de valor agregado para aumentar preços.'
-                : 'Excelente margem! Reinvista parte do lucro em marketing e vendas para acelerar crescimento.'}
+        <!-- Fluxo de Caixa e Liquidez -->
+        ${(data.financeiro.prazoMedioRecebimento > 0 || data.financeiro.prazoMedioPagamento > 0 || data.financeiro.capitalGiro > 0 || data.financeiro.reservaEmergencia > 0) ? `
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-icon">💵</div>
+            <span class="card-title">Fluxo de Caixa e Liquidez</span>
+          </div>
+          <div class="data-grid">
+            ${data.financeiro.prazoMedioRecebimento > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Prazo Médio Recebimento</div>
+              <div class="data-value">${data.financeiro.prazoMedioRecebimento} dias</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.prazoMedioPagamento > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Prazo Médio Pagamento</div>
+              <div class="data-value">${data.financeiro.prazoMedioPagamento} dias</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.prazoMedioRecebimento > 0 && data.financeiro.prazoMedioPagamento > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Ciclo Financeiro</div>
+              <div class="data-value" style="color: ${(data.financeiro.prazoMedioRecebimento - data.financeiro.prazoMedioPagamento) <= 0 ? '#16a34a' : '#ea580c'};">
+                ${data.financeiro.prazoMedioRecebimento - data.financeiro.prazoMedioPagamento} dias
+              </div>
+            </div>
+            ` : ''}
+            ${data.financeiro.capitalGiro > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Capital de Giro</div>
+              <div class="data-value">${formatCurrency(data.financeiro.capitalGiro)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.reservaEmergencia > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Reserva de Emergência</div>
+              <div class="data-value">${formatCurrency(data.financeiro.reservaEmergencia)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.reservaEmergencia > 0 && data.financeiro.despesasFixas > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Meses de Reserva</div>
+              <div class="data-value" style="color: ${(data.financeiro.reservaEmergencia / data.financeiro.despesasFixas) >= 6 ? '#16a34a' : (data.financeiro.reservaEmergencia / data.financeiro.despesasFixas) >= 3 ? '#ea580c' : '#dc2626'};">
+                ${(data.financeiro.reservaEmergencia / data.financeiro.despesasFixas).toFixed(1)}
+              </div>
+            </div>
+            ` : ''}
           </div>
         </div>
         ` : ''}
         
+        <!-- Endividamento -->
+        ${(data.financeiro.dividas && data.financeiro.dividas.length > 0) || data.financeiro.totalDividas > 0 ? `
+        <div class="card" style="margin-bottom: 24px; border-left: 4px solid #dc2626;">
+          <div class="card-header">
+            <div class="card-icon">💳</div>
+            <span class="card-title">Análise de Endividamento</span>
+          </div>
+          <div class="data-grid">
+            ${data.financeiro.totalDividas > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Total de Dívidas</div>
+              <div class="data-value" style="color: #dc2626;">${formatCurrency(data.financeiro.totalDividas)}</div>
+            </div>
+            ` : ''}
+            ${data.financeiro.dividas && data.financeiro.dividas.length > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Parcelas Mensais</div>
+              <div class="data-value" style="color: #ea580c;">
+                ${formatCurrency(data.financeiro.dividas.reduce((acc: number, d: any) => acc + (d.parcelasMensais || 0), 0))}
+              </div>
+            </div>
+            ` : ''}
+            ${data.financeiro.comprometimentoReceita > 0 ? `
+            <div class="data-item">
+              <div class="data-label">Comprometimento da Receita</div>
+              <div class="data-value" style="color: ${data.financeiro.comprometimentoReceita > 30 ? '#dc2626' : data.financeiro.comprometimentoReceita > 15 ? '#ea580c' : '#16a34a'};">
+                ${data.financeiro.comprometimentoReceita}%
+              </div>
+            </div>
+            ` : ''}
+          </div>
+          
+          ${data.financeiro.dividas && data.financeiro.dividas.length > 0 ? `
+          <div class="table-container" style="margin-top: 16px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>Valor Total</th>
+                  <th>Parcela Mensal</th>
+                  <th>Parcelas Restantes</th>
+                  <th>Taxa de Juros</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.financeiro.dividas.map((d: any) => `
+                <tr>
+                  <td><strong>${d.descricao}</strong></td>
+                  <td>${formatCurrency(d.valorTotal)}</td>
+                  <td>${formatCurrency(d.parcelasMensais)}</td>
+                  <td>${d.parcelasRestantes}x</td>
+                  <td>${d.taxaJuros}% a.m.</td>
+                </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          ` : ''}
+          
+          ${data.financeiro.comprometimentoReceita > 15 ? `
+          <div class="insight-box" style="margin-top: 16px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);">
+            <div class="insight-box-title" style="color: #dc2626;">⚠️ Alerta de Endividamento</div>
+            <div class="insight-box-text">
+              ${data.financeiro.comprometimentoReceita > 30 
+                ? `<strong>Nível crítico!</strong> Com ${data.financeiro.comprometimentoReceita}% da receita comprometida com dívidas, o fluxo de caixa está severamente impactado. Priorize: renegociação de dívidas, consolidação em taxas menores e aumento de receita.`
+                : `<strong>Atenção requerida:</strong> ${data.financeiro.comprometimentoReceita}% de comprometimento está acima do ideal (15%). Considere refinanciar dívidas de maior taxa e criar plano de quitação antecipada.`}
+            </div>
+          </div>
+          ` : ''}
+        </div>
+        ` : ''}
+        
+        <!-- Análise Geral -->
+        ${(data.financeiro.faturamentoAtual > 0 || data.financeiro.faturamentoMensal > 0) && (data.financeiro.margemLucro > 0 || data.financeiro.margemAtual > 0) ? `
+        <div class="insight-box" style="margin-bottom: 24px;">
+          <div class="insight-box-title">💡 Diagnóstico Financeiro</div>
+          <div class="insight-box-text">
+            <strong>Lucro líquido estimado: ${formatCurrency((data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal) * (data.financeiro.margemLucro || data.financeiro.margemAtual) / 100)}/mês</strong><br><br>
+            ${(data.financeiro.margemLucro || data.financeiro.margemAtual) < 10 
+              ? '🔴 <strong>Margem crítica:</strong> Abaixo de 10% compromete a sustentabilidade. Ações urgentes: revisar precificação, cortar custos não essenciais, renegociar com fornecedores.'
+              : (data.financeiro.margemLucro || data.financeiro.margemAtual) < 20
+                ? '🟡 <strong>Margem moderada:</strong> Há espaço para otimização. Foque em: eficiência operacional, automação de processos e estratégias de valor agregado.'
+                : '🟢 <strong>Margem saudável:</strong> Continue otimizando e reinvista parte do lucro em crescimento sustentável.'}
+            ${data.financeiro.metaFaturamento > 0 && (data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal) < data.financeiro.metaFaturamento 
+              ? `<br><br>📈 <strong>Gap para meta:</strong> ${formatCurrency(data.financeiro.metaFaturamento - (data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal))} (${(((data.financeiro.metaFaturamento - (data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal)) / (data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal)) * 100).toFixed(0)}% de crescimento necessário)`
+              : ''}
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Riscos Identificados -->
+        ${data.financeiro.riscos && data.financeiro.riscos.length > 0 ? `
+        <div class="card" style="margin-bottom: 24px; border-left: 4px solid #ea580c;">
+          <div class="card-header">
+            <div class="card-icon">⚠️</div>
+            <span class="card-title">Riscos Financeiros Identificados</span>
+          </div>
+          <ul style="margin: 0; padding-left: 20px;">
+            ${data.financeiro.riscos.map((r: string) => `<li style="padding: 8px 0; color: #374151;">${r}</li>`).join('')}
+          </ul>
+        </div>
+        ` : ''}
+        
+        <!-- Oportunidades -->
+        ${data.financeiro.oportunidades && data.financeiro.oportunidades.length > 0 ? `
+        <div class="card" style="margin-bottom: 24px; border-left: 4px solid #16a34a;">
+          <div class="card-header">
+            <div class="card-icon">💡</div>
+            <span class="card-title">Oportunidades de Melhoria Financeira</span>
+          </div>
+          <ul style="margin: 0; padding-left: 20px;">
+            ${data.financeiro.oportunidades.map((o: string) => `<li style="padding: 8px 0; color: #374151;">${o}</li>`).join('')}
+          </ul>
+        </div>
+        ` : ''}
+        
+        <!-- Investimentos -->
         ${data.financeiro.investimentos && data.financeiro.investimentos.length > 0 ? `
-        <div class="card" style="margin-top: 24px;">
+        <div class="card" style="margin-bottom: 24px;">
           <div class="card-header">
             <div class="card-icon">📈</div>
             <span class="card-title">Investimentos Planejados</span>
@@ -3598,7 +3832,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
                 </tr>
               </thead>
               <tbody>
-                ${data.financeiro.investimentos.map(inv => `
+                ${data.financeiro.investimentos.map((inv: any) => `
                   <tr>
                     <td><strong>${inv.area}</strong></td>
                     <td>${formatCurrency(inv.valor)}</td>
@@ -3612,33 +3846,52 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         </div>
         ` : ''}
         
+        <!-- Plano de Ação -->
         <div class="action-plan" style="margin-top: 32px;">
           <div class="action-plan-header">
             <div class="action-plan-title">📋 Plano de Ação - Financeiro</div>
-            <span class="action-plan-badge">Rentabilidade</span>
+            <span class="action-plan-badge">Saúde Financeira</span>
           </div>
           <ul class="action-plan-list">
             <li class="action-plan-item">
               <span class="action-plan-number">1</span>
               <div class="action-plan-content">
-                <div class="action-plan-text">Implementar DRE mensal</div>
-                <div class="action-plan-detail">Demonstrativo de Resultado do Exercício todo mês até dia 10. Saiba exatamente: receita - custos - despesas = lucro. Não gerencie no escuro.</div>
+                <div class="action-plan-text">Implementar DRE mensal gerencial</div>
+                <div class="action-plan-detail">Feche o mês até dia 5 e analise: receita, custos variáveis, margem de contribuição, custos fixos e lucro líquido. Decisões sem DRE são tiros no escuro.</div>
               </div>
             </li>
             <li class="action-plan-item">
               <span class="action-plan-number">2</span>
               <div class="action-plan-content">
-                <div class="action-plan-text">Calcular CAC e LTV por canal</div>
-                <div class="action-plan-detail">CAC = Custo total de marketing e vendas ÷ novos clientes. LTV = Ticket médio × frequência × tempo de vida. LTV deve ser pelo menos 3x o CAC.</div>
+                <div class="action-plan-text">Monitorar indicadores-chave semanalmente</div>
+                <div class="action-plan-detail">CAC, LTV, ticket médio, inadimplência, ciclo financeiro. Monte um dashboard simples e revise toda segunda-feira. O que não é medido não é gerenciado.</div>
               </div>
             </li>
             <li class="action-plan-item">
               <span class="action-plan-number">3</span>
               <div class="action-plan-content">
                 <div class="action-plan-text">Criar reserva de emergência empresarial</div>
-                <div class="action-plan-detail">Meta: 3-6 meses de custos fixos em reserva. Comece separando 10% do lucro mensal até atingir a meta. Isso dá segurança para decisões ousadas.</div>
+                <div class="action-plan-detail">Meta: 6 meses de custos fixos. Separe 10% do lucro mensalmente. Isso permite tomar decisões de longo prazo sem pressão de caixa.</div>
               </div>
             </li>
+            ${data.financeiro.comprometimentoReceita > 15 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <div class="action-plan-content">
+                <div class="action-plan-text">Renegociar e consolidar dívidas</div>
+                <div class="action-plan-detail">Priorize quitar dívidas de maior taxa. Considere consolidação em linha de crédito mais barata. Meta: comprometimento abaixo de 15% da receita.</div>
+              </div>
+            </li>
+            ` : ''}
+            ${data.financeiro.cac > 0 && data.financeiro.ltv > 0 && (data.financeiro.ltv / data.financeiro.cac) < 3 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">${data.financeiro.comprometimentoReceita > 15 ? '5' : '4'}</span>
+              <div class="action-plan-content">
+                <div class="action-plan-text">Melhorar ratio LTV/CAC</div>
+                <div class="action-plan-detail">Para aumentar LTV: programas de fidelização, upsell, cross-sell. Para reduzir CAC: refine o ICP, melhore conversão, foque em canais orgânicos.</div>
+              </div>
+            </li>
+            ` : ''}
           </ul>
         </div>
       </div>
