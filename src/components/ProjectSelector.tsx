@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2 } from 'lucide-react';
+import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles } from 'lucide-react';
 import { Project } from '@/types/consulting';
 
 const segmentos = [
@@ -29,7 +29,7 @@ const segmentos = [
 ];
 
 export function ProjectSelector() {
-  const { projects, currentProject, createProject, selectProject, deleteProject } = useConsulting();
+  const { projects, currentProject, createProject, createDemoProject, selectProject, deleteProject } = useConsulting();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     nomeEmpresa: '',
@@ -257,6 +257,14 @@ export function ProjectSelector() {
             <Building2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum projeto cadastrado</h3>
             <p className="text-muted-foreground mb-6">Comece criando seu primeiro projeto de consultoria</p>
+            <Button 
+              variant="outline" 
+              onClick={createDemoProject}
+              className="gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Criar Projeto Demo (100% preenchido)
+            </Button>
           </div>
         )}
       </div>
