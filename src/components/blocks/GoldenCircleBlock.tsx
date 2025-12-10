@@ -37,26 +37,17 @@ export function GoldenCircleBlock() {
         <div className="relative">
           {/* Por Quê - Círculo Interno */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-primary flex items-center justify-center z-30 shadow-strong">
-            <div className="text-center text-primary-foreground">
-              <span className="text-xl font-bold">POR QUÊ</span>
-              <p className="text-xs opacity-80">Propósito</p>
-            </div>
+            <span className="text-xl font-bold text-primary-foreground">POR QUÊ</span>
           </div>
           
           {/* Como - Círculo do Meio */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full bg-primary/30 flex items-start justify-center pt-4 z-20">
-            <div className="text-center text-foreground">
-              <span className="text-lg font-semibold">COMO</span>
-              <p className="text-xs opacity-70">Diferencial</p>
-            </div>
+            <span className="text-lg font-semibold text-foreground">COMO</span>
           </div>
           
           {/* O Quê - Círculo Externo */}
           <div className="w-80 h-80 rounded-full bg-primary/10 flex items-start justify-center pt-4 z-10">
-            <div className="text-center text-foreground">
-              <span className="text-lg font-semibold">O QUÊ</span>
-              <p className="text-xs opacity-70">Entrega</p>
-            </div>
+            <span className="text-lg font-semibold text-foreground">O QUÊ</span>
           </div>
         </div>
       </div>
