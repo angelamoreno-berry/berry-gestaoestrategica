@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-
+import { HelpTooltip } from '@/components/HelpTooltip';
 interface Question {
   id: string;
   question: string;
@@ -441,7 +441,10 @@ export function DiagnosticoBlock() {
                   <CardTitle className="flex items-center gap-3">
                     <span className="text-2xl">{area.icon}</span>
                     <div>
-                      <span>{area.label}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{area.label}</span>
+                        <HelpTooltip blockId="diagnostico" fieldKey={area.key} />
+                      </div>
                       <p className="text-sm font-normal text-muted-foreground">{area.description}</p>
                     </div>
                   </CardTitle>

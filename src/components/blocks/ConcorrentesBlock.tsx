@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, Trash2 } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function ConcorrentesBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -82,6 +83,7 @@ export function ConcorrentesBlock() {
             <span className="flex items-center gap-2">
               <span className="text-2xl">🎭</span>
               Principais Concorrentes
+              <HelpTooltip blockId="concorrentes" fieldKey="concorrentes" />
             </span>
             <Button onClick={addConcorrente} size="sm">
               <Plus className="w-4 h-4 mr-1" /> Adicionar
@@ -141,6 +143,7 @@ export function ConcorrentesBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">⭐</span>
             Seus Diferenciais
+            <HelpTooltip blockId="concorrentes" fieldKey="diferenciais" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             O que torna sua empresa única no mercado?
@@ -183,6 +186,7 @@ export function ConcorrentesBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">👥</span>
             Público-Alvo
+            <HelpTooltip blockId="concorrentes" fieldKey="publicoAlvo" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -202,6 +206,7 @@ export function ConcorrentesBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">💡</span>
             Proposta de Valor
+            <HelpTooltip blockId="concorrentes" fieldKey="propostaValor" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             O que você oferece que resolve o problema do seu cliente de forma única?
