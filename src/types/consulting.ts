@@ -29,12 +29,20 @@ export interface IdentidadeData {
   posicionamento: string;
 }
 
+export interface Concorrente {
+  nome: string;
+  tipo: string;
+  pontosFortes: string;
+  pontosFracos: string;
+}
+
 export interface ConcorrentesData {
   concorrentes: Array<{
     nome: string;
     pontoForte: string;
     pontoFraco: string;
   }>;
+  principais: Concorrente[];
   diferenciais: string[];
   publicoAlvo: string;
   propostaValor: string;
@@ -42,8 +50,12 @@ export interface ConcorrentesData {
 
 export interface ICPData {
   caracteristicasDemograficas: string;
+  descricao: string;
+  segmentos: string[];
   dores: string[];
+  dpisos: string[];
   desejos: string[];
+  necessidades: string[];
   comportamento: string;
   ondeEncontrar: string;
 }
@@ -82,32 +94,49 @@ export interface MotoresCrescimentoData {
   }>;
 }
 
+export interface Cargo {
+  titulo: string;
+  nivel: 1 | 2 | 3;
+  responsabilidades: string[];
+  kpis: string[];
+  subordinadoA: string;
+}
+
 export interface OrganogramaData {
-  cargos: Array<{
-    titulo: string;
-    nivel: 1 | 2 | 3;
-    responsabilidades: string[];
-    kpis: string[];
-    subordinadoA: string;
-  }>;
+  cargos: Cargo[];
+}
+
+export interface Processo {
+  nome: string;
+  descricao: string;
+  responsavel: string;
+  frequencia: string;
 }
 
 export interface ProcessosData {
-  processos: Array<{
-    nome: string;
-    descricao: string;
-    responsavel: string;
-    frequencia: string;
-  }>;
+  processos: Processo[];
+  lista: Processo[];
+}
+
+export interface Investimento {
+  area: string;
+  valor: number;
+  prazo: string;
+  prioridade: 'Alta' | 'Media' | 'Baixa';
 }
 
 export interface FinanceiroData {
   despesasFixas: number;
   despesasVariaveis: number;
   faturamentoAtual: number;
+  faturamentoMensal: number;
   margemAtual: number;
+  margemLucro: number;
+  custoFixoMensal: number;
+  pontoEquilibrio: number;
   metaFaturamento: number;
   oportunidades: string[];
+  investimentos: Investimento[];
 }
 
 export interface SWOTData {
@@ -135,15 +164,30 @@ export interface SWOTPessoalData {
   ameacas: string[];
 }
 
+export interface Prioridade {
+  descricao: string;
+  importancia: 'alta' | 'media' | 'baixa';
+}
+
+export interface Rotina {
+  atividade: string;
+  frequencia: string;
+  dia: string;
+}
+
+export interface Delegacao {
+  atividade: string;
+  para: string;
+}
+
 export interface AgendaCEOData {
-  prioridades: Array<{
-    descricao: string;
-    importancia: 'alta' | 'media' | 'baixa';
-  }>;
+  prioridades: Prioridade[];
   alocacaoTempo: Array<{
     atividade: string;
     percentual: number;
   }>;
+  rotinas: Rotina[];
+  delegacoes: Delegacao[];
   focoTrimestre: string;
 }
 

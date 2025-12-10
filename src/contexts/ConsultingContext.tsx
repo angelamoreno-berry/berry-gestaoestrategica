@@ -19,14 +19,19 @@ const initialData: ConsultingData = {
   },
   concorrentes: {
     concorrentes: [],
+    principais: [],
     diferenciais: [],
     publicoAlvo: '',
     propostaValor: '',
   },
   icp: {
     caracteristicasDemograficas: '',
+    descricao: '',
+    segmentos: [],
     dores: [],
+    dpisos: [],
     desejos: [],
+    necessidades: [],
     comportamento: '',
     ondeEncontrar: '',
   },
@@ -52,14 +57,20 @@ const initialData: ConsultingData = {
   },
   processos: {
     processos: [],
+    lista: [],
   },
   financeiro: {
     despesasFixas: 0,
     despesasVariaveis: 0,
     faturamentoAtual: 0,
+    faturamentoMensal: 0,
     margemAtual: 0,
+    margemLucro: 0,
+    custoFixoMensal: 0,
+    pontoEquilibrio: 0,
     metaFaturamento: 0,
     oportunidades: [],
+    investimentos: [],
   },
   swot: {
     forcas: [],
@@ -86,6 +97,8 @@ const initialData: ConsultingData = {
   agendaCEO: {
     prioridades: [],
     alocacaoTempo: [],
+    rotinas: [],
+    delegacoes: [],
     focoTrimestre: '',
   },
 };
@@ -241,12 +254,19 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           { nome: 'CloudBiz', pontoForte: 'Preço agressivo e marketing digital forte', pontoFraco: 'Suporte deficiente e muitos bugs' },
           { nome: 'GestãoPro', pontoForte: 'Funcionalidades completas e integrações', pontoFraco: 'Complexidade excessiva, curva de aprendizado alta' },
         ],
+        principais: [
+          { nome: 'SoftGest', tipo: 'Direto', pontosFortes: 'Marca consolidada e grande base de clientes', pontosFracos: 'Sistema legado, interface ultrapassada' },
+          { nome: 'CloudBiz', tipo: 'Direto', pontosFortes: 'Preço agressivo e marketing digital forte', pontosFracos: 'Suporte deficiente e muitos bugs' },
+          { nome: 'GestãoPro', tipo: 'Indireto', pontosFortes: 'Funcionalidades completas e integrações', pontosFracos: 'Complexidade excessiva, curva de aprendizado alta' },
+        ],
         diferenciais: ['Implementação em 48h', 'Suporte humano 24/7', 'Interface intuitiva', 'Preço justo sem surpresas'],
         publicoAlvo: 'PMEs de serviços com 10-100 funcionários que buscam modernizar a gestão',
         propostaValor: 'Gestão descomplicada que funciona desde o primeiro dia, com suporte humano sempre que você precisar.',
       },
       icp: {
         caracteristicasDemograficas: 'Empresários de 35-55 anos, donos de empresas de serviços com faturamento entre R$100k-500k/mês, 10-50 funcionários, atuando há mais de 5 anos no mercado.',
+        descricao: 'Empresário experiente que já tentou outras soluções de gestão, valoriza simplicidade e suporte humano, está disposto a investir em tecnologia mas tem receio de complexidade.',
+        segmentos: ['Serviços B2B', 'Consultorias', 'Agências', 'Clínicas', 'Escritórios de Contabilidade'],
         dores: [
           'Perde tempo demais com planilhas e controles manuais',
           'Não consegue ver os números da empresa em tempo real',
@@ -254,12 +274,23 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           'Já tentou outros sistemas e desistiu pela dificuldade',
           'Sente que está perdendo dinheiro mas não sabe onde'
         ],
+        dpisos: [
+          'Perde tempo demais com planilhas e controles manuais',
+          'Não consegue ver os números da empresa em tempo real',
+          'Tem medo de tecnologia complexa que a equipe não vai usar'
+        ],
         desejos: [
           'Ter controle total da empresa na palma da mão',
           'Tomar decisões baseadas em dados confiáveis',
           'Ter tempo para focar no estratégico, não no operacional',
           'Escalar o negócio com processos organizados',
           'Dormir tranquilo sabendo que está tudo sob controle'
+        ],
+        necessidades: [
+          'Sistema intuitivo que a equipe use de verdade',
+          'Suporte rápido e humanizado quando precisar',
+          'Relatórios claros para tomada de decisão',
+          'Implementação rápida sem parar a operação'
         ],
         comportamento: 'Pesquisa muito antes de comprar, valoriza indicações de outros empresários, prefere ver demonstração antes de fechar, sensível a preço mas paga mais por qualidade comprovada.',
         ondeEncontrar: 'LinkedIn, grupos de empresários no WhatsApp, eventos da ACSP, podcasts de negócios, YouTube (canais de gestão)',
@@ -322,12 +353,23 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           { nome: 'Review Financeiro', descricao: 'Análise de DRE, fluxo de caixa e indicadores', responsavel: 'CEO', frequencia: 'Mensal' },
           { nome: 'All Hands', descricao: 'Reunião geral da empresa para alinhamento e celebrações', responsavel: 'CEO', frequencia: 'Mensal' }
         ],
+        lista: [
+          { nome: 'Onboarding de Cliente', descricao: 'Processo de ativação e treinamento de novos clientes', responsavel: 'Head de CS', frequencia: 'A cada novo cliente' },
+          { nome: 'Sprint de Desenvolvimento', descricao: 'Ciclo de 2 semanas para entrega de novas funcionalidades', responsavel: 'Head de Produto', frequencia: 'Quinzenal' },
+          { nome: 'Reunião de Pipeline', descricao: 'Revisão das oportunidades comerciais e forecast', responsavel: 'Head Comercial', frequencia: 'Semanal' },
+          { nome: 'Review Financeiro', descricao: 'Análise de DRE, fluxo de caixa e indicadores', responsavel: 'CEO', frequencia: 'Mensal' },
+          { nome: 'All Hands', descricao: 'Reunião geral da empresa para alinhamento e celebrações', responsavel: 'CEO', frequencia: 'Mensal' }
+        ],
       },
       financeiro: {
         despesasFixas: 95000,
         despesasVariaveis: 25000,
         faturamentoAtual: 180000,
+        faturamentoMensal: 180000,
         margemAtual: 33,
+        margemLucro: 33,
+        custoFixoMensal: 95000,
+        pontoEquilibrio: 142000,
         metaFaturamento: 300000,
         oportunidades: [
           'Aumentar ticket médio com upsell de módulos adicionais',
@@ -335,6 +377,11 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           'Expandir para novos segmentos (varejo, saúde)',
           'Criar modelo de implementação self-service para reduzir CAC',
           'Lançar marketplace de integrações com parceiros'
+        ],
+        investimentos: [
+          { area: 'Marketing Digital', valor: 30000, prazo: '3 meses', prioridade: 'Alta' },
+          { area: 'Expansão de Time de CS', valor: 50000, prazo: '6 meses', prioridade: 'Alta' },
+          { area: 'Desenvolvimento de Integrações', valor: 25000, prazo: '6 meses', prioridade: 'Media' }
         ],
       },
       swot: {
@@ -419,6 +466,17 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           { atividade: 'Produto e estratégia', percentual: 20 },
           { atividade: 'Financeiro e administrativo', percentual: 10 },
           { atividade: 'Desenvolvimento pessoal e networking', percentual: 10 }
+        ],
+        rotinas: [
+          { atividade: 'Reunião de alinhamento com líderes', frequencia: 'Semanal', dia: 'Segunda' },
+          { atividade: 'Review de métricas e KPIs', frequencia: 'Semanal', dia: 'Segunda' },
+          { atividade: '1:1 com reports diretos', frequencia: 'Quinzenal', dia: 'Terça' },
+          { atividade: 'Análise financeira e DRE', frequencia: 'Mensal', dia: 'Primeira semana' }
+        ],
+        delegacoes: [
+          { atividade: 'Gestão operacional do produto', para: 'Head de Produto' },
+          { atividade: 'Atendimento de suporte nível 1', para: 'Head de CS' },
+          { atividade: 'Prospecção de leads', para: 'SDRs' }
         ],
         focoTrimestre: 'Dobrar o MRR de R$180k para R$300k através de vendas enterprise e redução de churn.',
       },

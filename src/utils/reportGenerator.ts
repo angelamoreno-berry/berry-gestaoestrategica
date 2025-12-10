@@ -3166,7 +3166,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
                       <div class="org-subordinate">Subordinado a: ${cargo.subordinadoA || 'Proprietário'}</div>
                       <div class="org-section">
                         <div class="org-section-title">Responsabilidades</div>
-                        <div class="org-responsibilities">${cargo.responsabilidades}</div>
+                        <div class="org-responsibilities">${Array.isArray(cargo.responsabilidades) ? cargo.responsabilidades.join(', ') : cargo.responsabilidades}</div>
                       </div>
                       ${cargo.kpis && cargo.kpis.length > 0 ? `
                       <div class="org-section">
@@ -3519,7 +3519,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       ` : ''}
       
       <!-- ===== AGENDA CEO ===== -->
-      ${data.agendaCEO && (data.agendaCEO.prioridades.length > 0 || data.agendaCEO.rotinas.length > 0) ? `
+      ${data.agendaCEO && (data.agendaCEO.prioridades.length > 0 || (data.agendaCEO.rotinas && data.agendaCEO.rotinas.length > 0)) ? `
       <div class="section page-break">
         <div class="section-header">
           <div class="section-badge">
@@ -3540,7 +3540,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             ${data.agendaCEO.prioridades.map((p, i) => `
               <li class="list-item">
                 <span style="width: 28px; height: 28px; background: var(--gradient-primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;">${i + 1}</span>
-                <span>${p}</span>
+                <span>${typeof p === 'string' ? p : p.descricao}</span>
               </li>
             `).join('')}
           </ul>
@@ -3555,7 +3555,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         </div>
         ` : ''}
         
-        ${data.agendaCEO.rotinas.length > 0 ? `
+        ${data.agendaCEO.rotinas && data.agendaCEO.rotinas.length > 0 ? `
         <div class="card">
           <div class="card-header">
             <div class="card-icon">🔄</div>
