@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function EstrategiasValorBlock() {
@@ -17,8 +16,7 @@ export function EstrategiasValorBlock() {
   useEffect(() => {
     const hasOfertas = localData.novasOfertas.length > 0 ? 1 : 0;
     const hasServicos = localData.novosServicos.length > 0 ? 1 : 0;
-    const hasPacotes = localData.pacotes.length > 0 ? 1 : 0;
-    const progress = Math.round(((hasOfertas + hasServicos + hasPacotes) / 3) * 100);
+    const progress = Math.round(((hasOfertas + hasServicos) / 2) * 100);
     updateBlockProgress('estrategiasValor', progress);
     
     if (progress === 100) {
@@ -56,26 +54,6 @@ export function EstrategiasValorBlock() {
     updateData('estrategiasValor', newData);
   };
 
-  const addPacote = () => {
-    const newPacote = { nome: '', descricao: '', preco: '' };
-    const newData = { ...localData, pacotes: [...localData.pacotes, newPacote] };
-    setLocalData(newData);
-    updateData('estrategiasValor', newData);
-  };
-
-  const updatePacote = (index: number, field: string, value: string) => {
-    const newPacotes = [...localData.pacotes];
-    newPacotes[index] = { ...newPacotes[index], [field]: value };
-    const newData = { ...localData, pacotes: newPacotes };
-    setLocalData(newData);
-    updateData('estrategiasValor', newData);
-  };
-
-  const removePacote = (index: number) => {
-    const newData = { ...localData, pacotes: localData.pacotes.filter((_, i) => i !== index) };
-    setLocalData(newData);
-    updateData('estrategiasValor', newData);
-  };
 
   return (
     <div className="space-y-6">
@@ -163,63 +141,6 @@ export function EstrategiasValorBlock() {
         </CardContent>
       </Card>
 
-      {/* Pacotes */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <span className="text-2xl">📦</span>
-              Pacotes de Serviços
-              <HelpTooltip fieldKey="pacotes" blockId="estrategiasValor" />
-            </span>
-            <Button onClick={addPacote} size="sm">
-              <Plus className="w-4 h-4 mr-1" /> Adicionar Pacote
-            </Button>
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Crie 2-3 pacotes (ex: Básico, Profissional, Premium) com valores crescentes para aumentar ticket médio.
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {localData.pacotes.map((pacote, index) => (
-            <div key={index} className="p-4 border rounded-lg space-y-3 bg-muted/30">
-              <div className="flex items-center justify-between">
-                <Input
-                  placeholder="Nome do pacote (ex: Pacote Premium)"
-                  value={pacote.nome}
-                  onChange={(e) => updatePacote(index, 'nome', e.target.value)}
-                  className="font-medium"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removePacote(index)}
-                  className="ml-2 text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-              <Textarea
-                placeholder="Descrição do pacote e o que inclui..."
-                value={pacote.descricao}
-                onChange={(e) => updatePacote(index, 'descricao', e.target.value)}
-                className="resize-none"
-                rows={2}
-              />
-              <Input
-                placeholder="Preço sugerido (ex: R$ 2.500/mês)"
-                value={pacote.preco}
-                onChange={(e) => updatePacote(index, 'preco', e.target.value)}
-              />
-            </div>
-          ))}
-          {localData.pacotes.length === 0 && (
-            <p className="text-center text-muted-foreground py-4">
-              Clique em "Adicionar Pacote" para criar seus pacotes de serviços
-            </p>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

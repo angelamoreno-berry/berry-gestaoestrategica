@@ -35,27 +35,27 @@ export function GoldenCircleBlock() {
       {/* Golden Circle Visualization */}
       <div className="flex justify-center py-8">
         <div className="relative">
-          {/* Why - Inner Circle */}
+          {/* Por Quê - Círculo Interno */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-primary flex items-center justify-center z-30 shadow-strong">
             <div className="text-center text-primary-foreground">
-              <span className="text-2xl font-bold">WHY</span>
-              <p className="text-xs opacity-80">Por quê?</p>
+              <span className="text-xl font-bold">POR QUÊ</span>
+              <p className="text-xs opacity-80">Propósito</p>
             </div>
           </div>
           
-          {/* How - Middle Circle */}
+          {/* Como - Círculo do Meio */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full bg-primary/30 flex items-start justify-center pt-4 z-20">
             <div className="text-center text-foreground">
-              <span className="text-lg font-semibold">HOW</span>
-              <p className="text-xs opacity-70">Como?</p>
+              <span className="text-lg font-semibold">COMO</span>
+              <p className="text-xs opacity-70">Diferencial</p>
             </div>
           </div>
           
-          {/* What - Outer Circle */}
+          {/* O Quê - Círculo Externo */}
           <div className="w-80 h-80 rounded-full bg-primary/10 flex items-start justify-center pt-4 z-10">
             <div className="text-center text-foreground">
-              <span className="text-lg font-semibold">WHAT</span>
-              <p className="text-xs opacity-70">O quê?</p>
+              <span className="text-lg font-semibold">O QUÊ</span>
+              <p className="text-xs opacity-70">Entrega</p>
             </div>
           </div>
         </div>
@@ -69,7 +69,7 @@ export function GoldenCircleBlock() {
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
                 1
               </div>
-              WHY - Por quê existimos?
+              POR QUÊ - Por que existimos?
               <HelpTooltip fieldKey="why" blockId="goldenCircle" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export function GoldenCircleBlock() {
               <div className="w-10 h-10 rounded-full bg-primary/30 flex items-center justify-center font-bold">
                 2
               </div>
-              HOW - Como fazemos?
+              COMO - Como fazemos?
               <HelpTooltip fieldKey="how" blockId="goldenCircle" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -117,7 +117,7 @@ export function GoldenCircleBlock() {
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold">
                 3
               </div>
-              WHAT - O que entregamos?
+              O QUÊ - O que entregamos?
               <HelpTooltip fieldKey="what" blockId="goldenCircle" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -145,19 +145,19 @@ export function GoldenCircleBlock() {
           <CardContent className="space-y-3">
             {localData.why && (
               <div>
-                <p className="text-xs font-medium text-primary mb-1">WHY</p>
+                <p className="text-xs font-medium text-primary mb-1">POR QUÊ</p>
                 <p className="text-sm">{localData.why}</p>
               </div>
             )}
             {localData.how && (
               <div>
-                <p className="text-xs font-medium text-primary/70 mb-1">HOW</p>
+                <p className="text-xs font-medium text-primary/70 mb-1">COMO</p>
                 <p className="text-sm">{localData.how}</p>
               </div>
             )}
             {localData.what && (
               <div>
-                <p className="text-xs font-medium text-primary/50 mb-1">WHAT</p>
+                <p className="text-xs font-medium text-primary/50 mb-1">O QUÊ</p>
                 <p className="text-sm">{localData.what}</p>
               </div>
             )}
