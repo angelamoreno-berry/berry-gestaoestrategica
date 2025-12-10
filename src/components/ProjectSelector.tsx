@@ -76,7 +76,7 @@ export function ProjectSelector() {
             Ferramenta de Estruturação
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Gerencie seus projetos de consultoria e acompanhe o diagnóstico de maturidade de cada empresa
+            Gerencie e estruture o essencial da gestão de cada empresa
           </p>
         </div>
 
