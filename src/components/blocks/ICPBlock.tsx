@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function ICPBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -84,6 +85,7 @@ export function ICPBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">📊</span>
             Características Demográficas
+            <HelpTooltip blockId="icp" fieldKey="caracteristicasDemograficas" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Idade, gênero, localização, renda, profissão, segmento de empresa...
@@ -106,6 +108,7 @@ export function ICPBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">😰</span>
             Dores e Problemas
+            <HelpTooltip blockId="icp" fieldKey="dores" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Quais são os maiores desafios e frustrações do seu cliente ideal?
@@ -145,6 +148,7 @@ export function ICPBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">✨</span>
             Desejos e Aspirações
+            <HelpTooltip blockId="icp" fieldKey="desejos" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             O que seu cliente ideal quer conquistar? Quais são seus sonhos?
@@ -184,6 +188,7 @@ export function ICPBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🧠</span>
             Comportamento de Compra
+            <HelpTooltip blockId="icp" fieldKey="comportamento" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Como ele toma decisões? O que influencia suas escolhas?
@@ -206,6 +211,7 @@ export function ICPBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">📍</span>
             Onde Encontrar
+            <HelpTooltip blockId="icp" fieldKey="ondeEncontrar" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
             Quais canais, redes sociais, eventos ou lugares seu cliente frequenta?

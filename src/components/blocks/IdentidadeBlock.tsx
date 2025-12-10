@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function IdentidadeBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -57,6 +58,7 @@ export function IdentidadeBlock() {
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">🔭</span>
               Visão
+              <HelpTooltip blockId="identidade" fieldKey="visao" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Onde a empresa quer chegar? Qual é o sonho grande a ser alcançado?
@@ -79,6 +81,7 @@ export function IdentidadeBlock() {
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">🎯</span>
               Missão
+              <HelpTooltip blockId="identidade" fieldKey="missao" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Qual é o propósito da empresa? Por que ela existe?
@@ -101,6 +104,7 @@ export function IdentidadeBlock() {
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">💎</span>
               Valores
+              <HelpTooltip blockId="identidade" fieldKey="valores" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Quais são os princípios inegociáveis que guiam as ações da empresa?
@@ -143,6 +147,7 @@ export function IdentidadeBlock() {
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">🏆</span>
               Posicionamento
+              <HelpTooltip blockId="identidade" fieldKey="posicionamento" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Como a empresa quer ser percebida pelo mercado?
