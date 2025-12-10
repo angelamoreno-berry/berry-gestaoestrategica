@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2, X, Users } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function OrganogramaBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -68,6 +69,21 @@ export function OrganogramaBlock() {
       <p className="text-muted-foreground">
         Construa a estrutura organizacional definindo cargos, hierarquia e responsabilidades críticas de cada função.
       </p>
+
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <HelpTooltip fieldKey="cargos" blockId="organograma" />
+            <div>
+              <p className="text-sm font-medium">💡 Dica</p>
+              <p className="text-sm text-muted-foreground">
+                Em empresas pequenas, uma pessoa pode ter múltiplas funções - documente as funções, não cargos formais. 
+                Ex: "Sócio 1: Vendas + Marketing" ou "Assistente: Financeiro + RH".
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Visual Organograma Preview */}
       {localData.cargos.length > 0 && (

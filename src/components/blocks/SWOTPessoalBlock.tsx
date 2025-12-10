@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const swotConfig = [
-  { key: 'forcas', label: 'Forças Pessoais', icon: '💪', color: 'bg-green-500', description: 'Quais são suas principais habilidades e talentos?' },
-  { key: 'fraquezas', label: 'Pontos de Melhoria', icon: '🎯', color: 'bg-red-500', description: 'Em que áreas você precisa se desenvolver?' },
-  { key: 'oportunidades', label: 'Oportunidades', icon: '🚀', color: 'bg-blue-500', description: 'Que oportunidades você pode aproveitar?' },
-  { key: 'ameacas', label: 'Desafios', icon: '⚠️', color: 'bg-orange-500', description: 'Quais obstáculos podem atrapalhar seu desenvolvimento?' },
+  { key: 'forcas', label: 'Forças Pessoais', icon: '💪', color: 'bg-green-500', description: 'Suas habilidades naturais, conhecimentos e talentos.', examples: 'Ex: Visão estratégica, Networking, Comunicação, Resiliência, Conhecimento técnico' },
+  { key: 'fraquezas', label: 'Pontos de Melhoria', icon: '🎯', color: 'bg-red-500', description: 'Áreas que você precisa desenvolver ou buscar apoio.', examples: 'Ex: Delegação, Gestão financeira, Paciência, Organização, Gestão de conflitos' },
+  { key: 'oportunidades', label: 'Oportunidades', icon: '🚀', color: 'bg-blue-500', description: 'Formas de se desenvolver e crescer profissionalmente.', examples: 'Ex: Mentoria, MBA, Networking em eventos, Coaching, Novos projetos' },
+  { key: 'ameacas', label: 'Desafios', icon: '⚠️', color: 'bg-orange-500', description: 'Obstáculos que podem atrapalhar seu desenvolvimento.', examples: 'Ex: Burnout, Síndrome do impostor, Falta de tempo, Isolamento' },
 ] as const;
 
 export function SWOTPessoalBlock() {
@@ -83,8 +84,10 @@ export function SWOTPessoalBlock() {
               <CardTitle className="text-lg flex items-center gap-2">
                 <span>{item.icon}</span>
                 {item.label}
+                <HelpTooltip fieldKey={item.key} blockId="swotPessoal" />
               </CardTitle>
               <p className="text-xs text-muted-foreground">{item.description}</p>
+              <p className="text-xs text-muted-foreground/70 italic">{item.examples}</p>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex gap-2">

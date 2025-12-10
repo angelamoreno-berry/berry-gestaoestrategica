@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const swotConfig = [
-  { key: 'forcas', label: 'Forças', icon: '💪', color: 'bg-green-500', description: 'O que a empresa faz bem internamente?' },
-  { key: 'fraquezas', label: 'Fraquezas', icon: '⚠️', color: 'bg-red-500', description: 'Onde a empresa precisa melhorar internamente?' },
-  { key: 'oportunidades', label: 'Oportunidades', icon: '🚀', color: 'bg-blue-500', description: 'Quais fatores externos podem ser aproveitados?' },
-  { key: 'ameacas', label: 'Ameaças', icon: '⛈️', color: 'bg-orange-500', description: 'Quais fatores externos podem prejudicar?' },
+  { key: 'forcas', label: 'Forças', icon: '💪', color: 'bg-green-500', description: 'Vantagens internas: equipe, produto, marca, localização, tecnologia, processos.', examples: 'Ex: Equipe experiente, Produto único, Boa reputação' },
+  { key: 'fraquezas', label: 'Fraquezas', icon: '⚠️', color: 'bg-red-500', description: 'Limitações internas: falta de recursos, dependências, gaps de conhecimento.', examples: 'Ex: Caixa limitado, Marca desconhecida, Processos manuais' },
+  { key: 'oportunidades', label: 'Oportunidades', icon: '🚀', color: 'bg-blue-500', description: 'Fatores externos favoráveis: tendências, mercados novos, regulação.', examples: 'Ex: Digitalização do setor, Expansão regional, Novos nichos' },
+  { key: 'ameacas', label: 'Ameaças', icon: '⛈️', color: 'bg-orange-500', description: 'Fatores externos negativos: concorrência, crise, regulação, mudanças.', examples: 'Ex: Novos concorrentes, Recessão, Mudança de hábitos' },
 ] as const;
 
 export function SWOTBlock() {
@@ -74,8 +75,10 @@ export function SWOTBlock() {
               <CardTitle className="text-lg flex items-center gap-2">
                 <span>{item.icon}</span>
                 {item.label}
+                <HelpTooltip fieldKey={item.key} blockId="swot" />
               </CardTitle>
               <p className="text-xs text-muted-foreground">{item.description}</p>
+              <p className="text-xs text-muted-foreground/70 italic">{item.examples}</p>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex gap-2">
@@ -114,9 +117,10 @@ export function SWOTBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🗓️</span>
             Horizontes de Planejamento
+            <HelpTooltip fieldKey="horizontes" blockId="swot" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Defina as principais metas para cada horizonte temporal
+            Defina metas SMART para cada horizonte. Use a matriz SWOT para informar suas prioridades.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -127,7 +131,7 @@ export function SWOTBlock() {
                 Curto Prazo (3-6 meses)
               </label>
               <Textarea
-                placeholder="Principais entregas e conquistas..."
+                placeholder="Ex: Validar novo canal de vendas, contratar 2 pessoas, aumentar ticket médio em 20%..."
                 value={localData.horizontes.curto}
                 onChange={(e) => handleHorizonteChange('curto', e.target.value)}
                 className="resize-none"
@@ -140,7 +144,7 @@ export function SWOTBlock() {
                 Médio Prazo (6-12 meses)
               </label>
               <Textarea
-                placeholder="Objetivos intermediários..."
+                placeholder="Ex: Lançar novo produto, expandir para nova região, atingir break-even, dobrar faturamento..."
                 value={localData.horizontes.medio}
                 onChange={(e) => handleHorizonteChange('medio', e.target.value)}
                 className="resize-none"
@@ -153,7 +157,7 @@ export function SWOTBlock() {
                 Longo Prazo (1-3 anos)
               </label>
               <Textarea
-                placeholder="Visão de futuro e grandes metas..."
+                placeholder="Ex: Ser líder regional, faturar R$X milhões, abrir franquias, captar investimento..."
                 value={localData.horizontes.longo}
                 onChange={(e) => handleHorizonteChange('longo', e.target.value)}
                 className="resize-none"

@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2, Cog } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const frequencias = [
   { value: 'diario', label: 'Diário' },
@@ -56,6 +57,23 @@ export function ProcessosBlock() {
       <p className="text-muted-foreground">
         Mapeie os processos essenciais do negócio, definindo responsáveis e frequência de execução.
       </p>
+
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <HelpTooltip fieldKey="processos" blockId="processos" />
+            <div>
+              <p className="text-sm font-medium">💡 Processos essenciais para mapear</p>
+              <p className="text-sm text-muted-foreground">
+                <strong>Vendas:</strong> Prospecção → Qualificação → Proposta → Fechamento<br/>
+                <strong>Entrega:</strong> Onboarding → Execução → Acompanhamento → Conclusão<br/>
+                <strong>Financeiro:</strong> Faturamento → Cobrança → Pagamentos → Conciliação<br/>
+                <strong>Pessoas:</strong> Recrutamento → Contratação → Treinamento → Avaliação
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Add Process Button */}
       <div className="flex justify-center">

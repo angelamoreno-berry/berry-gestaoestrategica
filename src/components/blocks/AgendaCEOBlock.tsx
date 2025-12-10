@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Plus, Trash2, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const importanciaLabels = {
   alta: { label: 'Alta', color: 'bg-red-500' },
@@ -93,14 +94,15 @@ export function AgendaCEOBlock() {
           <CardTitle className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-primary" />
             Foco Principal do Trimestre
+            <HelpTooltip fieldKey="focoTrimestre" blockId="agendaCEO" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Qual é A coisa mais importante que o CEO deve entregar nos próximos 90 dias?
+            Qual é A coisa mais importante dos próximos 90 dias? Uma única prioridade clara gera mais resultado.
           </p>
         </CardHeader>
         <CardContent>
           <Textarea
-            placeholder="Ex: Implementar o novo processo comercial e treinar a equipe para dobrar a conversão de leads..."
+            placeholder="Ex: Estruturar processo comercial e contratar 1 vendedor para sair de 100% das vendas. Ou: Lançar MVP do novo produto e validar com 10 clientes pagantes..."
             value={localData.focoTrimestre}
             onChange={(e) => handleFocoChange(e.target.value)}
             className="resize-none"
@@ -116,11 +118,15 @@ export function AgendaCEOBlock() {
             <span className="flex items-center gap-2">
               <span className="text-2xl">🎯</span>
               Prioridades Estratégicas
+              <HelpTooltip fieldKey="prioridades" blockId="agendaCEO" />
             </span>
             <Button onClick={addPrioridade} size="sm">
               <Plus className="w-4 h-4 mr-1" /> Adicionar
             </Button>
           </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Liste 3-5 prioridades. Ex: Vendas, Produto, Pessoas, Processos, Financeiro, Parcerias.
+          </p>
         </CardHeader>
         <CardContent className="space-y-3">
           {localData.prioridades.map((prioridade, index) => (
@@ -173,13 +179,14 @@ export function AgendaCEOBlock() {
             <span className="flex items-center gap-2">
               <Clock className="w-5 h-5" />
               Alocação Ideal de Tempo
+              <HelpTooltip fieldKey="alocacaoTempo" blockId="agendaCEO" />
             </span>
             <Button onClick={addAlocacao} size="sm">
               <Plus className="w-4 h-4 mr-1" /> Adicionar
             </Button>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Como o tempo do CEO deve ser distribuído entre as principais atividades?
+            Sugestão: Estratégia 30-40%, Pessoas 20-30%, Vendas/Clientes 20%, Operações 10-20%. O total deve somar 100%.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
