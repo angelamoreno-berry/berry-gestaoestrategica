@@ -2,9 +2,20 @@ import { useConsulting } from '@/contexts/ConsultingContext';
 import { ProgressRing } from './ProgressRing';
 import { cn } from '@/lib/utils';
 import { Check, ArrowLeft, Building2 } from 'lucide-react';
+import { openReportInNewTab } from '@/utils/reportGenerator';
+import { toast } from '@/hooks/use-toast';
 
 export function Sidebar() {
-  const { blocks, currentBlock, setCurrentBlock, getTotalProgress, currentProject, goToProjectList } = useConsulting();
+  const { blocks, currentBlock, setCurrentBlock, getTotalProgress, currentProject, goToProjectList, data } = useConsulting();
+
+  const handleGenerateReport = () => {
+    if (!currentProject) {
+      toast({ title: 'Erro', description: 'Nenhum projeto selecionado', variant: 'destructive' });
+      return;
+    }
+    openReportInNewTab(currentProject, data, blocks);
+    toast({ title: 'Relatório gerado!', description: 'O relatório foi aberto em uma nova aba.' });
+  };
   const totalProgress = getTotalProgress();
 
   return (
@@ -89,7 +100,10 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-border">
-        <button className="w-full gradient-primary text-primary-foreground font-medium py-2.5 px-4 rounded-lg transition-all hover:opacity-90">
+        <button 
+          onClick={handleGenerateReport}
+          className="w-full gradient-primary text-primary-foreground font-medium py-2.5 px-4 rounded-lg transition-all hover:opacity-90"
+        >
           Gerar Relatório Final
         </button>
       </div>
