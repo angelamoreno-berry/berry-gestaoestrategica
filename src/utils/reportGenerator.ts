@@ -119,6 +119,10 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       --shadow-soft: 0 1px 3px rgba(0,0,0,0.04);
       --shadow-medium: 0 4px 16px rgba(0,0,0,0.06);
       --shadow-strong: 0 8px 32px rgba(0,0,0,0.08);
+      /* Gradientes simplificados para compatibilidade */
+      --gradient-primary: #18181B;
+      --gradient-accent: #0D9488;
+      --gradient-gold: #A16207;
     }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1600,7 +1604,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     }
     
     .checklist-checkbox.checked {
-      background: var(--gradient-accent);
+      background: var(--accent);
       border-color: var(--accent);
     }
     
@@ -1689,7 +1693,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     }
     
     .edit-toolbar-btn-primary {
-      background: var(--gradient-primary);
+      background: var(--foreground);
       color: white;
     }
     
@@ -2423,31 +2427,31 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="visual-example-content">
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center;">
               <div>
-                <div style="font-size: 40px; font-weight: 900; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${data.diagnostico.pessoas.level}</div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--foreground);">${data.diagnostico.pessoas.level}</div>
                 <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Pessoas</div>
-                <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                  <div style="height: 100%; width: ${data.diagnostico.pessoas.level * 20}%; background: var(--gradient-primary); border-radius: 4px;"></div>
+                <div style="height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                  <div style="height: 100%; width: ${data.diagnostico.pessoas.level * 20}%; background: var(--accent); border-radius: 3px;"></div>
                 </div>
               </div>
               <div>
-                <div style="font-size: 40px; font-weight: 900; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${data.diagnostico.processos.level}</div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--foreground);">${data.diagnostico.processos.level}</div>
                 <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Processos</div>
-                <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                  <div style="height: 100%; width: ${data.diagnostico.processos.level * 20}%; background: var(--gradient-primary); border-radius: 4px;"></div>
+                <div style="height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                  <div style="height: 100%; width: ${data.diagnostico.processos.level * 20}%; background: var(--accent); border-radius: 3px;"></div>
                 </div>
               </div>
               <div>
-                <div style="font-size: 40px; font-weight: 900; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${data.diagnostico.financas.level}</div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--foreground);">${data.diagnostico.financas.level}</div>
                 <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Finanças</div>
-                <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                  <div style="height: 100%; width: ${data.diagnostico.financas.level * 20}%; background: var(--gradient-primary); border-radius: 4px;"></div>
+                <div style="height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                  <div style="height: 100%; width: ${data.diagnostico.financas.level * 20}%; background: var(--accent); border-radius: 3px;"></div>
                 </div>
               </div>
               <div>
-                <div style="font-size: 40px; font-weight: 900; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${data.diagnostico.mercado.level}</div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--foreground);">${data.diagnostico.mercado.level}</div>
                 <div style="font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Mercado</div>
-                <div style="height: 8px; background: var(--border); border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                  <div style="height: 100%; width: ${data.diagnostico.mercado.level * 20}%; background: var(--gradient-primary); border-radius: 4px;"></div>
+                <div style="height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                  <div style="height: 100%; width: ${data.diagnostico.mercado.level * 20}%; background: var(--accent); border-radius: 3px;"></div>
                 </div>
               </div>
             </div>
@@ -2783,10 +2787,10 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         ` : ''}
         
         ${data.concorrentes.propostaValor ? `
-        <div class="card" style="background: var(--gradient-primary); color: white; border: none;">
-          <div style="text-align: center; padding: 20px 0;">
-            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; margin-bottom: 12px;">Proposta de Valor Única</div>
-            <div style="font-size: 24px; font-weight: 700; line-height: 1.4;">
+        <div class="card" style="background: var(--foreground); color: white; border: none;">
+          <div style="text-align: center; padding: 24px 0;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 14px;">Proposta de Valor Única</div>
+            <div style="font-size: 22px; font-weight: 600; line-height: 1.5;">
               "${data.concorrentes.propostaValor}"
             </div>
           </div>
@@ -3054,11 +3058,11 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="visual-example-content">
             <div style="display: grid; grid-template-columns: repeat(${Math.min(data.estrategiasValor.pacotes.length, 3)}, 1fr); gap: 16px;">
               ${data.estrategiasValor.pacotes.slice(0, 3).map((p, i) => `
-                <div style="background: ${i === 1 ? 'var(--gradient-primary)' : 'white'}; color: ${i === 1 ? 'white' : 'var(--foreground)'}; padding: 24px; border-radius: 16px; border: ${i === 1 ? 'none' : '2px solid var(--border)'}; text-align: center; ${i === 1 ? 'transform: scale(1.05);' : ''}">
-                  ${i === 1 ? '<div style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 100px; display: inline-block; margin-bottom: 12px;">MAIS POPULAR</div>' : ''}
-                  <div style="font-weight: 800; font-size: 18px; margin-bottom: 8px;">${p.nome}</div>
-                  <div style="font-size: 28px; font-weight: 900; margin-bottom: 12px;">${p.preco}</div>
-                  <div style="font-size: 13px; opacity: 0.8;">${p.descricao}</div>
+                <div style="background: ${i === 1 ? 'var(--foreground)' : 'white'}; color: ${i === 1 ? 'white' : 'var(--foreground)'}; padding: 28px; border-radius: 12px; border: ${i === 1 ? 'none' : '1px solid var(--border)'}; text-align: center; ${i === 1 ? 'transform: scale(1.02);' : ''}">
+                  ${i === 1 ? '<div style="font-size: 10px; background: rgba(255,255,255,0.15); padding: 6px 14px; border-radius: 100px; display: inline-block; margin-bottom: 14px;">MAIS POPULAR</div>' : ''}
+                  <div style="font-weight: 600; font-size: 17px; margin-bottom: 10px;">${p.nome}</div>
+                  <div style="font-size: 26px; font-weight: 700; margin-bottom: 14px;">${p.preco}</div>
+                  <div style="font-size: 14px; opacity: 0.8; line-height: 1.6;">${p.descricao}</div>
                 </div>
               `).join('')}
             </div>
@@ -3885,7 +3889,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <ul class="list">
             ${data.agendaCEO.prioridades.map((p, i) => `
               <li class="list-item">
-                <span style="width: 28px; height: 28px; background: var(--gradient-primary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0;">${i + 1}</span>
+                <span style="width: 28px; height: 28px; background: var(--foreground); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0;">${i + 1}</span>
                 <span>${typeof p === 'string' ? p : p.descricao}</span>
               </li>
             `).join('')}
@@ -4066,28 +4070,28 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           </div>
         </div>
         
-        <div class="card" style="background: var(--gradient-primary); color: white; border: none; margin-top: 32px;">
-          <div style="text-align: center; padding: 24px 0;">
-            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; margin-bottom: 12px;">Top 5 Ações Prioritárias</div>
-            <div style="font-size: 14px; text-align: left; max-width: 600px; margin: 0 auto;">
-              <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: 700;">1</span>
+        <div class="card" style="background: var(--foreground); color: white; border: none; margin-top: 40px;">
+          <div style="text-align: center; padding: 32px 0;">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 16px;">Top 5 Ações Prioritárias</div>
+            <div style="font-size: 15px; text-align: left; max-width: 600px; margin: 0 auto; line-height: 1.8;">
+              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
+                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">1</span>
                 <span>Validar e comunicar Golden Circle + Identidade para toda equipe</span>
               </div>
-              <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: 700;">2</span>
+              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
+                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">2</span>
                 <span>Implementar uma estratégia de precificação em pelo menos 1 produto</span>
               </div>
-              <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: 700;">3</span>
+              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
+                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">3</span>
                 <span>Criar material comercial baseado no ICP e diferenciais competitivos</span>
               </div>
-              <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: 700;">4</span>
+              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
+                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">4</span>
                 <span>Documentar os 5 processos mais críticos do negócio</span>
               </div>
-              <div style="display: flex; align-items: flex-start; gap: 12px;">
-                <span style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 8px; font-weight: 700;">5</span>
+              <div style="display: flex; align-items: flex-start; gap: 16px;">
+                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">5</span>
                 <span>Implementar dashboard de métricas e reunião semanal de acompanhamento</span>
               </div>
             </div>
