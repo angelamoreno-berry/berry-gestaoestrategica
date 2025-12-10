@@ -125,18 +125,47 @@ export interface Investimento {
   prioridade: 'Alta' | 'Media' | 'Baixa';
 }
 
+export interface Divida {
+  descricao: string;
+  valorTotal: number;
+  parcelasMensais: number;
+  parcelasRestantes: number;
+  taxaJuros: number;
+}
+
 export interface FinanceiroData {
+  // Receitas
   despesasFixas: number;
   despesasVariaveis: number;
   faturamentoAtual: number;
   faturamentoMensal: number;
+  metaFaturamento: number;
+  
+  // Indicadores calculados (mantidos para compatibilidade)
   margemAtual: number;
   margemLucro: number;
   custoFixoMensal: number;
   pontoEquilibrio: number;
-  metaFaturamento: number;
+  
+  // Novos indicadores
+  ticketMedio: number;
+  quantidadeClientes: number;
+  cac: number; // Custo de Aquisição de Cliente
+  ltv: number; // Lifetime Value
+  prazoMedioRecebimento: number; // em dias
+  prazoMedioPagamento: number; // em dias
+  capitalGiro: number;
+  reservaEmergencia: number;
+  
+  // Endividamento
+  dividas: Divida[];
+  totalDividas: number;
+  comprometimentoReceita: number; // % da receita comprometida com dívidas
+  
+  // Listas
   oportunidades: string[];
   investimentos: Investimento[];
+  riscos: string[];
 }
 
 export interface SWOTData {

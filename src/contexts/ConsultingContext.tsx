@@ -69,8 +69,20 @@ const initialData: ConsultingData = {
     custoFixoMensal: 0,
     pontoEquilibrio: 0,
     metaFaturamento: 0,
+    ticketMedio: 0,
+    quantidadeClientes: 0,
+    cac: 0,
+    ltv: 0,
+    prazoMedioRecebimento: 0,
+    prazoMedioPagamento: 0,
+    capitalGiro: 0,
+    reservaEmergencia: 0,
+    dividas: [],
+    totalDividas: 0,
+    comprometimentoReceita: 0,
     oportunidades: [],
     investimentos: [],
+    riscos: [],
   },
   swot: {
     forcas: [],
@@ -371,6 +383,20 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
         custoFixoMensal: 95000,
         pontoEquilibrio: 142000,
         metaFaturamento: 300000,
+        ticketMedio: 720,
+        quantidadeClientes: 250,
+        cac: 1500,
+        ltv: 8640,
+        prazoMedioRecebimento: 15,
+        prazoMedioPagamento: 30,
+        capitalGiro: 85000,
+        reservaEmergencia: 120000,
+        dividas: [
+          { descricao: 'Financiamento equipamentos', valorTotal: 50000, parcelasMensais: 2500, parcelasRestantes: 20, taxaJuros: 1.5 },
+          { descricao: 'Antecipação de recebíveis', valorTotal: 15000, parcelasMensais: 5200, parcelasRestantes: 3, taxaJuros: 2.8 },
+        ],
+        totalDividas: 65000,
+        comprometimentoReceita: 4.3,
         oportunidades: [
           'Aumentar ticket médio com upsell de módulos adicionais',
           'Reduzir churn com programa de sucesso do cliente',
@@ -382,6 +408,11 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           { area: 'Marketing Digital', valor: 30000, prazo: '3 meses', prioridade: 'Alta' },
           { area: 'Expansão de Time de CS', valor: 50000, prazo: '6 meses', prioridade: 'Alta' },
           { area: 'Desenvolvimento de Integrações', valor: 25000, prazo: '6 meses', prioridade: 'Media' }
+        ],
+        riscos: [
+          'Inadimplência acima de 5% pode comprometer fluxo de caixa',
+          'Dependência de poucos clientes grandes (top 10 = 35% receita)',
+          'Reserva de emergência cobre apenas 1.3 meses de operação'
         ],
       },
       swot: {
