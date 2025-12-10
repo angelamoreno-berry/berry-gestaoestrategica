@@ -640,31 +640,99 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     .org-chart {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 24px;
+    }
+    
+    .org-level {
+      margin-bottom: 16px;
+    }
+    
+    .org-level-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .org-level-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .org-level-1 .org-level-dot { background: #EAB308; }
+    .org-level-2 .org-level-dot { background: #3B82F6; }
+    .org-level-3 .org-level-dot { background: #22C55E; }
+    
+    .org-level-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    
+    .org-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
     }
     
     .org-card {
       background: var(--background);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px 20px;
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid var(--border);
     }
+    
+    .org-level-1 .org-card { border-left-color: #EAB308; }
+    .org-level-2 .org-card { border-left-color: #3B82F6; }
+    .org-level-3 .org-card { border-left-color: #22C55E; }
     
     .org-title {
       font-weight: 700;
-      font-size: 15px;
-      color: var(--primary);
-      margin-bottom: 8px;
+      font-size: 16px;
+      color: var(--foreground);
+      margin-bottom: 4px;
     }
     
     .org-subordinate {
       font-size: 12px;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .org-section {
+      margin-bottom: 12px;
+    }
+    
+    .org-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
     
     .org-responsibilities {
       font-size: 13px;
+    }
+    
+    .org-kpis {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .org-kpi {
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
     }
     
     /* Process Card */
@@ -1271,31 +1339,65 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         <div class="section-header">
           <div class="section-icon">👥</div>
           <h2 class="section-title">Estrutura Organizacional</h2>
-          <p class="section-description">Cargos, responsabilidades e hierarquia da equipe.</p>
+          <p class="section-description">Cargos, responsabilidades, KPIs e hierarquia da equipe em 3 níveis.</p>
         </div>
         
         <div class="info-box">
-          <div class="info-box-title">💡 Organizando a Equipe</div>
+          <div class="info-box-title">💡 Estrutura em 3 Níveis</div>
           <div class="info-box-text">
-            Uma estrutura organizacional clara evita sobreposição de funções, elimina "buracos" de responsabilidade 
-            e estabelece linhas claras de comunicação e prestação de contas. Mesmo empresas pequenas se beneficiam 
-            de definir papéis, ainda que uma pessoa acumule várias funções temporariamente.
+            <strong>Nível 1 - Estratégico:</strong> Define visão, direção e grandes decisões (CEO, Diretores, Sócios).<br>
+            <strong>Nível 2 - Tático:</strong> Traduz estratégia em planos e gerencia equipes (Gerentes, Coordenadores).<br>
+            <strong>Nível 3 - Operacional:</strong> Executa processos e entrega resultados do dia a dia (Analistas, Assistentes).<br><br>
+            Cada cargo deve ter responsabilidades claras e KPIs mensuráveis para acompanhamento de performance.
           </div>
         </div>
         
         <div class="org-chart">
-          ${data.organograma.cargos.map(c => `
-            <div class="org-card">
-              <div class="org-title">${c.titulo}</div>
-              ${c.subordinadoA ? `<div class="org-subordinate">Reporta-se a: ${c.subordinadoA}</div>` : ''}
-              <div class="org-responsibilities">
-                <strong>Responsabilidades:</strong>
-                <ul style="margin-top: 8px; padding-left: 20px;">
-                  ${c.responsabilidades.map(r => `<li style="margin-bottom: 4px;">${r}</li>`).join('')}
-                </ul>
+          ${[1, 2, 3].map(nivel => {
+            const cargosNivel = data.organograma.cargos.filter(c => (c as any).nivel === nivel);
+            if (cargosNivel.length === 0) return '';
+            const nivelLabels: Record<number, string> = {
+              1: '👑 Nível 1 - Estratégico',
+              2: '🎯 Nível 2 - Tático', 
+              3: '⚡ Nível 3 - Operacional'
+            };
+            return `
+              <div class="org-level org-level-${nivel}">
+                <div class="org-level-header">
+                  <span class="org-level-dot"></span>
+                  <span class="org-level-title">${nivelLabels[nivel]}</span>
+                </div>
+                <div class="org-cards">
+                  ${cargosNivel.map(c => `
+                    <div class="org-card">
+                      <div class="org-title">${c.titulo}</div>
+                      ${c.subordinadoA ? `<div class="org-subordinate">📍 Reporta-se a: ${c.subordinadoA}</div>` : ''}
+                      
+                      ${c.responsabilidades.length > 0 ? `
+                      <div class="org-section">
+                        <div class="org-section-title">📋 Responsabilidades</div>
+                        <div class="org-responsibilities">
+                          <ul style="margin: 0; padding-left: 16px;">
+                            ${c.responsabilidades.map(r => `<li style="margin-bottom: 4px;">${r}</li>`).join('')}
+                          </ul>
+                        </div>
+                      </div>
+                      ` : ''}
+                      
+                      ${((c as any).kpis || []).length > 0 ? `
+                      <div class="org-section">
+                        <div class="org-section-title">📊 KPIs</div>
+                        <div class="org-kpis">
+                          ${((c as any).kpis || []).map((k: string) => `<span class="org-kpi">📈 ${k}</span>`).join('')}
+                        </div>
+                      </div>
+                      ` : ''}
+                    </div>
+                  `).join('')}
+                </div>
               </div>
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       </div>
       ` : ''}

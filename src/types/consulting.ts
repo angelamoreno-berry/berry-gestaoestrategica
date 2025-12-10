@@ -77,7 +77,9 @@ export interface MotoresCrescimentoData {
 export interface OrganogramaData {
   cargos: Array<{
     titulo: string;
+    nivel: 1 | 2 | 3;
     responsabilidades: string[];
+    kpis: string[];
     subordinadoA: string;
   }>;
 }
