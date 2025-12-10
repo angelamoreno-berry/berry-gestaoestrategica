@@ -1682,10 +1682,254 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       color: var(--foreground);
       line-height: 1.7;
     }
+    
+    /* ===== MASTER CHECKLIST ===== */
+    .master-checklist {
+      margin-top: 40px;
+    }
+    
+    .checklist-category {
+      margin-bottom: 32px;
+    }
+    
+    .checklist-category-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--gradient-primary);
+      color: white;
+      border-radius: 16px 16px 0 0;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    
+    .checklist-category-icon {
+      font-size: 20px;
+    }
+    
+    .checklist-items {
+      background: white;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+    }
+    
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+    
+    .checklist-item:last-child {
+      border-bottom: none;
+    }
+    
+    .checklist-item:hover {
+      background: var(--background);
+    }
+    
+    .checklist-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      margin-top: 2px;
+    }
+    
+    .checklist-checkbox:hover {
+      border-color: var(--primary);
+    }
+    
+    .checklist-checkbox.checked {
+      background: var(--gradient-accent);
+      border-color: var(--accent);
+    }
+    
+    .checklist-checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    
+    .checklist-content {
+      flex: 1;
+    }
+    
+    .checklist-text {
+      font-size: 14px;
+      color: var(--foreground);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    
+    .checklist-item.checked .checklist-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    
+    .checklist-detail {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    
+    .checklist-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    
+    .checklist-tag {
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .checklist-tag-priority {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+    
+    .checklist-tag-category {
+      background: var(--primary-lighter);
+      color: var(--primary);
+    }
+    
+    /* ===== EDITABLE TOOLBAR ===== */
+    .edit-toolbar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 16px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow-strong);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      z-index: 1000;
+      border: 1px solid var(--border);
+    }
+    
+    .edit-toolbar-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .edit-toolbar-btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+    }
+    
+    .edit-toolbar-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+    
+    .edit-toolbar-btn-secondary {
+      background: var(--background);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+    }
+    
+    .edit-toolbar-btn-secondary:hover {
+      background: var(--border);
+    }
+    
+    .edit-toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+    
+    .edit-toolbar-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-right: 8px;
+    }
+    
+    .editable-content {
+      outline: none;
+    }
+    
+    .editable-content:focus {
+      outline: none;
+    }
+    
+    .editable-content *::selection {
+      background: var(--primary-lighter);
+    }
+    
+    @media print {
+      .edit-toolbar {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- ===== EDIT TOOLBAR ===== -->
+  <div class="edit-toolbar">
+    <span class="edit-toolbar-label">📝 Modo Edição</span>
+    <button class="edit-toolbar-btn edit-toolbar-btn-primary" onclick="window.print()">
+      🖨️ Imprimir
+    </button>
+    <div class="edit-toolbar-divider"></div>
+    <button class="edit-toolbar-btn edit-toolbar-btn-secondary" onclick="saveAsHTML()">
+      💾 Salvar HTML
+    </button>
+  </div>
+  
+  <script>
+    // Toggle checklist items
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('checklist-checkbox')) {
+        e.target.classList.toggle('checked');
+        const item = e.target.closest('.checklist-item');
+        if (item) item.classList.toggle('checked');
+      }
+    });
+    
+    // Save as HTML function
+    function saveAsHTML() {
+      const content = document.documentElement.outerHTML;
+      const blob = new Blob([content], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'relatorio-editado.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+  
+  <div class="container editable-content" contenteditable="true">
     <!-- ===== COVER PAGE ===== -->
     <div class="cover-page">
       <div class="cover-badge">Documento Estratégico Confidencial</div>
@@ -3753,6 +3997,355 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="insight-box-text">
             Este documento é um <strong>ponto de partida</strong>, não um ponto final. A execução disciplinada das ações propostas é o que transforma diagnóstico em resultado.<br><br>
             <strong>Sugestão:</strong> Revise este documento mensalmente. Marque o que foi feito, ajuste o que precisa e comemore as vitórias.
+          </div>
+        </div>
+      </div>
+      
+      <!-- ===== MASTER CHECKLIST ===== -->
+      <div class="section page-break">
+        <div class="section-header">
+          <div class="section-badge">
+            <span class="section-icon">✅</span>
+            Checklist Completo
+          </div>
+          <h2 class="section-title">Plano de Ação Consolidado</h2>
+          <p class="section-description">Todos os itens de ação identificados ao longo do diagnóstico, organizados por categoria. Clique nas caixas para marcar itens concluídos.</p>
+        </div>
+        
+        <div class="master-checklist">
+          <!-- Diagnóstico de Maturidade -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">📊</span>
+              Diagnóstico de Maturidade
+            </div>
+            <div class="checklist-items">
+              ${generateActionPlan('pessoas', data.diagnostico.pessoas.level).map((action, i) => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">${action}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Pessoas</span>
+                      ${i === 0 ? '<span class="checklist-tag checklist-tag-priority">Prioritário</span>' : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+              ${generateActionPlan('processos', data.diagnostico.processos.level).map((action, i) => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">${action}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Processos</span>
+                      ${i === 0 ? '<span class="checklist-tag checklist-tag-priority">Prioritário</span>' : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+              ${generateActionPlan('financas', data.diagnostico.financas.level).map((action, i) => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">${action}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Finanças</span>
+                      ${i === 0 ? '<span class="checklist-tag checklist-tag-priority">Prioritário</span>' : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+              ${generateActionPlan('mercado', data.diagnostico.mercado.level).map((action, i) => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">${action}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Mercado</span>
+                      ${i === 0 ? '<span class="checklist-tag checklist-tag-priority">Prioritário</span>' : ''}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Golden Circle & Identidade -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">🎯</span>
+              Propósito & Identidade
+            </div>
+            <div class="checklist-items">
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Comunicar o Golden Circle para toda a equipe</div>
+                  <div class="checklist-detail">Por Quê: ${data.goldenCircle.why?.substring(0, 100) || 'Definir propósito'}...</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Validar missão e visão com stakeholders</div>
+                  <div class="checklist-detail">Missão: ${data.identidade.missao?.substring(0, 80) || 'Definir missão'}...</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Documentar e divulgar valores organizacionais</div>
+                  <div class="checklist-detail">Valores definidos: ${data.identidade.valores?.length || 0} valores</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Criar material visual do Golden Circle para escritório</div>
+                  <div class="checklist-meta">
+                    <span class="checklist-tag checklist-tag-category">Cultura</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Estratégia Comercial -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">💼</span>
+              Estratégia Comercial
+            </div>
+            <div class="checklist-items">
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Criar persona documentada do ICP</div>
+                  <div class="checklist-detail">Características: ${data.icp.caracteristicasDemograficas?.substring(0, 80) || 'A definir'}...</div>
+                  <div class="checklist-meta">
+                    <span class="checklist-tag checklist-tag-priority">Prioritário</span>
+                  </div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Desenvolver script de vendas baseado nas dores do ICP</div>
+                  <div class="checklist-detail">Dores identificadas: ${data.icp.dores?.slice(0, 3).join(', ').substring(0, 80) || 'A definir'}...</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Implementar estratégia de precificação por valor</div>
+                  <div class="checklist-detail">Estratégia: ${data.precificacao.estrategia?.substring(0, 80) || 'A definir'}...</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Criar material de diferenciação competitiva</div>
+                  <div class="checklist-detail">Concorrentes mapeados: ${data.concorrentes.principais?.length || data.concorrentes.concorrentes?.length || 0}</div>
+                </div>
+              </div>
+              ${data.estrategiasValor.novasOfertas?.slice(0, 3).map(oferta => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Lançar nova oferta: ${oferta}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Produto</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- Motores de Crescimento -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">🚀</span>
+              Motores de Crescimento
+            </div>
+            <div class="checklist-items">
+              ${data.motoresCrescimento.motoresPrincipais?.slice(0, 3).map(motor => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Implementar motor: ${motor}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Crescimento</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('') || ''}
+              ${data.motoresCrescimento.metricas?.slice(0, 3).map(metrica => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Atingir meta: ${metrica.nome}</div>
+                    <div class="checklist-detail">Meta: ${metrica.meta}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Métrica</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('') || `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Definir motores de crescimento prioritários</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-priority">Prioritário</span>
+                    </div>
+                  </div>
+                </div>
+              `}
+            </div>
+          </div>
+          
+          <!-- Organização & Processos -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">📋</span>
+              Organização & Processos
+            </div>
+            <div class="checklist-items">
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Atualizar e comunicar organograma</div>
+                  <div class="checklist-detail">Cargos definidos: ${data.organograma.cargos?.length || 0}</div>
+                </div>
+              </div>
+              ${data.processos.processos?.slice(0, 3).map(processo => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Documentar processo: ${processo.nome}</div>
+                    <div class="checklist-detail">Responsável: ${processo.responsavel} | Frequência: ${processo.frequencia}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Processo</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('') || ''}
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Implementar reunião semanal de acompanhamento</div>
+                  <div class="checklist-meta">
+                    <span class="checklist-tag checklist-tag-priority">Prioritário</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Financeiro -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">💰</span>
+              Gestão Financeira
+            </div>
+            <div class="checklist-items">
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Implementar controle de fluxo de caixa semanal</div>
+                  <div class="checklist-meta">
+                    <span class="checklist-tag checklist-tag-priority">Prioritário</span>
+                  </div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Criar DRE mensal gerencial</div>
+                  <div class="checklist-detail">Faturamento atual: ${formatCurrency(data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal || 0)}</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Calcular e monitorar ponto de equilíbrio</div>
+                  <div class="checklist-detail">Margem atual: ${data.financeiro.margemAtual || data.financeiro.margemLucro || 0}%</div>
+                </div>
+              </div>
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Revisar estrutura de custos fixos e variáveis</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- SWOT Pessoal & Agenda CEO -->
+          <div class="checklist-category">
+            <div class="checklist-category-header">
+              <span class="checklist-category-icon">👤</span>
+              Desenvolvimento do Líder
+            </div>
+            <div class="checklist-items">
+              ${data.swotPessoal.forcas?.slice(0, 2).map(forca => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Potencializar força: ${forca}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Força Pessoal</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('') || ''}
+              ${data.swotPessoal.fraquezas?.slice(0, 2).map(fraqueza => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Desenvolver: ${fraqueza}</div>
+                    <div class="checklist-detail">Considerar treinamento, mentoria ou delegação</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-priority">Desenvolvimento</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('') || ''}
+              ${(data.agendaCEO.prioridades || []).slice(0, 3).map(p => `
+                <div class="checklist-item">
+                  <div class="checklist-checkbox"></div>
+                  <div class="checklist-content">
+                    <div class="checklist-text">Prioridade CEO: ${typeof p === 'string' ? p : p.descricao}</div>
+                    <div class="checklist-meta">
+                      <span class="checklist-tag checklist-tag-category">Agenda CEO</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('') || ''}
+              <div class="checklist-item">
+                <div class="checklist-checkbox"></div>
+                <div class="checklist-content">
+                  <div class="checklist-text">Bloquear tempo para trabalho estratégico na agenda</div>
+                  <div class="checklist-detail">Mínimo 4h semanais para pensar no negócio, não só no operacional</div>
+                  <div class="checklist-meta">
+                    <span class="checklist-tag checklist-tag-priority">Prioritário</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="insight-box" style="margin-top: 32px;">
+          <div class="insight-box-title">💡 Como usar este checklist</div>
+          <div class="insight-box-text">
+            <strong>1. Priorize:</strong> Comece pelos itens marcados como "Prioritário" - são os que geram mais impacto.<br><br>
+            <strong>2. Agende:</strong> Defina datas específicas para cada ação. O que não está na agenda, não acontece.<br><br>
+            <strong>3. Delegue:</strong> Identifique quais itens podem ser delegados e para quem.<br><br>
+            <strong>4. Acompanhe:</strong> Revise este checklist semanalmente na sua reunião de gestão.<br><br>
+            <strong>5. Celebre:</strong> Reconheça as conquistas! Cada item concluído é progresso real.
           </div>
         </div>
       </div>
