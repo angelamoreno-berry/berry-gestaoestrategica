@@ -91,8 +91,10 @@ const initialData: ConsultingData = {
 };
 
 const initialBlocks: BlockStatus[] = [
-  { id: 'diagnostico', name: 'Diagnóstico de Maturidade', icon: '📊', completed: false, progress: 0 },
+  { id: 'goldenCircle', name: 'Golden Circle', icon: '⭕', completed: false, progress: 0 },
   { id: 'identidade', name: 'Visão, Missão e Valores', icon: '🎯', completed: false, progress: 0 },
+  { id: 'swot', name: 'SWOT e Horizontes', icon: '🧭', completed: false, progress: 0 },
+  { id: 'diagnostico', name: 'Diagnóstico de Maturidade', icon: '📊', completed: false, progress: 0 },
   { id: 'concorrentes', name: 'Análise de Mercado', icon: '🔍', completed: false, progress: 0 },
   { id: 'icp', name: 'Definição de ICP', icon: '👤', completed: false, progress: 0 },
   { id: 'estrategiasValor', name: 'Estratégias de Valor', icon: '💎', completed: false, progress: 0 },
@@ -101,8 +103,6 @@ const initialBlocks: BlockStatus[] = [
   { id: 'organograma', name: 'Organograma', icon: '🏢', completed: false, progress: 0 },
   { id: 'processos', name: 'Processos Essenciais', icon: '⚙️', completed: false, progress: 0 },
   { id: 'financeiro', name: 'Análise Financeira', icon: '📈', completed: false, progress: 0 },
-  { id: 'swot', name: 'SWOT e Horizontes', icon: '🧭', completed: false, progress: 0 },
-  { id: 'goldenCircle', name: 'Golden Circle', icon: '⭕', completed: false, progress: 0 },
   { id: 'swotPessoal', name: 'SWOT Pessoal', icon: '🪞', completed: false, progress: 0 },
   { id: 'agendaCEO', name: 'Agenda Estratégica', icon: '📅', completed: false, progress: 0 },
 ];
@@ -136,7 +136,7 @@ const ConsultingContext = createContext<ConsultingContextType | undefined>(undef
 export function ConsultingProvider({ children }: { children: React.ReactNode }) {
   const [projectsData, setProjectsData] = useState<ProjectData[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
-  const [currentBlock, setCurrentBlock] = useState('diagnostico');
+  const [currentBlock, setCurrentBlock] = useState('goldenCircle');
 
   const currentProjectData = projectsData.find(p => p.project.id === currentProjectId);
   const data = currentProjectData?.data || initialData;
@@ -189,7 +189,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
   const resetAll = useCallback(() => {
     setProjectsData([]);
     setCurrentProjectId(null);
-    setCurrentBlock('diagnostico');
+    setCurrentBlock('goldenCircle');
   }, []);
 
   const createProject = useCallback((projectData: Omit<Project, 'id' | 'dataCriacao'>) => {
@@ -208,7 +208,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
 
   const selectProject = useCallback((id: string) => {
     setCurrentProjectId(id);
-    setCurrentBlock('diagnostico');
+    setCurrentBlock('goldenCircle');
   }, []);
 
   const deleteProject = useCallback((id: string) => {
