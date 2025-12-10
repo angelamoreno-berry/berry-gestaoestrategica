@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function GoldenCircleBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -69,14 +70,15 @@ export function GoldenCircleBlock() {
                 1
               </div>
               WHY - Por quê existimos?
+              <HelpTooltip fieldKey="why" blockId="goldenCircle" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Qual é o propósito, causa ou crença que inspira a empresa? O que move vocês além do lucro?
+              Seu propósito vai além do lucro. O que te fez começar? Que impacto quer causar? Ex: Apple = "Desafiar o status quo"
             </p>
           </CardHeader>
           <CardContent>
             <Textarea
-              placeholder="Ex: Acreditamos que toda pequena empresa merece ter acesso a uma gestão profissional que as grandes empresas têm. Existimos para democratizar a gestão de qualidade..."
+              placeholder="Ex: Acreditamos que toda pequena empresa merece acesso a ferramentas de gestão profissionais. Existimos para democratizar a gestão de qualidade e ajudar empreendedores a realizarem seu potencial..."
               value={localData.why}
               onChange={(e) => handleChange('why', e.target.value)}
               className="resize-none"
@@ -92,14 +94,15 @@ export function GoldenCircleBlock() {
                 2
               </div>
               HOW - Como fazemos?
+              <HelpTooltip fieldKey="how" blockId="goldenCircle" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Quais são os processos, métodos ou valores únicos que diferenciam a forma como vocês trabalham?
+              Sua forma única de entregar valor. Metodologia, processos ou valores que te diferenciam.
             </p>
           </CardHeader>
           <CardContent>
             <Textarea
-              placeholder="Ex: Através de uma metodologia prática de 90 dias, com acompanhamento semanal, ferramentas exclusivas e foco em resultado mensurável..."
+              placeholder="Ex: Através de uma metodologia prática de 90 dias com sprints semanais, ferramentas exclusivas, mentoria personalizada e foco obsessivo em resultados mensuráveis..."
               value={localData.how}
               onChange={(e) => handleChange('how', e.target.value)}
               className="resize-none"
@@ -115,14 +118,15 @@ export function GoldenCircleBlock() {
                 3
               </div>
               WHAT - O que entregamos?
+              <HelpTooltip fieldKey="what" blockId="goldenCircle" />
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              Quais são os produtos, serviços ou soluções tangíveis que a empresa oferece?
+              Produtos e serviços concretos. O que o cliente leva para casa?
             </p>
           </CardHeader>
           <CardContent>
             <Textarea
-              placeholder="Ex: Oferecemos consultoria em gestão, treinamentos para líderes, diagnósticos empresariais e ferramentas de gestão personalizadas..."
+              placeholder="Ex: Consultoria em gestão empresarial, treinamentos para líderes, diagnósticos de maturidade, ferramentas de planejamento estratégico e acompanhamento mensal de resultados..."
               value={localData.what}
               onChange={(e) => handleChange('what', e.target.value)}
               className="resize-none"

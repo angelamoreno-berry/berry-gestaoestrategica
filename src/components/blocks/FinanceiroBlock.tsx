@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function FinanceiroBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -106,11 +107,15 @@ export function FinanceiroBlock() {
             <CardTitle className="text-lg flex items-center gap-2">
               <span className="text-xl">📉</span>
               Despesas
+              <HelpTooltip fieldKey="despesasFixas" blockId="financeiro" />
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Despesas Fixas (mensal)</label>
+              <label className="text-sm text-muted-foreground mb-1 block">
+                Despesas Fixas (mensal)
+                <span className="text-xs ml-2">Ex: aluguel, salários, contador, software</span>
+              </label>
               <Input
                 type="number"
                 placeholder="R$ 0,00"
@@ -119,7 +124,10 @@ export function FinanceiroBlock() {
               />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Despesas Variáveis (mensal)</label>
+              <label className="text-sm text-muted-foreground mb-1 block">
+                Despesas Variáveis (mensal)
+                <span className="text-xs ml-2">Ex: comissões, insumos, frete</span>
+              </label>
               <Input
                 type="number"
                 placeholder="R$ 0,00"
@@ -135,11 +143,15 @@ export function FinanceiroBlock() {
             <CardTitle className="text-lg flex items-center gap-2">
               <span className="text-xl">📈</span>
               Receita
+              <HelpTooltip fieldKey="faturamentoAtual" blockId="financeiro" />
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Faturamento Atual (mensal)</label>
+              <label className="text-sm text-muted-foreground mb-1 block">
+                Faturamento Atual (mensal)
+                <span className="text-xs ml-2">Média dos últimos 3-6 meses</span>
+              </label>
               <Input
                 type="number"
                 placeholder="R$ 0,00"
@@ -148,7 +160,10 @@ export function FinanceiroBlock() {
               />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Meta de Faturamento (mensal)</label>
+              <label className="text-sm text-muted-foreground mb-1 block">
+                Meta de Faturamento (mensal)
+                <span className="text-xs ml-2">Crescimento típico: 20-50%/ano</span>
+              </label>
               <Input
                 type="number"
                 placeholder="R$ 0,00"
@@ -199,9 +214,10 @@ export function FinanceiroBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">💡</span>
             Oportunidades Identificadas
+            <HelpTooltip fieldKey="oportunidades" blockId="financeiro" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Onde é possível reduzir custos ou aumentar receita?
+            Ex: Renegociar aluguel, reduzir inadimplência, aumentar preços, cortar assinaturas não usadas, upsell para clientes atuais.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">

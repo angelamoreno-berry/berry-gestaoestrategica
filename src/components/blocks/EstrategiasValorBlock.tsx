@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, Trash2 } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 export function EstrategiasValorBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -88,9 +89,10 @@ export function EstrategiasValorBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🎁</span>
             Novas Ofertas
+            <HelpTooltip fieldKey="novasOfertas" blockId="estrategiasValor" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Produtos ou serviços adicionais que podem ser oferecidos
+            Produtos ou serviços adicionais que podem gerar receita extra. Pense no que mais seus clientes precisam.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -127,9 +129,10 @@ export function EstrategiasValorBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">⚡</span>
             Novos Serviços
+            <HelpTooltip fieldKey="novosServicos" blockId="estrategiasValor" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Serviços complementares ou upgrades para o portfólio atual
+            Serviços que resolvem problemas adjacentes dos clientes. Ex: suporte premium, consultoria, treinamentos.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -167,13 +170,14 @@ export function EstrategiasValorBlock() {
             <span className="flex items-center gap-2">
               <span className="text-2xl">📦</span>
               Pacotes de Serviços
+              <HelpTooltip fieldKey="pacotes" blockId="estrategiasValor" />
             </span>
             <Button onClick={addPacote} size="sm">
               <Plus className="w-4 h-4 mr-1" /> Adicionar Pacote
             </Button>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Combine serviços em pacotes atrativos para diferentes perfis de clientes
+            Crie 2-3 pacotes (ex: Básico, Profissional, Premium) com valores crescentes para aumentar ticket médio.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">

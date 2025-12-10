@@ -7,13 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { X, Plus, Trash2 } from 'lucide-react';
+import { HelpTooltip } from '@/components/HelpTooltip';
 
 const motoresOpcoes = [
-  { value: 'inbound', label: 'Inbound Marketing', description: 'Conteúdo que atrai leads qualificados', icon: '📝' },
-  { value: 'outbound', label: 'Outbound Sales', description: 'Prospecção ativa de clientes', icon: '📞' },
-  { value: 'indicacao', label: 'Indicações', description: 'Clientes indicam novos clientes', icon: '🤝' },
-  { value: 'parcerias', label: 'Parcerias', description: 'Crescimento via parceiros estratégicos', icon: '🔗' },
-  { value: 'produto', label: 'Product-Led', description: 'O produto vende sozinho', icon: '🚀' },
+  { value: 'inbound', label: 'Inbound Marketing', description: 'Blog, SEO, conteúdo educativo que atrai leads. Ex: HubSpot, Rock Content', icon: '📝' },
+  { value: 'outbound', label: 'Outbound Sales', description: 'Prospecção ativa via cold call/email/LinkedIn. Ex: empresas B2B de ticket alto', icon: '📞' },
+  { value: 'indicacao', label: 'Indicações', description: 'Programa de referral onde clientes trazem novos. Ex: Dropbox, Nubank', icon: '🤝' },
+  { value: 'parcerias', label: 'Parcerias', description: 'Canais indiretos, revendedores, integradores. Ex: Salesforce, Microsoft', icon: '🔗' },
+  { value: 'produto', label: 'Product-Led', description: 'Produto vende sozinho via freemium/trial. Ex: Slack, Notion, Canva', icon: '🚀' },
 ];
 
 export function MotoresCrescimentoBlock() {
@@ -77,9 +78,10 @@ export function MotoresCrescimentoBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🚀</span>
             Motor de Crescimento Principal
+            <HelpTooltip fieldKey="motorPrincipal" blockId="motoresCrescimento" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Qual será a principal alavanca de crescimento?
+            Escolha UM motor principal. Foco é essencial - empresas que dominam 1 canal crescem mais rápido.
           </p>
         </CardHeader>
         <CardContent>
@@ -118,9 +120,10 @@ export function MotoresCrescimentoBlock() {
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">📣</span>
             Canais de Aquisição
+            <HelpTooltip fieldKey="canais" blockId="motoresCrescimento" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Por onde os clientes vão chegar até você?
+            Liste 2-3 canais principais. Ex: Google Ads, LinkedIn, Instagram, Eventos, Indicações, Parcerias.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -158,13 +161,14 @@ export function MotoresCrescimentoBlock() {
             <span className="flex items-center gap-2">
               <span className="text-2xl">📊</span>
               Métricas de Crescimento
+              <HelpTooltip fieldKey="metricas" blockId="motoresCrescimento" />
             </span>
             <Button onClick={addMetrica} size="sm">
               <Plus className="w-4 h-4 mr-1" /> Adicionar Métrica
             </Button>
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Quais KPIs você vai acompanhar?
+            KPIs essenciais: CAC (custo aquisição), LTV (valor cliente), Conversão, Churn, MRR, Ticket Médio.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
