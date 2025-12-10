@@ -10,18 +10,21 @@ import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2 } from 'luc
 import { Project } from '@/types/consulting';
 
 const segmentos = [
+  'Agronegócio',
+  'Alimentação',
+  'Atacado e Distribuição',
+  'Automotivo',
+  'Engenharia e Construção',
+  'Educação',
+  'Energia Solar',
+  'Indústria',
+  'Logística',
+  'Negócios Digitais',
+  'Saúde e Bem Estar',
+  'Serviços',
+  'Supermercado',
   'Tecnologia',
   'Varejo',
-  'Serviços',
-  'Indústria',
-  'Saúde',
-  'Educação',
-  'Alimentação',
-  'Construção',
-  'Consultoria',
-  'Marketing',
-  'Finanças',
-  'Logística',
   'Outro'
 ];
 
