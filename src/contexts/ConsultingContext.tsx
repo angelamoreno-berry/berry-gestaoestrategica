@@ -40,6 +40,7 @@ const initialData: ConsultingData = {
     estrategia: '',
     ancoragem: '',
     margemDesejada: '',
+    produtos: [],
   },
   motoresCrescimento: {
     motoresPrincipais: [],

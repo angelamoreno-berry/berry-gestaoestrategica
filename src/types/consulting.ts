@@ -58,11 +58,19 @@ export interface EstrategiasValorData {
   }>;
 }
 
+export interface ProdutoServico {
+  id: string;
+  nome: string;
+  precoAtual: number;
+  descricao: string;
+}
+
 export interface PrecificacaoData {
   modelo: string;
   estrategia: string;
   ancoragem: string;
   margemDesejada: string;
+  produtos: ProdutoServico[];
 }
 
 export interface MotoresCrescimentoData {
