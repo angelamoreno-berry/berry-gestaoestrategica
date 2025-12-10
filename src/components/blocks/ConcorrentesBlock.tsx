@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,11 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 export function ConcorrentesBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.concorrentes);
   const [newDiferencial, setNewDiferencial] = useState('');
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).concorrentes;
+  }, [currentProject]);
 
   useEffect(() => {
     const hasConcorrentes = localData.concorrentes.length > 0 ? 1 : 0;
@@ -64,10 +72,25 @@ export function ConcorrentesBlock() {
     updateData('concorrentes', newData);
   };
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | string[]) => {
     const newData = { ...localData, [field]: value };
     setLocalData(newData);
     updateData('concorrentes', newData);
+  };
+
+  const handleAcceptSuggestion = (field: 'publicoAlvo' | 'propostaValor' | 'diferenciais') => {
+    if (suggestions) {
+      handleChange(field, suggestions[field]);
+    }
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
+  const showSuggestion = (field: string, value: string | string[]) => {
+    const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
+    return suggestions && isEmpty && !dismissedSuggestions[field];
   };
 
   return (
@@ -177,6 +200,15 @@ export function ConcorrentesBlock() {
               ))}
             </div>
           )}
+
+          {showSuggestion('diferenciais', localData.diferenciais) && (
+            <SuggestionCard
+              suggestion={suggestions!.diferenciais}
+              label="Sugestão de diferenciais"
+              onAccept={() => handleAcceptSuggestion('diferenciais')}
+              onDismiss={() => handleDismissSuggestion('diferenciais')}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -189,7 +221,7 @@ export function ConcorrentesBlock() {
             <HelpTooltip blockId="concorrentes" fieldKey="publicoAlvo" />
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Textarea
             placeholder="Descreva seu público-alvo ideal: quem são, onde estão, o que fazem..."
             value={localData.publicoAlvo}
@@ -197,6 +229,14 @@ export function ConcorrentesBlock() {
             className="resize-none"
             rows={3}
           />
+          {showSuggestion('publicoAlvo', localData.publicoAlvo) && (
+            <SuggestionCard
+              suggestion={suggestions!.publicoAlvo}
+              label="Sugestão de público-alvo"
+              onAccept={() => handleAcceptSuggestion('publicoAlvo')}
+              onDismiss={() => handleDismissSuggestion('publicoAlvo')}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -212,7 +252,7 @@ export function ConcorrentesBlock() {
             O que você oferece que resolve o problema do seu cliente de forma única?
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Textarea
             placeholder="Ex: Ajudamos pequenas empresas a triplicar seu faturamento em 12 meses através de..."
             value={localData.propostaValor}
@@ -220,6 +260,14 @@ export function ConcorrentesBlock() {
             className="resize-none"
             rows={4}
           />
+          {showSuggestion('propostaValor', localData.propostaValor) && (
+            <SuggestionCard
+              suggestion={suggestions!.propostaValor}
+              label="Sugestão de proposta de valor"
+              onAccept={() => handleAcceptSuggestion('propostaValor')}
+              onDismiss={() => handleDismissSuggestion('propostaValor')}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

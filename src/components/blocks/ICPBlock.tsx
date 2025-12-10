@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,12 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 export function ICPBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.icp);
   const [newDor, setNewDor] = useState('');
   const [newDesejo, setNewDesejo] = useState('');
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).icp;
+  }, [currentProject]);
 
   useEffect(() => {
     const hasCaracteristicas = localData.caracteristicasDemograficas.trim().length > 0 ? 1 : 0;
@@ -56,6 +64,21 @@ export function ICPBlock() {
     handleChange('desejos', localData.desejos.filter((_, i) => i !== index));
   };
 
+  const handleAcceptSuggestion = (field: 'caracteristicasDemograficas' | 'dores' | 'desejos') => {
+    if (suggestions) {
+      handleChange(field, suggestions[field]);
+    }
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
+  const showSuggestion = (field: string, value: string | string[]) => {
+    const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
+    return suggestions && isEmpty && !dismissedSuggestions[field];
+  };
+
   return (
     <div className="space-y-6">
       <p className="text-muted-foreground">
@@ -91,7 +114,7 @@ export function ICPBlock() {
             Idade, gênero, localização, renda, profissão, segmento de empresa...
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Textarea
             placeholder="Ex: Empresários entre 30-50 anos, donos de pequenas empresas de serviços com faturamento entre R$50k-500k/mês, localizados em grandes centros urbanos..."
             value={localData.caracteristicasDemograficas}
@@ -99,6 +122,14 @@ export function ICPBlock() {
             className="resize-none"
             rows={4}
           />
+          {showSuggestion('caracteristicasDemograficas', localData.caracteristicasDemograficas) && (
+            <SuggestionCard
+              suggestion={suggestions!.caracteristicasDemograficas}
+              label="Sugestão de perfil demográfico"
+              onAccept={() => handleAcceptSuggestion('caracteristicasDemograficas')}
+              onDismiss={() => handleDismissSuggestion('caracteristicasDemograficas')}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -139,6 +170,15 @@ export function ICPBlock() {
               ))}
             </div>
           )}
+
+          {showSuggestion('dores', localData.dores) && (
+            <SuggestionCard
+              suggestion={suggestions!.dores}
+              label="Sugestão de dores do cliente"
+              onAccept={() => handleAcceptSuggestion('dores')}
+              onDismiss={() => handleDismissSuggestion('dores')}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -178,6 +218,15 @@ export function ICPBlock() {
                 </Badge>
               ))}
             </div>
+          )}
+
+          {showSuggestion('desejos', localData.desejos) && (
+            <SuggestionCard
+              suggestion={suggestions!.desejos}
+              label="Sugestão de desejos do cliente"
+              onAccept={() => handleAcceptSuggestion('desejos')}
+              onDismiss={() => handleDismissSuggestion('desejos')}
+            />
           )}
         </CardContent>
       </Card>
