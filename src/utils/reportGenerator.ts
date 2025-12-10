@@ -1,5 +1,76 @@
 import { ConsultingData, BlockStatus, Project } from '@/types/consulting';
 
+// Helper functions for generating insights
+const generateMaturityInsights = (level: number, area: string): string => {
+  const insights: Record<number, Record<string, string>> = {
+    1: {
+      pessoas: "A área de pessoas está em estágio inicial. É fundamental estruturar processos básicos de RH, definir funções claras e criar uma cultura organizacional sólida.",
+      processos: "Os processos estão desorganizados ou inexistentes. Priorize mapear os processos críticos e documentá-los para garantir consistência operacional.",
+      financas: "O controle financeiro é precário. Implemente controles básicos de fluxo de caixa, DRE e balanço patrimonial imediatamente.",
+      mercado: "O conhecimento de mercado é superficial. Invista em pesquisa de mercado e análise competitiva para entender melhor o ambiente."
+    },
+    2: {
+      pessoas: "Existem estruturas básicas, mas falta profissionalização. Considere implementar avaliações de desempenho e planos de carreira.",
+      processos: "Alguns processos existem, mas não são padronizados. Documente procedimentos e crie indicadores de acompanhamento.",
+      financas: "Há controles básicos, mas falta análise estratégica. Implemente indicadores financeiros (ROI, margem, ponto de equilíbrio).",
+      mercado: "O posicionamento existe, mas não é diferenciado. Desenvolva uma proposta de valor única e comunique-a claramente."
+    },
+    3: {
+      pessoas: "A gestão de pessoas está em nível intermediário. Foque em desenvolvimento de lideranças e programas de engajamento.",
+      processos: "Os processos são razoavelmente estruturados. É hora de otimizar e automatizar onde possível.",
+      financas: "O controle financeiro é bom. Avance para planejamento financeiro de médio/longo prazo e gestão de investimentos.",
+      mercado: "O mercado é bem compreendido. Busque nichos específicos para dominar e criar barreiras competitivas."
+    },
+    4: {
+      pessoas: "A gestão de pessoas é madura. Implemente programas de inovação e intraempreendedorismo para manter o engajamento.",
+      processos: "Os processos são eficientes. Considere certificações (ISO) e melhoria contínua (Kaizen/Lean).",
+      financas: "A gestão financeira é profissional. Explore novos modelos de receita e estratégias de crescimento acelerado.",
+      mercado: "O posicionamento é forte. Explore expansão para novos mercados ou segmentos adjacentes."
+    },
+    5: {
+      pessoas: "Excelência em gestão de pessoas. Mantenha o padrão e torne-se referência do setor em employer branding.",
+      processos: "Excelência operacional. Considere escalar o modelo para outras unidades ou franquias.",
+      financas: "Excelência financeira. Explore M&A, venture capital ou IPO se for estratégico.",
+      mercado: "Liderança de mercado. Defina a agenda do setor e antecipe tendências."
+    }
+  };
+  return insights[level]?.[area] || "Avalie as necessidades específicas desta área para desenvolvimento.";
+};
+
+const generateActionPlan = (area: string, level: number): string[] => {
+  const plans: Record<string, Record<number, string[]>> = {
+    pessoas: {
+      1: ["Definir organograma básico e descrição de cargos", "Implementar processo de contratação estruturado", "Criar manual do colaborador"],
+      2: ["Implementar avaliação de desempenho trimestral", "Criar plano de cargos e salários", "Desenvolver programa de integração (onboarding)"],
+      3: ["Criar programa de desenvolvimento de lideranças", "Implementar pesquisa de clima organizacional", "Desenvolver plano de carreira para posições-chave"],
+      4: ["Criar programa de inovação interno", "Implementar gestão por OKRs", "Desenvolver programa de mentoria"],
+      5: ["Tornar-se referência em employer branding", "Criar academia corporativa", "Implementar programa de equity para colaboradores"]
+    },
+    processos: {
+      1: ["Mapear os 5 processos mais críticos", "Documentar procedimentos operacionais padrão (POPs)", "Criar checklist para atividades recorrentes"],
+      2: ["Implementar ferramentas de gestão de projetos", "Criar indicadores (KPIs) para cada processo", "Estabelecer reuniões de acompanhamento"],
+      3: ["Automatizar processos repetitivos", "Implementar sistema de gestão integrado (ERP)", "Criar comitê de melhoria contínua"],
+      4: ["Buscar certificação ISO 9001", "Implementar metodologia Lean/Six Sigma", "Criar centro de excelência operacional"],
+      5: ["Explorar RPA (automação robótica)", "Implementar IA nos processos-chave", "Desenvolver modelo escalável/franqueável"]
+    },
+    financas: {
+      1: ["Separar finanças pessoais das empresariais", "Implementar controle de fluxo de caixa semanal", "Criar DRE mensal simplificada"],
+      2: ["Implementar centro de custos", "Criar orçamento anual", "Calcular ponto de equilíbrio e margem de contribuição"],
+      3: ["Implementar análise de indicadores financeiros (ROI, ROE, EBITDA)", "Criar planejamento financeiro de 3 anos", "Desenvolver política de precificação baseada em valor"],
+      4: ["Implementar tesouraria profissional", "Criar comitê financeiro", "Explorar linhas de crédito e financiamento para crescimento"],
+      5: ["Avaliar captação de investimento externo", "Considerar fusões e aquisições", "Preparar estrutura para eventual IPO ou venda"]
+    },
+    mercado: {
+      1: ["Realizar pesquisa básica de concorrentes", "Definir persona do cliente ideal", "Criar proposta de valor inicial"],
+      2: ["Mapear jornada do cliente", "Implementar pesquisa de satisfação (NPS)", "Desenvolver estratégia de diferenciação"],
+      3: ["Criar programa de fidelização", "Desenvolver parcerias estratégicas", "Implementar inteligência de mercado"],
+      4: ["Expandir para novos segmentos ou regiões", "Desenvolver produtos/serviços complementares", "Criar barreiras de entrada para concorrentes"],
+      5: ["Liderar associações do setor", "Definir tendências e padrões do mercado", "Explorar internacionalização"]
+    }
+  };
+  return plans[area]?.[level] || ["Avaliar necessidades específicas", "Desenvolver plano customizado", "Implementar melhorias incrementais"];
+};
+
 export function generateReport(project: Project, data: ConsultingData, blocks: BlockStatus[]) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -14,6 +85,11 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
   };
 
   const overallProgress = Math.round(blocks.reduce((acc, b) => acc + b.progress, 0) / blocks.length);
+  
+  const avgMaturity = Math.round(
+    (data.diagnostico.pessoas.level + data.diagnostico.processos.level + 
+     data.diagnostico.financas.level + data.diagnostico.mercado.level) / 4 * 10
+  ) / 10;
 
   const html = `
 <!DOCTYPE html>
@@ -256,6 +332,111 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     
     .info-box-text {
       color: var(--foreground);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    
+    /* Insight Box */
+    .insight-box {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border-left: 4px solid #F59E0B;
+      padding: 20px 24px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+    
+    .insight-box-title {
+      font-weight: 600;
+      color: #92400E;
+      margin-bottom: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .insight-box-text {
+      color: #78350F;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    
+    /* Action Plan Box */
+    .action-plan {
+      background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+      border: 2px solid #10B981;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    
+    .action-plan-title {
+      font-weight: 700;
+      color: #065F46;
+      margin-bottom: 16px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .action-plan-list {
+      list-style: none;
+    }
+    
+    .action-plan-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px dashed #A7F3D0;
+    }
+    
+    .action-plan-item:last-child {
+      border-bottom: none;
+    }
+    
+    .action-plan-number {
+      width: 28px;
+      height: 28px;
+      background: #10B981;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    
+    .action-plan-text {
+      color: #065F46;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    /* Suggestion Box */
+    .suggestion-box {
+      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+      border: 1px solid #93C5FD;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+    
+    .suggestion-title {
+      font-weight: 600;
+      color: #1E40AF;
+      margin-bottom: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .suggestion-text {
+      color: #1E3A8A;
       font-size: 13px;
       line-height: 1.7;
     }
@@ -887,6 +1068,21 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             <div class="data-value">${project.quantidadeColaboradores} pessoas</div>
           </div>
         </div>
+        
+        <div class="insight-box" style="margin-top: 24px;">
+          <div class="insight-box-title">💡 Análise do Perfil</div>
+          <div class="insight-box-text">
+            ${project.faturamentoMedio > 0 && project.quantidadeColaboradores > 0 ? `
+              Com faturamento de ${formatCurrency(project.faturamentoMedio)} e ${project.quantidadeColaboradores} colaboradores, 
+              a receita média por colaborador é de ${formatCurrency(project.faturamentoMedio / project.quantidadeColaboradores)}.
+              ${project.faturamentoMedio / project.quantidadeColaboradores < 10000 
+                ? 'Este valor sugere oportunidade de aumentar produtividade ou revisar a estrutura de custos com pessoal.'
+                : project.faturamentoMedio / project.quantidadeColaboradores > 30000
+                  ? 'Este é um bom indicador de produtividade. Considere investir em tecnologia para manter esta eficiência.'
+                  : 'Este valor está dentro da média de mercado. Busque oportunidades de otimização gradual.'}
+            ` : 'Complete as informações de faturamento e colaboradores para análise de produtividade.'}
+          </div>
+        </div>
       </div>
       
       <!-- Diagnóstico -->
@@ -902,7 +1098,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="info-box-text">
             O diagnóstico avalia o estágio atual da empresa em 4 dimensões fundamentais: Pessoas, Processos, Finanças e Mercado. 
             Cada área recebe uma nota de 1 a 5, onde 1 representa um estágio inicial e 5 representa excelência operacional.
-            Este mapeamento permite identificar prioridades de atuação e direcionar esforços de forma estratégica.
+            <strong>Maturidade média atual: ${avgMaturity}/5</strong>
           </div>
         </div>
         
@@ -951,6 +1147,43 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             <div class="maturity-notes">${data.diagnostico.mercado.notes || 'Sem observações'}</div>
           </div>
         </div>
+        
+        <!-- Insights por área -->
+        <div class="insight-box">
+          <div class="insight-box-title">🎯 Insights do Diagnóstico</div>
+          <div class="insight-box-text">
+            <p><strong>Pessoas (${data.diagnostico.pessoas.level}/5):</strong> ${generateMaturityInsights(data.diagnostico.pessoas.level, 'pessoas')}</p>
+            <p style="margin-top: 12px;"><strong>Processos (${data.diagnostico.processos.level}/5):</strong> ${generateMaturityInsights(data.diagnostico.processos.level, 'processos')}</p>
+            <p style="margin-top: 12px;"><strong>Finanças (${data.diagnostico.financas.level}/5):</strong> ${generateMaturityInsights(data.diagnostico.financas.level, 'financas')}</p>
+            <p style="margin-top: 12px;"><strong>Mercado (${data.diagnostico.mercado.level}/5):</strong> ${generateMaturityInsights(data.diagnostico.mercado.level, 'mercado')}</p>
+          </div>
+        </div>
+        
+        <!-- Plano de Ação do Diagnóstico -->
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Diagnóstico</div>
+          
+          ${['pessoas', 'processos', 'financas', 'mercado'].map(area => {
+            const areaData = data.diagnostico[area as keyof typeof data.diagnostico];
+            const areaName = area === 'pessoas' ? '👥 Pessoas' : 
+                            area === 'processos' ? '⚙️ Processos' : 
+                            area === 'financas' ? '💰 Finanças' : '🎯 Mercado';
+            const actions = generateActionPlan(area, areaData.level);
+            return `
+              <div style="margin-bottom: 20px;">
+                <h4 style="color: #065F46; margin-bottom: 8px;">${areaName} - Nível ${areaData.level}</h4>
+                <ul class="action-plan-list">
+                  ${actions.map((action, i) => `
+                    <li class="action-plan-item">
+                      <span class="action-plan-number">${i + 1}</span>
+                      <span class="action-plan-text">${action}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
       
       <!-- Identidade Organizacional -->
@@ -962,20 +1195,17 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <p class="section-description">Os pilares que definem quem somos, aonde queremos chegar e o que nos guia.</p>
         </div>
         
-        <div class="info-box">
-          <div class="info-box-title">💡 Por que a Identidade é importante?</div>
-          <div class="info-box-text">
-            A identidade organizacional é o DNA da empresa. A <strong>Visão</strong> indica o destino almejado a longo prazo. 
-            A <strong>Missão</strong> define o propósito de existência da empresa e sua contribuição para o mundo.
-            Os <strong>Valores</strong> são os princípios inegociáveis que guiam todas as decisões e comportamentos.
-            O <strong>Posicionamento</strong> é como a empresa deseja ser percebida no mercado.
-          </div>
-        </div>
-        
         ${data.identidade.visao ? `
         <div class="card">
           <div class="card-title">🔭 Visão de Futuro</div>
           <div class="card-content">${data.identidade.visao}</div>
+        </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Como usar a Visão</div>
+          <div class="suggestion-text">
+            Comunique a visão em todas as reuniões de equipe. Cole em locais visíveis. Use como critério para avaliar novas oportunidades: 
+            "Isso nos aproxima da nossa visão?". Revise anualmente para garantir que continua relevante e inspiradora.
+          </div>
         </div>
         ` : ''}
         
@@ -983,6 +1213,13 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         <div class="card">
           <div class="card-title">🎯 Missão</div>
           <div class="card-content">${data.identidade.missao}</div>
+        </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Como aplicar a Missão</div>
+          <div class="suggestion-text">
+            A missão deve guiar todas as decisões operacionais. Treine sua equipe para responder: "Como isso se conecta com nossa missão?".
+            Use em materiais de marketing e no processo de contratação para atrair pessoas alinhadas.
+          </div>
         </div>
         ` : ''}
         
@@ -993,6 +1230,14 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             ${data.identidade.valores.map(v => `<span class="tag">${v}</span>`).join('')}
           </div>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Como viver os Valores</div>
+          <div class="suggestion-text">
+            ${data.identidade.valores.map((v, i) => `
+              <strong>${v}:</strong> Crie comportamentos observáveis para este valor. Ex: reconheça publicamente colaboradores que demonstram "${v}" em suas ações.
+            `).join(' ')}
+          </div>
+        </div>
         ` : ''}
         
         ${data.identidade.posicionamento ? `
@@ -1000,7 +1245,40 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="card-title">📍 Posicionamento de Mercado</div>
           <div class="card-content">${data.identidade.posicionamento}</div>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Como fortalecer o Posicionamento</div>
+          <div class="suggestion-text">
+            Garanta que todas as comunicações (site, redes sociais, atendimento) reflitam este posicionamento. 
+            Treine a equipe para comunicar consistentemente. Avalie se os preços e a experiência do cliente estão alinhados.
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Identidade</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Realizar workshop com lideranças para validar e internalizar visão, missão e valores</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Criar materiais visuais (posters, cards) com a identidade para distribuir na empresa</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Incluir avaliação de valores nas avaliações de desempenho e feedbacks</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Atualizar site e materiais de marketing com o posicionamento definido</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Criar programa de reconhecimento mensal para colaboradores que exemplificam os valores</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1011,17 +1289,6 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="section-icon">⭕</div>
           <h2 class="section-title">Golden Circle</h2>
           <p class="section-description">O framework de Simon Sinek para comunicação inspiradora e diferenciação.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Entendendo o Golden Circle</div>
-          <div class="info-box-text">
-            Desenvolvido por Simon Sinek, o Golden Circle propõe que empresas inspiradoras comunicam de dentro para fora:
-            <strong>WHY (Por quê)</strong> - O propósito, causa ou crença que move a empresa.
-            <strong>HOW (Como)</strong> - Os processos e diferenciais que tornam o "por quê" uma realidade.
-            <strong>WHAT (O quê)</strong> - Os produtos ou serviços que a empresa oferece.
-            Pessoas não compram O QUE você faz, compram POR QUE você faz.
-          </div>
         </div>
         
         <div class="golden-circle">
@@ -1046,6 +1313,42 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           </div>
           ` : ''}
         </div>
+        
+        <div class="insight-box" style="margin-top: 24px;">
+          <div class="insight-box-title">💡 Aplicando o Golden Circle</div>
+          <div class="insight-box-text">
+            ${data.goldenCircle.why ? `
+              <strong>Seu WHY:</strong> "${data.goldenCircle.why}" - Este é o coração da sua marca. 
+              Lidere com isso em todas as apresentações de vendas. Clientes se conectam emocionalmente com o propósito, não com produtos.
+            ` : ''}
+            ${data.goldenCircle.how ? `
+              <br><br><strong>Seu HOW:</strong> "${data.goldenCircle.how}" - Isto diferencia você dos concorrentes.
+              Documente estes processos e treine a equipe para executá-los consistentemente.
+            ` : ''}
+          </div>
+        </div>
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Golden Circle</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Reescrever o pitch de vendas começando pelo WHY: "Nós acreditamos que ${data.goldenCircle.why || '...'}..."</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Atualizar a página "Sobre" do site com a narrativa do Golden Circle</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Criar conteúdos de marketing que comuniquem o propósito (WHY) antes dos produtos (WHAT)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Usar o WHY como critério de contratação: "Esta pessoa compartilha nossa crença?"</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1056,16 +1359,6 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="section-icon">👤</div>
           <h2 class="section-title">Perfil do Cliente Ideal (ICP)</h2>
           <p class="section-description">Conhecimento profundo do cliente que mais se beneficia da nossa solução.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 O que é o ICP?</div>
-          <div class="info-box-text">
-            O Ideal Customer Profile (ICP) é a descrição detalhada do cliente perfeito para o seu negócio.
-            Conhecer profundamente suas <strong>dores</strong> (problemas e frustrações), <strong>desejos</strong> (aspirações e objetivos) 
-            e <strong>comportamento</strong> permite criar ofertas irresistíveis e comunicação assertiva.
-            Vender para o cliente errado gera desperdício de recursos e frustrações para ambos os lados.
-          </div>
         </div>
         
         ${data.icp.caracteristicasDemograficas ? `
@@ -1108,6 +1401,51 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="card-content">${data.icp.ondeEncontrar}</div>
         </div>
         ` : ''}
+        
+        <div class="insight-box">
+          <div class="insight-box-title">💡 Estratégias baseadas no ICP</div>
+          <div class="insight-box-text">
+            ${data.icp.dores.length > 0 ? `
+              <strong>Abordagem de dores:</strong> Suas mensagens de marketing devem começar reconhecendo estas dores: 
+              "${data.icp.dores[0]}". Isso gera conexão imediata com o prospect.
+            ` : ''}
+            ${data.icp.desejos.length > 0 ? `
+              <br><br><strong>Promessa de transformação:</strong> Mostre como você leva o cliente de "${data.icp.dores[0] || 'problema atual'}" 
+              para "${data.icp.desejos[0]}". Esta é sua promessa de transformação.
+            ` : ''}
+            ${data.icp.ondeEncontrar ? `
+              <br><br><strong>Canais prioritários:</strong> Concentre 80% do esforço de marketing em: ${data.icp.ondeEncontrar}
+            ` : ''}
+          </div>
+        </div>
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - ICP</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Entrevistar 10 clientes atuais para validar e aprofundar o ICP</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Criar persona visual com nome, foto e história para humanizar o ICP</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Reescrever copy do site usando exatamente as palavras que o ICP usa para descrever suas dores</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Criar conteúdo educativo que resolva as dores identificadas (blog, vídeos, ebooks)</span>
+            </li>
+            ${data.icp.ondeEncontrar ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Estabelecer presença ativa em: ${data.icp.ondeEncontrar}</span>
+            </li>
+            ` : ''}
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1118,15 +1456,6 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="section-icon">🏆</div>
           <h2 class="section-title">Análise Competitiva</h2>
           <p class="section-description">Mapeamento da concorrência e identificação de vantagens competitivas.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Por que analisar concorrentes?</div>
-          <div class="info-box-text">
-            Conhecer os concorrentes permite identificar lacunas de mercado, aprender com erros e acertos de outros 
-            e posicionar-se de forma diferenciada. A análise revela pontos fortes a serem neutralizados e pontos fracos 
-            que podem ser explorados como oportunidade de diferenciação.
-          </div>
         </div>
         
         ${data.concorrentes.concorrentes.length > 0 ? `
@@ -1148,6 +1477,16 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             `).join('')}
           </tbody>
         </table>
+        
+        <div class="insight-box" style="margin-top: 20px;">
+          <div class="insight-box-title">💡 Estratégias Competitivas</div>
+          <div class="insight-box-text">
+            ${data.concorrentes.concorrentes.map(c => `
+              <strong>${c.nome}:</strong> Explorar sua fraqueza ("${c.pontoFraco}") em suas comunicações. 
+              Não ataque diretamente, mas posicione-se como solução para este problema específico.
+            `).join('<br><br>')}
+          </div>
+        </div>
         ` : ''}
         
         ${data.concorrentes.diferenciais.length > 0 ? `
@@ -1157,6 +1496,14 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             ${data.concorrentes.diferenciais.map(d => `<span class="tag tag-accent">${d}</span>`).join('')}
           </div>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Como comunicar diferenciais</div>
+          <div class="suggestion-text">
+            ${data.concorrentes.diferenciais.map(d => `
+              <strong>"${d}"</strong> - Crie provas sociais (depoimentos, casos) que demonstrem este diferencial na prática.
+            `).join(' ')}
+          </div>
+        </div>
         ` : ''}
         
         ${data.concorrentes.propostaValor ? `
@@ -1164,26 +1511,46 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="card-title">💎 Proposta de Valor Única</div>
           <div class="card-content">${data.concorrentes.propostaValor}</div>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Testando a Proposta de Valor</div>
+          <div class="suggestion-text">
+            Teste: Se seu cliente ideal lesse "${data.concorrentes.propostaValor}", ele imediatamente entenderia por que escolher você?
+            Use esta proposta como headline do seu site e em todos os materiais de vendas.
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Concorrência</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Criar rotina mensal de monitoramento de concorrentes (preços, ofertas, comunicação)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Treinar equipe comercial para responder objeções comparativas com concorrentes</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Criar material comparativo (battle card) para uso interno da equipe de vendas</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Desenvolver cases de sucesso que evidenciem cada diferencial competitivo</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
       <!-- Estratégias de Valor -->
-      ${data.estrategiasValor.novasOfertas.length > 0 || data.estrategiasValor.pacotes.length > 0 ? `
+      ${data.estrategiasValor.novasOfertas.length > 0 || data.estrategiasValor.pacotes.length > 0 || data.estrategiasValor.novosServicos.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
           <div class="section-icon">💡</div>
           <h2 class="section-title">Estratégias de Valor</h2>
           <p class="section-description">Novas ofertas e formas de agregar valor aos clientes.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Criando Valor Adicional</div>
-          <div class="info-box-text">
-            Estratégias de valor envolvem criar novas ofertas, serviços complementares e pacotes que aumentam 
-            o ticket médio e a percepção de valor pelo cliente. O objetivo é maximizar o valor entregue 
-            enquanto aumenta a rentabilidade do negócio através de upselling e cross-selling inteligentes.
-          </div>
         </div>
         
         ${data.estrategiasValor.novasOfertas.length > 0 ? `
@@ -1192,6 +1559,14 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <ul class="list">
             ${data.estrategiasValor.novasOfertas.map(o => `<li class="list-item"><span class="list-bullet"></span><span>${o}</span></li>`).join('')}
           </ul>
+        </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Implementando Novas Ofertas</div>
+          <div class="suggestion-text">
+            ${data.estrategiasValor.novasOfertas.map((o, i) => `
+              <strong>${i + 1}. ${o}:</strong> Valide com 5 clientes antes de lançar. Crie MVP mínimo. Lance para base existente primeiro.
+            `).join('<br>')}
+          </div>
         </div>
         ` : ''}
         
@@ -1217,30 +1592,48 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             `).join('')}
           </div>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Otimizando Pacotes</div>
+          <div class="suggestion-text">
+            Posicione o pacote intermediário como "Mais Popular". Adicione urgência: "Condição especial até [data]".
+            O pacote mais caro serve como âncora para fazer o intermediário parecer acessível.
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Estratégias de Valor</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Priorizar uma nova oferta para lançamento nos próximos 30 dias</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Criar página de vendas dedicada para cada pacote/oferta</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Treinar equipe comercial no pitch de cada nova oferta</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Definir metas de vendas específicas para cada oferta</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
       <!-- Precificação -->
-      ${data.precificacao.modelo || data.precificacao.estrategia || (data.precificacao.produtos && data.precificacao.produtos.length > 0) ? `
+      ${(data.precificacao.produtos && data.precificacao.produtos.length > 0) ? `
       <div class="section page-break">
         <div class="section-header">
           <div class="section-icon">💰</div>
           <h2 class="section-title">Estratégia de Precificação</h2>
-          <p class="section-description">Modelo de precificação e estratégias para maximização de valor.</p>
+          <p class="section-description">Produtos/serviços e estratégias para maximização de valor.</p>
         </div>
         
-        <div class="info-box">
-          <div class="info-box-title">💡 A Arte de Precificar</div>
-          <div class="info-box-text">
-            Precificação vai muito além de cobrir custos. O <strong>modelo de precificação</strong> define como você cobra (hora, projeto, assinatura).
-            A <strong>estratégia</strong> determina seu posicionamento (premium, competitivo, penetração).
-            A <strong>ancoragem</strong> utiliza referências de preço para influenciar a percepção de valor.
-            Uma precificação bem estruturada pode aumentar lucros em 20-50% sem alterar custos.
-          </div>
-        </div>
-        
-        ${data.precificacao.produtos && data.precificacao.produtos.length > 0 ? `
         <h3 style="margin: 30px 0 20px; font-size: 18px; color: var(--primary);">📦 Produtos e Serviços com Sugestões de Precificação</h3>
         ${data.precificacao.produtos.map(produto => `
           <div class="card" style="margin-bottom: 24px;">
@@ -1292,39 +1685,44 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
                 </div>
               </div>
             </div>
+            
+            <div class="suggestion-box" style="margin-top: 16px;">
+              <div class="suggestion-title">💡 Como implementar para "${produto.nome}"</div>
+              <div class="suggestion-text">
+                <strong>Passo 1:</strong> Escolha uma estratégia acima e crie uma oferta específica.<br>
+                <strong>Passo 2:</strong> Teste com 10 clientes e meça a conversão.<br>
+                <strong>Passo 3:</strong> Se a conversão cair menos de 20% com preço 40% maior, mantenha o novo preço.<br>
+                <strong>ROI Potencial:</strong> Se vender o mesmo volume com +40% de preço, seu lucro pode dobrar.
+              </div>
+            </div>
             ` : ''}
           </div>
         `).join('')}
-        ` : ''}
         
-        <div class="data-grid">
-          ${data.precificacao.modelo ? `
-          <div class="card">
-            <div class="card-title">📐 Modelo de Precificação</div>
-            <div class="card-content">${data.precificacao.modelo}</div>
-          </div>
-          ` : ''}
-          
-          ${data.precificacao.estrategia ? `
-          <div class="card">
-            <div class="card-title">🎯 Estratégia</div>
-            <div class="card-content">${data.precificacao.estrategia}</div>
-          </div>
-          ` : ''}
-          
-          ${data.precificacao.ancoragem ? `
-          <div class="card">
-            <div class="card-title">⚓ Ancoragem de Preço</div>
-            <div class="card-content">${data.precificacao.ancoragem}</div>
-          </div>
-          ` : ''}
-          
-          ${data.precificacao.margemDesejada ? `
-          <div class="card">
-            <div class="card-title">📈 Margem Desejada</div>
-            <div class="card-content">${data.precificacao.margemDesejada}</div>
-          </div>
-          ` : ''}
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Precificação</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Calcular custo real de cada produto/serviço (inclua seu tempo)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Escolher uma estratégia de precificação por produto e testar por 30 dias</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Criar versão premium de pelo menos um produto/serviço</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Implementar ancoragem de preço na página de vendas</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Criar modelo de recorrência para pelo menos um serviço</span>
+            </li>
+          </ul>
         </div>
       </div>
       ` : ''}
@@ -1338,21 +1736,20 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <p class="section-description">Os principais vetores de crescimento e canais de aquisição.</p>
         </div>
         
-        <div class="info-box">
-          <div class="info-box-title">💡 Escolhendo seus Motores</div>
-          <div class="info-box-text">
-            Existem três motores principais de crescimento: <strong>Viral</strong> (indicações e compartilhamentos), 
-            <strong>Pago</strong> (publicidade e marketing) e <strong>Retenção</strong> (fidelização e recorrência).
-            Empresas de sucesso dominam 1-2 motores antes de expandir. Tentar todos ao mesmo tempo dilui recursos e resultados.
-            Escolha os motores alinhados ao seu modelo de negócio e ICP.
-          </div>
-        </div>
-        
         ${data.motoresCrescimento.motoresPrincipais.length > 0 ? `
         <div class="card">
-          <div class="card-title">🎯 Motores Principais Selecionados</div>
+          <div class="card-title">⚡ Motores Principais</div>
           <div class="tags">
-            ${data.motoresCrescimento.motoresPrincipais.map(m => `<span class="tag tag-accent">${m}</span>`).join('')}
+            ${data.motoresCrescimento.motoresPrincipais.map(m => `<span class="tag">${m}</span>`).join('')}
+          </div>
+        </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Ativando os Motores</div>
+          <div class="suggestion-text">
+            ${data.motoresCrescimento.motoresPrincipais.map(m => `
+              <strong>${m}:</strong> Defina uma ação semanal específica para este motor. 
+              Meça resultados e dobre o investimento no que funcionar.
+            `).join('<br>')}
           </div>
         </div>
         ` : ''}
@@ -1360,9 +1757,17 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         ${data.motoresCrescimento.canais.length > 0 ? `
         <div class="card">
           <div class="card-title">📢 Canais de Aquisição</div>
-          <ul class="list">
-            ${data.motoresCrescimento.canais.map(c => `<li class="list-item"><span class="list-bullet"></span><span>${c}</span></li>`).join('')}
-          </ul>
+          <div class="tags">
+            ${data.motoresCrescimento.canais.map(c => `<span class="tag tag-accent">${c}</span>`).join('')}
+          </div>
+        </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Priorizando Canais</div>
+          <div class="suggestion-text">
+            Escolha MAX 3 canais para focar nos próximos 90 dias. Divida investimento: 70% no canal que já funciona, 
+            20% no segundo melhor, 10% em experimentos. 
+            ${data.motoresCrescimento.canais.length > 0 ? `Comece por: ${data.motoresCrescimento.canais[0]}` : ''}
+          </div>
         </div>
         ` : ''}
         
@@ -1379,14 +1784,43 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             <tbody>
               ${data.motoresCrescimento.metricas.map(m => `
                 <tr>
-                  <td>${m.nome}</td>
-                  <td><strong>${m.meta}</strong></td>
+                  <td><strong>${m.nome}</strong></td>
+                  <td>${m.meta}</td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Acompanhando Métricas</div>
+          <div class="suggestion-text">
+            Crie dashboard com estas métricas e revise semanalmente. Defina "owners" para cada métrica.
+            Se a métrica não melhorar em 4 semanas, mude a estratégia ou a métrica.
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Crescimento</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Criar dashboard de métricas (use Google Sheets ou similar)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Definir rituais semanais de acompanhamento (15 min, mesmo dia/hora)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Implementar programa de indicação estruturado com incentivos</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Testar 3 experimentos de aquisição por mês, documentar resultados</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1396,58 +1830,38 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         <div class="section-header">
           <div class="section-icon">👥</div>
           <h2 class="section-title">Estrutura Organizacional</h2>
-          <p class="section-description">Cargos, responsabilidades, KPIs e hierarquia da equipe em 3 níveis.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Estrutura em 3 Níveis</div>
-          <div class="info-box-text">
-            <strong>Nível 1 - Estratégico:</strong> Define visão, direção e grandes decisões (CEO, Diretores, Sócios).<br>
-            <strong>Nível 2 - Tático:</strong> Traduz estratégia em planos e gerencia equipes (Gerentes, Coordenadores).<br>
-            <strong>Nível 3 - Operacional:</strong> Executa processos e entrega resultados do dia a dia (Analistas, Assistentes).<br><br>
-            Cada cargo deve ter responsabilidades claras e KPIs mensuráveis para acompanhamento de performance.
-          </div>
+          <p class="section-description">Organograma, responsabilidades e indicadores de desempenho.</p>
         </div>
         
         <div class="org-chart">
           ${[1, 2, 3].map(nivel => {
-            const cargosNivel = data.organograma.cargos.filter(c => (c as any).nivel === nivel);
-            if (cargosNivel.length === 0) return '';
-            const nivelLabels: Record<number, string> = {
-              1: '👑 Nível 1 - Estratégico',
-              2: '🎯 Nível 2 - Tático', 
-              3: '⚡ Nível 3 - Operacional'
-            };
+            const cargosPorNivel = data.organograma.cargos.filter(c => c.nivel === nivel);
+            if (cargosPorNivel.length === 0) return '';
+            const nivelNome = nivel === 1 ? 'Estratégico' : nivel === 2 ? 'Tático' : 'Operacional';
             return `
               <div class="org-level org-level-${nivel}">
                 <div class="org-level-header">
-                  <span class="org-level-dot"></span>
-                  <span class="org-level-title">${nivelLabels[nivel]}</span>
+                  <div class="org-level-dot"></div>
+                  <div class="org-level-title">Nível ${nivelNome}</div>
                 </div>
                 <div class="org-cards">
-                  ${cargosNivel.map(c => `
+                  ${cargosPorNivel.map(cargo => `
                     <div class="org-card">
-                      <div class="org-title">${c.titulo}</div>
-                      ${c.subordinadoA ? `<div class="org-subordinate">📍 Reporta-se a: ${c.subordinadoA}</div>` : ''}
-                      
-                      ${c.responsabilidades.length > 0 ? `
-                      <div class="org-section">
-                        <div class="org-section-title">📋 Responsabilidades</div>
-                        <div class="org-responsibilities">
-                          <ul style="margin: 0; padding-left: 16px;">
-                            ${c.responsabilidades.map(r => `<li style="margin-bottom: 4px;">${r}</li>`).join('')}
-                          </ul>
+                      <div class="org-title">${cargo.titulo}</div>
+                      ${cargo.subordinadoA ? `<div class="org-subordinate">Reporta a: ${cargo.subordinadoA}</div>` : ''}
+                      ${cargo.responsabilidades.length > 0 ? `
+                        <div class="org-section">
+                          <div class="org-section-title">Responsabilidades</div>
+                          <div class="org-responsibilities">${cargo.responsabilidades.join('; ')}</div>
                         </div>
-                      </div>
                       ` : ''}
-                      
-                      ${((c as any).kpis || []).length > 0 ? `
-                      <div class="org-section">
-                        <div class="org-section-title">📊 KPIs</div>
-                        <div class="org-kpis">
-                          ${((c as any).kpis || []).map((k: string) => `<span class="org-kpi">📈 ${k}</span>`).join('')}
+                      ${cargo.kpis.length > 0 ? `
+                        <div class="org-section">
+                          <div class="org-section-title">KPIs</div>
+                          <div class="org-kpis">
+                            ${cargo.kpis.map(kpi => `<span class="org-kpi">${kpi}</span>`).join('')}
+                          </div>
                         </div>
-                      </div>
                       ` : ''}
                     </div>
                   `).join('')}
@@ -1455,6 +1869,43 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
               </div>
             `;
           }).join('')}
+        </div>
+        
+        <div class="insight-box" style="margin-top: 24px;">
+          <div class="insight-box-title">💡 Análise da Estrutura</div>
+          <div class="insight-box-text">
+            ${data.organograma.cargos.length < 3 
+              ? 'A estrutura está enxuta. Considere se há sobrecarga em alguma função e se vale terceirizar atividades operacionais.'
+              : data.organograma.cargos.length < 6
+                ? 'A estrutura está em crescimento. Garanta que as linhas de reporte estejam claras e que não haja sobreposição de responsabilidades.'
+                : 'A estrutura está robusta. Foque em desenvolver lideranças intermediárias e garantir comunicação fluida entre níveis.'}
+            <br><br>
+            ${data.organograma.cargos.filter(c => c.kpis.length === 0).length > 0 
+              ? `<strong>Atenção:</strong> ${data.organograma.cargos.filter(c => c.kpis.length === 0).length} cargo(s) sem KPIs definidos. Defina métricas para todos os cargos.`
+              : 'Todos os cargos possuem KPIs definidos. Excelente!'}
+          </div>
+        </div>
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Organização</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Validar descrições de cargo com cada colaborador</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Implementar 1:1s quinzenais entre líderes e liderados</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Criar matriz RACI para principais processos</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Definir metas individuais alinhadas aos KPIs de cada cargo</span>
+            </li>
+          </ul>
         </div>
       </div>
       ` : ''}
@@ -1465,28 +1916,50 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         <div class="section-header">
           <div class="section-icon">⚙️</div>
           <h2 class="section-title">Processos Operacionais</h2>
-          <p class="section-description">Processos padronizados que garantem consistência e qualidade.</p>
+          <p class="section-description">Principais processos mapeados e seus responsáveis.</p>
         </div>
         
-        <div class="info-box">
-          <div class="info-box-title">💡 A Importância dos Processos</div>
-          <div class="info-box-text">
-            Processos documentados e padronizados são a base da escalabilidade. Eles garantem que a qualidade 
-            não dependa de indivíduos específicos, facilitam o treinamento de novos colaboradores e permitem 
-            identificar gargalos e oportunidades de melhoria contínua. Um bom processo é claro, mensurável e repetível.
-          </div>
-        </div>
-        
-        ${data.processos.processos.map(p => `
+        ${data.processos.processos.map(processo => `
           <div class="process-card">
             <div class="process-header">
-              <span class="process-name">${p.nome}</span>
-              <span class="process-frequency">${p.frequencia}</span>
+              <div class="process-name">${processo.nome}</div>
+              <div class="process-frequency">${processo.frequencia}</div>
             </div>
-            <div class="process-description">${p.descricao}</div>
-            <div class="process-responsible">👤 Responsável: ${p.responsavel}</div>
+            ${processo.descricao ? `<div class="process-description">${processo.descricao}</div>` : ''}
+            <div class="process-responsible">Responsável: ${processo.responsavel}</div>
+          </div>
+          <div class="suggestion-box" style="margin-bottom: 20px;">
+            <div class="suggestion-title">💡 Otimização sugerida para "${processo.nome}"</div>
+            <div class="suggestion-text">
+              <strong>Documenta:</strong> Crie POP (Procedimento Operacional Padrão) com passo-a-passo.<br>
+              <strong>Mensure:</strong> Defina métrica de sucesso (tempo, qualidade, custo).<br>
+              <strong>Automatize:</strong> Identifique etapas repetitivas que podem ser automatizadas.<br>
+              <strong>Treine:</strong> Garanta que pelo menos 2 pessoas saibam executar.
+            </div>
           </div>
         `).join('')}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Processos</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Documentar todos os processos em POPs com fluxogramas</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Criar indicadores de desempenho para cada processo</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Identificar 3 processos prioritários para automação</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Treinar backups para todos os processos críticos</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1496,16 +1969,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         <div class="section-header">
           <div class="section-icon">📈</div>
           <h2 class="section-title">Análise Financeira</h2>
-          <p class="section-description">Panorama financeiro atual e projeções estratégicas.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Gestão Financeira Estratégica</div>
-          <div class="info-box-text">
-            A saúde financeira determina a capacidade de investimento e crescimento. Conhecer sua <strong>margem de contribuição</strong>,
-            <strong>ponto de equilíbrio</strong> e <strong>fluxo de caixa</strong> permite tomar decisões informadas.
-            A meta de faturamento deve ser ambiciosa mas realista, considerando capacidade operacional e mercado.
-          </div>
+          <p class="section-description">Indicadores financeiros e oportunidades de otimização.</p>
         </div>
         
         <div class="data-grid">
@@ -1535,6 +1999,24 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           </div>
         </div>
         
+        <div class="insight-box" style="margin-top: 24px;">
+          <div class="insight-box-title">💡 Análise Financeira Detalhada</div>
+          <div class="insight-box-text">
+            ${data.financeiro.faturamentoAtual > 0 && data.financeiro.despesasFixas > 0 ? `
+              <strong>Ponto de Equilíbrio:</strong> Com despesas fixas de ${formatCurrency(data.financeiro.despesasFixas)} e margem de ${data.financeiro.margemAtual}%, 
+              seu ponto de equilíbrio é aproximadamente ${formatCurrency(data.financeiro.despesasFixas / (data.financeiro.margemAtual / 100))}.
+              <br><br>
+              <strong>Lucro Operacional:</strong> Com faturamento de ${formatCurrency(data.financeiro.faturamentoAtual)} e margem de ${data.financeiro.margemAtual}%,
+              seu lucro bruto é aproximadamente ${formatCurrency(data.financeiro.faturamentoAtual * (data.financeiro.margemAtual / 100))}.
+              <br><br>
+            ` : ''}
+            ${data.financeiro.metaFaturamento > data.financeiro.faturamentoAtual ? `
+              <strong>Para atingir a meta:</strong> Você precisa aumentar o faturamento em ${Math.round(((data.financeiro.metaFaturamento - data.financeiro.faturamentoAtual) / data.financeiro.faturamentoAtual) * 100)}%.
+              Isso pode ser feito através de: aumento de preços, mais clientes ou aumento de ticket médio.
+            ` : ''}
+          </div>
+        </div>
+        
         ${data.financeiro.oportunidades.length > 0 ? `
         <div class="card" style="margin-top: 20px;">
           <div class="card-title">🎯 Oportunidades Identificadas</div>
@@ -1542,7 +2024,41 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             ${data.financeiro.oportunidades.map(o => `<li class="list-item"><span class="list-bullet"></span><span>${o}</span></li>`).join('')}
           </ul>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Priorizando Oportunidades</div>
+          <div class="suggestion-text">
+            ${data.financeiro.oportunidades.map((o, i) => `
+              <strong>${i + 1}. ${o}:</strong> Estime o impacto financeiro. Priorize as de maior retorno com menor esforço.
+            `).join('<br>')}
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Financeiro</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Implementar DRE mensal até o dia 5 de cada mês</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Revisar todos os custos fixos e eliminar/renegociar 3 itens</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Definir estratégia para aumentar ticket médio em 15%</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Criar reserva de emergência de 3 meses de despesas fixas</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Implementar as ${data.financeiro.oportunidades.length || 'X'} oportunidades identificadas</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1553,17 +2069,6 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <div class="section-icon">🧭</div>
           <h2 class="section-title">Análise SWOT Empresarial</h2>
           <p class="section-description">Forças, Fraquezas, Oportunidades e Ameaças do negócio.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Como usar a Matriz SWOT</div>
-          <div class="info-box-text">
-            A SWOT cruza fatores internos (Forças e Fraquezas) com externos (Oportunidades e Ameaças).
-            <strong>Forças + Oportunidades</strong> = Estratégias de avanço agressivo.
-            <strong>Forças + Ameaças</strong> = Estratégias de confronto/defesa.
-            <strong>Fraquezas + Oportunidades</strong> = Estratégias de reforço/desenvolvimento.
-            <strong>Fraquezas + Ameaças</strong> = Estratégias de proteção/recuo.
-          </div>
         </div>
         
         <div class="swot-grid">
@@ -1596,6 +2101,25 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           </div>
         </div>
         
+        <div class="insight-box" style="margin-top: 24px;">
+          <div class="insight-box-title">💡 Estratégias Cruzadas da SWOT</div>
+          <div class="insight-box-text">
+            ${data.swot.forcas.length > 0 && data.swot.oportunidades.length > 0 ? `
+              <strong>Forças + Oportunidades (Avanço):</strong> Use "${data.swot.forcas[0]}" para capturar "${data.swot.oportunidades[0]}". 
+              Esta é sua maior alavanca de crescimento.
+              <br><br>
+            ` : ''}
+            ${data.swot.fraquezas.length > 0 && data.swot.ameacas.length > 0 ? `
+              <strong>Fraquezas + Ameaças (Proteção):</strong> A fraqueza "${data.swot.fraquezas[0]}" combinada com a ameaça "${data.swot.ameacas[0]}" 
+              representa seu maior risco. Priorize resolver esta vulnerabilidade.
+              <br><br>
+            ` : ''}
+            ${data.swot.forcas.length > 0 && data.swot.ameacas.length > 0 ? `
+              <strong>Forças + Ameaças (Defesa):</strong> Use "${data.swot.forcas[0]}" para se proteger de "${data.swot.ameacas[0]}".
+            ` : ''}
+          </div>
+        </div>
+        
         ${data.swot.horizontes.curto || data.swot.horizontes.medio || data.swot.horizontes.longo ? `
         <div class="card" style="margin-top: 30px;">
           <div class="card-title">📅 Horizontes Estratégicos</div>
@@ -1622,26 +2146,59 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             ` : ''}
           </div>
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Implementando os Horizontes</div>
+          <div class="suggestion-text">
+            ${data.swot.horizontes.curto ? `<strong>Curto prazo:</strong> Quebre "${data.swot.horizontes.curto}" em 12 ações semanais. Execute sem perder foco.<br>` : ''}
+            ${data.swot.horizontes.medio ? `<strong>Médio prazo:</strong> Crie marcos trimestrais para "${data.swot.horizontes.medio}". Revise a cada 90 dias.<br>` : ''}
+            ${data.swot.horizontes.longo ? `<strong>Longo prazo:</strong> Mantenha "${data.swot.horizontes.longo}" visível, mas não se prenda. Reavalie anualmente.` : ''}
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - SWOT</div>
+          <ul class="action-plan-list">
+            ${data.swot.forcas.length > 0 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Potencializar força: "${data.swot.forcas[0]}" - criar ação específica para amplificar</span>
+            </li>
+            ` : ''}
+            ${data.swot.fraquezas.length > 0 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Mitigar fraqueza: "${data.swot.fraquezas[0]}" - definir plano de desenvolvimento ou terceirização</span>
+            </li>
+            ` : ''}
+            ${data.swot.oportunidades.length > 0 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Capturar oportunidade: "${data.swot.oportunidades[0]}" - criar projeto específico com prazo</span>
+            </li>
+            ` : ''}
+            ${data.swot.ameacas.length > 0 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Monitorar ameaça: "${data.swot.ameacas[0]}" - criar indicadores de alerta antecipado</span>
+            </li>
+            ` : ''}
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Revisar SWOT trimestralmente e ajustar estratégias conforme necessário</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
       <!-- SWOT Pessoal -->
-      ${data.swotPessoal.forcas.length > 0 || data.swotPessoal.fraquezas.length > 0 ? `
+      ${data.swotPessoal.forcas.length > 0 || data.swotPessoal.fraquezas.length > 0 || data.swotPessoal.oportunidades.length > 0 || data.swotPessoal.ameacas.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
           <div class="section-icon">🧠</div>
           <h2 class="section-title">SWOT Pessoal do Líder</h2>
           <p class="section-description">Autoconhecimento como base para liderança efetiva.</p>
-        </div>
-        
-        <div class="info-box">
-          <div class="info-box-title">💡 Liderança Consciente</div>
-          <div class="info-box-text">
-            O sucesso da empresa está intimamente ligado ao desenvolvimento do líder. Conhecer suas próprias 
-            forças permite potencializá-las; reconhecer fraquezas abre caminho para desenvolvimento ou delegação.
-            Líderes efetivos buscam constantemente feedback e trabalham ativamente em seu crescimento pessoal.
-          </div>
         </div>
         
         <div class="swot-grid">
@@ -1673,6 +2230,56 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             </div>
           </div>
         </div>
+        
+        <div class="insight-box" style="margin-top: 24px;">
+          <div class="insight-box-title">💡 Desenvolvendo a Liderança</div>
+          <div class="insight-box-text">
+            ${data.swotPessoal.forcas.length > 0 ? `
+              <strong>Potencialize:</strong> Sua força "${data.swotPessoal.forcas[0]}" é um diferencial. 
+              Delegue atividades que não usem esta força para focar onde você é excepcional.
+              <br><br>
+            ` : ''}
+            ${data.swotPessoal.fraquezas.length > 0 ? `
+              <strong>Desenvolva ou delegue:</strong> A área de "${data.swotPessoal.fraquezas[0]}" pode ser desenvolvida com treinamento 
+              ou delegada para alguém com esta competência. Não tente fazer tudo sozinho.
+              <br><br>
+            ` : ''}
+            ${data.swotPessoal.ameacas.length > 0 ? `
+              <strong>Proteja-se:</strong> O risco "${data.swotPessoal.ameacas[0]}" pode afetar sua performance como líder.
+              Crie mecanismos de proteção e autocuidado.
+            ` : ''}
+          </div>
+        </div>
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Desenvolvimento Pessoal</div>
+          <ul class="action-plan-list">
+            ${data.swotPessoal.forcas.length > 0 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Usar força "${data.swotPessoal.forcas[0]}" em pelo menos 60% do tempo de trabalho</span>
+            </li>
+            ` : ''}
+            ${data.swotPessoal.fraquezas.length > 0 ? `
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Buscar curso/mentoria para desenvolver: "${data.swotPessoal.fraquezas[0]}"</span>
+            </li>
+            ` : ''}
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Agendar check-in semanal de autocuidado (saúde física e mental)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Buscar feedback trimestral de 3 pessoas-chave (equipe, par, mentor)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Definir 1 hábito de desenvolvimento pessoal para praticar diariamente</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
       
@@ -1685,19 +2292,18 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           <p class="section-description">Prioridades, foco e alocação de tempo do líder.</p>
         </div>
         
-        <div class="info-box">
-          <div class="info-box-title">💡 Gerenciando o Recurso Mais Escasso</div>
-          <div class="info-box-text">
-            O tempo do CEO/fundador é o recurso mais escasso e valioso da empresa. Definir prioridades claras,
-            eliminar distrações e focar no que realmente move o ponteiro é essencial. A regra de Pareto se aplica:
-            20% das atividades geram 80% dos resultados. Identifique e proteja esse tempo a todo custo.
-          </div>
-        </div>
-        
         ${data.agendaCEO.focoTrimestre ? `
         <div class="card" style="background: linear-gradient(135deg, var(--primary-light) 0%, #E0E7FF 100%); border: 2px solid var(--primary);">
           <div class="card-title" style="color: var(--primary);">🎯 Foco Principal do Trimestre</div>
           <div class="card-content" style="font-size: 16px; font-weight: 500;">${data.agendaCEO.focoTrimestre}</div>
+        </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Protegendo o Foco</div>
+          <div class="suggestion-text">
+            <strong>"${data.agendaCEO.focoTrimestre}"</strong> deve ser o critério para todas as decisões.
+            Quando surgir uma nova oportunidade, pergunte: "Isso me aproxima de ${data.agendaCEO.focoTrimestre}?".
+            Se não, delegue ou decline. Foco é dizer não para o bom para dizer sim para o ótimo.
+          </div>
         </div>
         ` : ''}
         
@@ -1721,6 +2327,25 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             </tbody>
           </table>
         </div>
+        <div class="insight-box">
+          <div class="insight-box-title">💡 Executando Prioridades</div>
+          <div class="insight-box-text">
+            ${data.agendaCEO.prioridades.filter(p => p.importancia === 'alta').length > 0 ? `
+              <strong>Prioridades ALTAS:</strong> ${data.agendaCEO.prioridades.filter(p => p.importancia === 'alta').map(p => `"${p.descricao}"`).join(', ')}
+              - Estas devem ocupar as primeiras horas do dia, quando sua energia está máxima. Não delegue.
+              <br><br>
+            ` : ''}
+            ${data.agendaCEO.prioridades.filter(p => p.importancia === 'media').length > 0 ? `
+              <strong>Prioridades MÉDIAS:</strong> ${data.agendaCEO.prioridades.filter(p => p.importancia === 'media').map(p => `"${p.descricao}"`).join(', ')}
+              - Agende horários específicos na semana. Considere delegar partes da execução.
+              <br><br>
+            ` : ''}
+            ${data.agendaCEO.prioridades.filter(p => p.importancia === 'baixa').length > 0 ? `
+              <strong>Prioridades BAIXAS:</strong> ${data.agendaCEO.prioridades.filter(p => p.importancia === 'baixa').map(p => `"${p.descricao}"`).join(', ')}
+              - Questione: isso realmente precisa do seu tempo? Delegue ou elimine se possível.
+            ` : ''}
+          </div>
+        </div>
         ` : ''}
         
         ${data.agendaCEO.alocacaoTempo.length > 0 ? `
@@ -1738,9 +2363,127 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             </div>
           `).join('')}
         </div>
+        <div class="suggestion-box">
+          <div class="suggestion-title">💡 Otimizando Tempo</div>
+          <div class="suggestion-text">
+            ${data.agendaCEO.alocacaoTempo.sort((a, b) => b.percentual - a.percentual).slice(0, 2).map(a => `
+              <strong>${a.atividade} (${a.percentual}%):</strong> Esta é sua principal alocação. 
+              Pergunte: "Sou a única pessoa que pode fazer isso?" Se não, delegue 20% desta atividade.
+            `).join('<br><br>')}
+          </div>
+        </div>
         ` : ''}
+        
+        <div class="action-plan">
+          <div class="action-plan-title">📋 Plano de Ação - Agenda do CEO</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text">Bloquear 2h/dia na agenda para o foco do trimestre (sem reuniões)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text">Criar ritual de revisão semanal (sexta-feira, 30 min)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text">Eliminar ou delegar 3 atividades que não agregam valor estratégico</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text">Criar lista de "não fazer" tão importante quanto lista de tarefas</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text">Agendar 1h/semana para pensamento estratégico (sem operacional)</span>
+            </li>
+          </ul>
+        </div>
       </div>
       ` : ''}
+      
+      <!-- Resumo Executivo Final -->
+      <div class="section page-break">
+        <div class="section-header">
+          <div class="section-icon">📋</div>
+          <h2 class="section-title">Resumo Executivo - Próximos Passos</h2>
+          <p class="section-description">Síntese das principais ações a serem executadas.</p>
+        </div>
+        
+        <div class="info-box">
+          <div class="info-box-title">📊 Visão Geral do Diagnóstico</div>
+          <div class="info-box-text">
+            <strong>Maturidade média:</strong> ${avgMaturity}/5<br>
+            <strong>Progresso do plano:</strong> ${overallProgress}%<br>
+            <strong>Faturamento atual:</strong> ${formatCurrency(data.financeiro.faturamentoAtual)}<br>
+            <strong>Meta de faturamento:</strong> ${formatCurrency(data.financeiro.metaFaturamento)}<br>
+            ${data.agendaCEO.focoTrimestre ? `<strong>Foco do trimestre:</strong> ${data.agendaCEO.focoTrimestre}` : ''}
+          </div>
+        </div>
+        
+        <div class="action-plan">
+          <div class="action-plan-title">🚀 Top 10 Ações Prioritárias</div>
+          <ul class="action-plan-list">
+            <li class="action-plan-item">
+              <span class="action-plan-number">1</span>
+              <span class="action-plan-text"><strong>SEMANA 1:</strong> Comunicar visão, missão e valores para toda equipe</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">2</span>
+              <span class="action-plan-text"><strong>SEMANA 1:</strong> Implementar controle financeiro básico (DRE mensal)</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">3</span>
+              <span class="action-plan-text"><strong>SEMANA 2:</strong> Documentar 3 processos críticos do negócio</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">4</span>
+              <span class="action-plan-text"><strong>SEMANA 2:</strong> Validar ICP com 5 clientes atuais</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">5</span>
+              <span class="action-plan-text"><strong>SEMANA 3:</strong> Testar nova precificação em 1 produto/serviço</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">6</span>
+              <span class="action-plan-text"><strong>SEMANA 3:</strong> Criar dashboard de métricas principais</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">7</span>
+              <span class="action-plan-text"><strong>SEMANA 4:</strong> Implementar ritual de 1:1 com liderados diretos</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">8</span>
+              <span class="action-plan-text"><strong>MÊS 2:</strong> Lançar 1 nova oferta/pacote validado</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">9</span>
+              <span class="action-plan-text"><strong>MÊS 2:</strong> Estabelecer presença ativa no principal canal do ICP</span>
+            </li>
+            <li class="action-plan-item">
+              <span class="action-plan-number">10</span>
+              <span class="action-plan-text"><strong>MÊS 3:</strong> Revisar SWOT e ajustar estratégias baseado nos resultados</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="suggestion-box" style="margin-top: 24px;">
+          <div class="suggestion-title">🎯 Recomendação Final</div>
+          <div class="suggestion-text">
+            O sucesso deste plano depende de execução consistente. Recomendamos:
+            <br><br>
+            <strong>1. Foco brutal:</strong> Não tente fazer tudo de uma vez. Execute uma ação por vez com excelência.
+            <br>
+            <strong>2. Rituais de acompanhamento:</strong> Revise o progresso semanalmente (15 min) e mensalmente (1h).
+            <br>
+            <strong>3. Responsabilização:</strong> Cada ação deve ter um dono e um prazo. Sem dono = não será feito.
+            <br>
+            <strong>4. Celebre vitórias:</strong> Reconheça progressos, mesmo pequenos. Isso mantém o momentum.
+            <br>
+            <strong>5. Ajuste o plano:</strong> Este é um documento vivo. Ajuste conforme aprende com a execução.
+          </div>
+        </div>
+      </div>
     </div>
     
     <!-- Footer -->
