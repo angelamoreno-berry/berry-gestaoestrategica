@@ -4,26 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
-import { HelpTooltip } from '@/components/HelpTooltip';
 import { Plus, Trash2, TrendingUp, Package, Crown, RefreshCw, Target, Anchor } from 'lucide-react';
 import { ProdutoServico } from '@/types/consulting';
-
-const modelosPrecificacao = [
-  { value: 'hora', label: 'Por Hora', description: 'Ideal para consultorias e serviços customizados' },
-  { value: 'projeto', label: 'Por Projeto', description: 'Valor fixo por entrega' },
-  { value: 'recorrente', label: 'Recorrente', description: 'Assinatura mensal/anual' },
-  { value: 'resultado', label: 'Por Resultado', description: 'Comissão sobre resultados' },
-  { value: 'hibrido', label: 'Híbrido', description: 'Combinação de modelos' },
-];
-
-const estrategiasPrecificacao = [
-  { value: 'penetracao', label: 'Penetração', description: 'Preço baixo para ganhar mercado' },
-  { value: 'skimming', label: 'Skimming', description: 'Preço premium posicionamento alto' },
-  { value: 'competitivo', label: 'Competitivo', description: 'Preços alinhados ao mercado' },
-  { value: 'valor', label: 'Baseado em Valor', description: 'Preço reflete ROI do cliente' },
-];
 
 interface SugestaoPreco {
   tipo: string;
@@ -109,11 +92,9 @@ export function PrecificacaoBlock() {
   const [produtoSelecionado, setProdutoSelecionado] = useState<string | null>(null);
 
   useEffect(() => {
-    const hasModelo = localData.modelo.length > 0 ? 1 : 0;
-    const hasEstrategia = localData.estrategia.length > 0 ? 1 : 0;
     const hasProdutos = localData.produtos.length > 0 ? 1 : 0;
-    const hasMargemOuAncoragem = (localData.ancoragem.trim().length > 0 || localData.margemDesejada.trim().length > 0) ? 1 : 0;
-    const progress = Math.round(((hasModelo + hasEstrategia + hasProdutos + hasMargemOuAncoragem) / 4) * 100);
+    const hasProdutosComPreco = localData.produtos.some(p => p.precoAtual > 0) ? 1 : 0;
+    const progress = Math.round(((hasProdutos + hasProdutosComPreco) / 2) * 100);
     updateBlockProgress('precificacao', progress);
     
     if (progress === 100) {
@@ -296,118 +277,6 @@ export function PrecificacaoBlock() {
           )}
         </CardContent>
       </Card>
-
-      {/* Modelo de Precificação */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="text-2xl">💵</span>
-            Modelo de Precificação
-            <HelpTooltip fieldKey="modelo" blockId="precificacao" />
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Como você vai cobrar? A escolha impacta diretamente seu fluxo de caixa e escalabilidade.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup
-            value={localData.modelo}
-            onValueChange={(value) => handleChange('modelo', value)}
-            className="grid gap-3"
-          >
-            {modelosPrecificacao.map((modelo) => (
-              <div key={modelo.value} className="flex items-start space-x-3">
-                <RadioGroupItem value={modelo.value} id={modelo.value} className="mt-1" />
-                <Label htmlFor={modelo.value} className="flex-1 cursor-pointer">
-                  <span className="font-medium">{modelo.label}</span>
-                  <p className="text-sm text-muted-foreground">{modelo.description}</p>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </CardContent>
-      </Card>
-
-      {/* Estratégia de Preço */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span className="text-2xl">📈</span>
-            Estratégia de Preço
-            <HelpTooltip fieldKey="estrategia" blockId="precificacao" />
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Posicionamento de preço define percepção de marca.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup
-            value={localData.estrategia}
-            onValueChange={(value) => handleChange('estrategia', value)}
-            className="grid grid-cols-2 gap-3"
-          >
-            {estrategiasPrecificacao.map((estrategia) => (
-              <div
-                key={estrategia.value}
-                className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                  localData.estrategia === estrategia.value
-                    ? 'border-primary bg-primary/5'
-                    : 'hover:border-muted-foreground'
-                }`}
-                onClick={() => handleChange('estrategia', estrategia.value)}
-              >
-                <RadioGroupItem value={estrategia.value} id={estrategia.value} className="sr-only" />
-                <Label htmlFor={estrategia.value} className="cursor-pointer">
-                  <span className="font-medium">{estrategia.label}</span>
-                  <p className="text-xs text-muted-foreground mt-1">{estrategia.description}</p>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </CardContent>
-      </Card>
-
-      {/* Ancoragem e Margem */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-2xl">⚓</span>
-              Ancoragem de Preço
-              <HelpTooltip fieldKey="ancoragem" blockId="precificacao" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              placeholder="Ex: Mostrar primeiro o pacote Enterprise de R$15k..."
-              value={localData.ancoragem}
-              onChange={(e) => handleChange('ancoragem', e.target.value)}
-              className="resize-none"
-              rows={3}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <span className="text-2xl">🎯</span>
-              Margem Desejada
-              <HelpTooltip fieldKey="margemDesejada" blockId="precificacao" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input
-              placeholder="Ex: 45% de margem bruta"
-              value={localData.margemDesejada}
-              onChange={(e) => handleChange('margemDesejada', e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground mt-2">
-              Referências: SaaS 70-80%, Consultoria 40-60%, Varejo 30-50%
-            </p>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
