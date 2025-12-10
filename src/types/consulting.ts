@@ -1,3 +1,14 @@
+export interface Project {
+  id: string;
+  nomeEmpresa: string;
+  responsavel: string;
+  segmento: string;
+  faturamentoMedio: number;
+  quantidadeColaboradores: number;
+  emailResponsavel: string;
+  dataCriacao: string;
+}
+
 export interface MaturityLevel {
   area: string;
   level: number;
