@@ -13,6 +13,8 @@ import { SWOTBlock } from './blocks/SWOTBlock';
 import { GoldenCircleBlock } from './blocks/GoldenCircleBlock';
 import { SWOTPessoalBlock } from './blocks/SWOTPessoalBlock';
 import { AgendaCEOBlock } from './blocks/AgendaCEOBlock';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from './ui/button';
 
 const blockComponents: Record<string, React.ComponentType> = {
   diagnostico: DiagnosticoBlock,
@@ -32,28 +34,84 @@ const blockComponents: Record<string, React.ComponentType> = {
 };
 
 export function MainContent() {
-  const { currentBlock, blocks } = useConsulting();
-  const CurrentBlockComponent = blockComponents[currentBlock];
-  const currentBlockInfo = blocks.find(b => b.id === currentBlock);
+  const { blocks, currentBlock, setCurrentBlock } = useConsulting();
+  
+  const currentBlockData = blocks.find(b => b.id === currentBlock);
+  const currentIndex = blocks.findIndex(b => b.id === currentBlock);
+  const BlockComponent = blockComponents[currentBlock];
+
+  const goToPrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentBlock(blocks[currentIndex - 1].id);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentIndex < blocks.length - 1) {
+      setCurrentBlock(blocks[currentIndex + 1].id);
+    }
+  };
 
   return (
-    <main className="flex-1 p-8 overflow-y-auto">
-      <div className="max-w-4xl mx-auto">
+    <main className="flex-1 min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto p-8">
         {/* Block Header */}
-        <div className="mb-8 animate-fade-in">
+        <header className="mb-8 animate-fade-in">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-3xl">{currentBlockInfo?.icon}</span>
+            <span className="text-3xl">{currentBlockData?.icon}</span>
             <h2 className="font-display text-3xl font-bold text-foreground">
-              {currentBlockInfo?.name}
+              {currentBlockData?.name}
             </h2>
           </div>
-          <div className="h-1 w-24 gradient-primary rounded-full" />
-        </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Bloco {currentIndex + 1} de {blocks.length}</span>
+            <span>•</span>
+            <span>{currentBlockData?.progress}% completo</span>
+          </div>
+        </header>
 
         {/* Block Content */}
         <div className="animate-slide-up">
-          {CurrentBlockComponent && <CurrentBlockComponent />}
+          {BlockComponent && <BlockComponent />}
         </div>
+
+        {/* Navigation */}
+        <footer className="mt-8 pt-6 border-t border-border flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={goToPrevious}
+            disabled={currentIndex === 0}
+            className="gap-2"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Anterior
+          </Button>
+
+          <div className="flex gap-1.5">
+            {blocks.map((block, index) => (
+              <button
+                key={block.id}
+                onClick={() => setCurrentBlock(block.id)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
+                  index === currentIndex
+                    ? 'bg-primary w-6'
+                    : block.completed
+                    ? 'bg-primary/50'
+                    : 'bg-muted hover:bg-muted-foreground/30'
+                }`}
+              />
+            ))}
+          </div>
+
+          <Button
+            onClick={goToNext}
+            disabled={currentIndex === blocks.length - 1}
+            className="gap-2 gradient-primary"
+          >
+            Próximo
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </footer>
       </div>
     </main>
   );
