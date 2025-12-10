@@ -1222,7 +1222,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       ` : ''}
       
       <!-- Precificação -->
-      ${data.precificacao.modelo || data.precificacao.estrategia ? `
+      ${data.precificacao.modelo || data.precificacao.estrategia || (data.precificacao.produtos && data.precificacao.produtos.length > 0) ? `
       <div class="section page-break">
         <div class="section-header">
           <div class="section-icon">💰</div>
@@ -1239,6 +1239,63 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
             Uma precificação bem estruturada pode aumentar lucros em 20-50% sem alterar custos.
           </div>
         </div>
+        
+        ${data.precificacao.produtos && data.precificacao.produtos.length > 0 ? `
+        <h3 style="margin: 30px 0 20px; font-size: 18px; color: var(--primary);">📦 Produtos e Serviços com Sugestões de Precificação</h3>
+        ${data.precificacao.produtos.map(produto => `
+          <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+              <div>
+                <div class="card-title" style="font-size: 18px;">${produto.nome || 'Produto sem nome'}</div>
+                ${produto.descricao ? `<p style="color: var(--muted); font-size: 13px; margin-top: 4px;">${produto.descricao}</p>` : ''}
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 12px; color: var(--muted); text-transform: uppercase;">Preço Atual</div>
+                <div style="font-size: 24px; font-weight: 700; color: var(--foreground);">R$ ${produto.precoAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+              </div>
+            </div>
+            
+            ${produto.precoAtual > 0 ? `
+            <div style="margin-top: 20px;">
+              <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--primary);">💡 Sugestões de Precificação</div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 16px; border-radius: 12px;">
+                  <div style="font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Valor Agregado (+40%)</div>
+                  <div style="font-size: 18px; font-weight: 700; margin-top: 4px;">R$ ${(produto.precoAtual * 1.4).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div style="font-size: 10px; opacity: 0.8; margin-top: 6px;">Com garantia, suporte VIP e bônus</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: white; padding: 16px; border-radius: 12px;">
+                  <div style="font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Combo/Pacote (3 itens)</div>
+                  <div style="font-size: 18px; font-weight: 700; margin-top: 4px;">R$ ${(produto.precoAtual * 2.5).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div style="font-size: 10px; opacity: 0.8; margin-top: 6px;">Economia 15% cliente, +67% ticket</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: white; padding: 16px; border-radius: 12px;">
+                  <div style="font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Plano Premium (2x)</div>
+                  <div style="font-size: 18px; font-weight: 700; margin-top: 4px;">R$ ${(produto.precoAtual * 2).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div style="font-size: 10px; opacity: 0.8; margin-top: 6px;">Atendimento prioritário e exclusivo</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); color: white; padding: 16px; border-radius: 12px;">
+                  <div style="font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Recorrência (mensal)</div>
+                  <div style="font-size: 18px; font-weight: 700; margin-top: 4px;">R$ ${(produto.precoAtual * 0.15).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</div>
+                  <div style="font-size: 10px; opacity: 0.8; margin-top: 6px;">12x retorno anual garantido</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%); color: white; padding: 16px; border-radius: 12px;">
+                  <div style="font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Baseado em ROI (3x)</div>
+                  <div style="font-size: 18px; font-weight: 700; margin-top: 4px;">R$ ${(produto.precoAtual * 3).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div style="font-size: 10px; opacity: 0.8; margin-top: 6px;">Se gera 10x retorno, 3x é barato</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%); color: white; padding: 16px; border-radius: 12px;">
+                  <div style="font-size: 11px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px;">Ancoragem</div>
+                  <div style="font-size: 14px; font-weight: 700; margin-top: 4px;"><s style="opacity: 0.7;">R$ ${(produto.precoAtual * 2).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</s></div>
+                  <div style="font-size: 18px; font-weight: 700;">R$ ${produto.precoAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div style="font-size: 10px; opacity: 0.8; margin-top: 2px;">Âncora faz parecer oportunidade</div>
+                </div>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        `).join('')}
+        ` : ''}
         
         <div class="data-grid">
           ${data.precificacao.modelo ? `
