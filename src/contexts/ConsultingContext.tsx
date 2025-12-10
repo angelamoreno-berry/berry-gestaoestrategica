@@ -42,7 +42,7 @@ const initialData: ConsultingData = {
     margemDesejada: '',
   },
   motoresCrescimento: {
-    motorPrincipal: '',
+    motoresPrincipais: [],
     canais: [],
     metricas: [],
   },

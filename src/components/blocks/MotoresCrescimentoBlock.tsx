@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
@@ -23,7 +23,7 @@ export function MotoresCrescimentoBlock() {
   const [newCanal, setNewCanal] = useState('');
 
   useEffect(() => {
-    const hasMotor = localData.motorPrincipal.length > 0 ? 1 : 0;
+    const hasMotor = localData.motoresPrincipais.length > 0 ? 1 : 0;
     const hasCanais = localData.canais.length > 0 ? 1 : 0;
     const hasMetricas = localData.metricas.length > 0 ? 1 : 0;
     const progress = Math.round(((hasMotor + hasCanais + hasMetricas) / 3) * 100);
@@ -38,6 +38,15 @@ export function MotoresCrescimentoBlock() {
     const newData = { ...localData, [field]: value };
     setLocalData(newData);
     updateData('motoresCrescimento', newData);
+  };
+
+  const toggleMotor = (motorValue: string) => {
+    const current = localData.motoresPrincipais;
+    if (current.includes(motorValue)) {
+      handleChange('motoresPrincipais', current.filter(m => m !== motorValue));
+    } else if (current.length < 2) {
+      handleChange('motoresPrincipais', [...current, motorValue]);
+    }
   };
 
   const addCanal = () => {
@@ -72,45 +81,53 @@ export function MotoresCrescimentoBlock() {
         Defina os motores de crescimento que vão impulsionar o negócio e as métricas para acompanhar o progresso.
       </p>
 
-      {/* Motor Principal */}
+      {/* Motores Principais */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🚀</span>
-            Motor de Crescimento Principal
+            Motores de Crescimento Principais
             <HelpTooltip fieldKey="motorPrincipal" blockId="motoresCrescimento" />
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Escolha UM motor principal. Foco é essencial - empresas que dominam 1 canal crescem mais rápido.
+            Escolha até 2 motores principais. Foco é essencial - empresas que dominam poucos canais crescem mais rápido.
+            <Badge variant="outline" className="ml-2">{localData.motoresPrincipais.length}/2</Badge>
           </p>
         </CardHeader>
         <CardContent>
-          <RadioGroup
-            value={localData.motorPrincipal}
-            onValueChange={(value) => handleChange('motorPrincipal', value)}
-            className="grid gap-3"
-          >
-            {motoresOpcoes.map((motor) => (
-              <div
-                key={motor.value}
-                className={`flex items-start space-x-3 p-4 border rounded-lg cursor-pointer transition-all ${
-                  localData.motorPrincipal === motor.value
-                    ? 'border-primary bg-primary/5'
-                    : 'hover:border-muted-foreground'
-                }`}
-                onClick={() => handleChange('motorPrincipal', motor.value)}
-              >
-                <RadioGroupItem value={motor.value} id={motor.value} className="mt-1" />
-                <Label htmlFor={motor.value} className="flex-1 cursor-pointer">
-                  <span className="flex items-center gap-2 font-medium">
-                    <span>{motor.icon}</span>
-                    {motor.label}
-                  </span>
-                  <p className="text-sm text-muted-foreground">{motor.description}</p>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+          <div className="grid gap-3">
+            {motoresOpcoes.map((motor) => {
+              const isSelected = localData.motoresPrincipais.includes(motor.value);
+              const isDisabled = !isSelected && localData.motoresPrincipais.length >= 2;
+              
+              return (
+                <div
+                  key={motor.value}
+                  className={`flex items-start space-x-3 p-4 border rounded-lg cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-primary bg-primary/5'
+                      : isDisabled
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:border-muted-foreground'
+                  }`}
+                  onClick={() => !isDisabled && toggleMotor(motor.value)}
+                >
+                  <Checkbox 
+                    checked={isSelected} 
+                    disabled={isDisabled}
+                    className="mt-1" 
+                  />
+                  <Label className={`flex-1 ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                    <span className="flex items-center gap-2 font-medium">
+                      <span>{motor.icon}</span>
+                      {motor.label}
+                    </span>
+                    <p className="text-sm text-muted-foreground">{motor.description}</p>
+                  </Label>
+                </div>
+              );
+            })}
+          </div>
         </CardContent>
       </Card>
 
