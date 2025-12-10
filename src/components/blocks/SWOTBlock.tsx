@@ -70,12 +70,10 @@ export function SWOTBlock() {
     updateData('swot', newData);
   };
 
-  const handleAcceptSuggestion = (key: SwotKey) => {
-    if (suggestions) {
-      const newData = { ...localData, [key]: suggestions[key] };
-      setLocalData(newData);
-      updateData('swot', newData);
-    }
+  const handleAcceptSuggestion = (key: SwotKey, value: string | string[]) => {
+    const newData = { ...localData, [key]: value as string[] };
+    setLocalData(newData);
+    updateData('swot', newData);
   };
 
   const handleDismissSuggestion = (field: string) => {
@@ -137,7 +135,7 @@ export function SWOTBlock() {
                 <SuggestionCard
                   suggestion={suggestions![item.key as SwotKey]}
                   label={`Sugestão de ${item.label.toLowerCase()}`}
-                  onAccept={() => handleAcceptSuggestion(item.key as SwotKey)}
+                  onAccept={(value) => handleAcceptSuggestion(item.key as SwotKey, value)}
                   onDismiss={() => handleDismissSuggestion(item.key)}
                 />
               )}
