@@ -28,6 +28,17 @@ interface BlockSuggestions {
     propostaValor: string;
     diferenciais: string[];
   };
+  swotPessoal: {
+    forcas: string[];
+    fraquezas: string[];
+    oportunidades: string[];
+    ameacas: string[];
+  };
+  agendaCEO: {
+    focoTrimestre: string;
+    prioridades: string[];
+    alocacaoTempo: Array<{ atividade: string; percentual: number }>;
+  };
 }
 
 function getCompanySize(colaboradores: number): 'micro' | 'pequena' | 'media' {
@@ -85,6 +96,17 @@ export function generateSuggestions(project: Project): BlockSuggestions {
       publicoAlvo: getPublicoAlvo(segmento),
       propostaValor: `Entregamos ${getBeneficioPrincipal(segmento)} de forma única, combinando ${getDiferencialChave(segmento)} com atendimento personalizado.`,
       diferenciais: generateDiferenciaisSuggestion({ isServicos, isTecnologia, isVarejo, isSaude, isAlimentacao }),
+    },
+    swotPessoal: {
+      forcas: generateSwotPessoalForcas(size),
+      fraquezas: generateSwotPessoalFraquezas(size),
+      oportunidades: generateSwotPessoalOportunidades(),
+      ameacas: generateSwotPessoalAmeacas(),
+    },
+    agendaCEO: {
+      focoTrimestre: generateFocoTrimestreSuggestion(size, { isServicos, isTecnologia, isVarejo, isSaude, isAlimentacao }),
+      prioridades: generatePrioridadesSuggestion(size),
+      alocacaoTempo: generateAlocacaoTempoSuggestion(size),
     },
   };
 }
@@ -280,5 +302,95 @@ function generateDiferenciaisSuggestion(type: BusinessType): string[] {
     'Agilidade na entrega e resposta',
     'Transparência em todas as etapas',
     'Foco obsessivo em resultados'
+  ];
+}
+
+// SWOT Pessoal functions
+function generateSwotPessoalForcas(size: string): string[] {
+  const base = ['Visão estratégica', 'Conhecimento do mercado', 'Relacionamento com clientes'];
+  if (size === 'micro') {
+    return [...base, 'Agilidade na tomada de decisão', 'Flexibilidade'];
+  }
+  if (size === 'pequena') {
+    return [...base, 'Capacidade de liderança', 'Resiliência'];
+  }
+  return [...base, 'Experiência em gestão', 'Networking consolidado'];
+}
+
+function generateSwotPessoalFraquezas(size: string): string[] {
+  if (size === 'micro') {
+    return ['Dificuldade em delegar', 'Centralização de decisões', 'Falta de tempo para estratégia', 'Gestão financeira pessoal'];
+  }
+  if (size === 'pequena') {
+    return ['Delegação em desenvolvimento', 'Gestão de conflitos', 'Equilíbrio vida-trabalho', 'Desenvolvimento de líderes'];
+  }
+  return ['Dificuldade de inovar', 'Resistência a mudanças', 'Comunicação com novas gerações', 'Atualização tecnológica'];
+}
+
+function generateSwotPessoalOportunidades(): string[] {
+  return [
+    'Mentoria com empresários experientes',
+    'Cursos de liderança e gestão',
+    'Networking em associações do setor',
+    'Coaching executivo',
+    'Grupos de mastermind'
+  ];
+}
+
+function generateSwotPessoalAmeacas(): string[] {
+  return [
+    'Burnout e esgotamento',
+    'Síndrome do impostor',
+    'Isolamento profissional',
+    'Falta de atualização do mercado',
+    'Dependência excessiva do negócio'
+  ];
+}
+
+// Agenda CEO functions
+function generateFocoTrimestreSuggestion(size: string, type: BusinessType): string {
+  if (size === 'micro') {
+    return 'Estruturar os processos básicos da empresa e definir métricas claras de acompanhamento para sair do operacional e ter mais tempo para o estratégico.';
+  }
+  if (size === 'pequena') {
+    return 'Desenvolver a equipe atual para assumir responsabilidades operacionais, liberando tempo para focar em vendas e parcerias estratégicas.';
+  }
+  return 'Profissionalizar a gestão com indicadores claros por área e preparar a empresa para o próximo nível de crescimento.';
+}
+
+function generatePrioridadesSuggestion(size: string): string[] {
+  if (size === 'micro') {
+    return ['Vendas e prospecção de clientes', 'Estruturação de processos', 'Gestão financeira', 'Primeira contratação estratégica'];
+  }
+  if (size === 'pequena') {
+    return ['Desenvolvimento da equipe', 'Vendas e parcerias', 'Melhoria de processos', 'Gestão financeira', 'Cultura organizacional'];
+  }
+  return ['Estratégia e visão de longo prazo', 'Desenvolvimento de líderes', 'Relacionamento com stakeholders', 'Inovação e novos mercados', 'Governança'];
+}
+
+function generateAlocacaoTempoSuggestion(size: string): Array<{ atividade: string; percentual: number }> {
+  if (size === 'micro') {
+    return [
+      { atividade: 'Vendas e Clientes', percentual: 40 },
+      { atividade: 'Operação', percentual: 30 },
+      { atividade: 'Estratégia e Planejamento', percentual: 20 },
+      { atividade: 'Administrativo/Financeiro', percentual: 10 }
+    ];
+  }
+  if (size === 'pequena') {
+    return [
+      { atividade: 'Estratégia e Planejamento', percentual: 30 },
+      { atividade: 'Pessoas e Liderança', percentual: 25 },
+      { atividade: 'Vendas e Relacionamento', percentual: 25 },
+      { atividade: 'Operação', percentual: 15 },
+      { atividade: 'Administrativo', percentual: 5 }
+    ];
+  }
+  return [
+    { atividade: 'Estratégia e Visão', percentual: 35 },
+    { atividade: 'Pessoas e Cultura', percentual: 25 },
+    { atividade: 'Relacionamento Externo', percentual: 20 },
+    { atividade: 'Inovação e Novos Negócios', percentual: 15 },
+    { atividade: 'Governança', percentual: 5 }
   ];
 }

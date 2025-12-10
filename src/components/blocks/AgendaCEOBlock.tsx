@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { Slider } from '@/components/ui/slider';
 import { Plus, Trash2, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 const importanciaLabels = {
   alta: { label: 'Alta', color: 'bg-red-500' },
@@ -17,8 +19,14 @@ const importanciaLabels = {
 };
 
 export function AgendaCEOBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.agendaCEO);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).agendaCEO;
+  }, [currentProject]);
 
   useEffect(() => {
     const hasPrioridades = localData.prioridades.length > 0 ? 1 : 0;
@@ -80,6 +88,33 @@ export function AgendaCEOBlock() {
     updateData('agendaCEO', newData);
   };
 
+  const handleAcceptFocoSuggestion = (value: string | string[]) => {
+    handleFocoChange(value as string);
+  };
+
+  const handleAcceptPrioridadesSuggestion = (value: string | string[]) => {
+    const prioridades = (value as string[]).map(desc => ({
+      descricao: desc,
+      importancia: 'media' as const
+    }));
+    const newData = { ...localData, prioridades };
+    setLocalData(newData);
+    updateData('agendaCEO', newData);
+  };
+
+  const handleAcceptAlocacaoSuggestion = (value: string | string[]) => {
+    // value will be the original suggestion array from the generator
+    if (suggestions) {
+      const newData = { ...localData, alocacaoTempo: suggestions.alocacaoTempo };
+      setLocalData(newData);
+      updateData('agendaCEO', newData);
+    }
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
   const totalPercentual = localData.alocacaoTempo.reduce((acc, item) => acc + item.percentual, 0);
 
   return (
@@ -100,7 +135,7 @@ export function AgendaCEOBlock() {
             Qual é A coisa mais importante dos próximos 90 dias? Uma única prioridade clara gera mais resultado.
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Textarea
             placeholder="Ex: Estruturar processo comercial e contratar 1 vendedor para sair de 100% das vendas. Ou: Lançar MVP do novo produto e validar com 10 clientes pagantes..."
             value={localData.focoTrimestre}
@@ -108,6 +143,14 @@ export function AgendaCEOBlock() {
             className="resize-none"
             rows={3}
           />
+          {suggestions && !localData.focoTrimestre.trim() && !dismissedSuggestions['focoTrimestre'] && (
+            <SuggestionCard
+              suggestion={suggestions.focoTrimestre}
+              label="Sugestão de foco trimestral"
+              onAccept={handleAcceptFocoSuggestion}
+              onDismiss={() => handleDismissSuggestion('focoTrimestre')}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -165,9 +208,19 @@ export function AgendaCEOBlock() {
             </div>
           ))}
           {localData.prioridades.length === 0 && (
-            <p className="text-center text-muted-foreground py-4">
-              Adicione as prioridades estratégicas do CEO
-            </p>
+            <>
+              <p className="text-center text-muted-foreground py-4">
+                Adicione as prioridades estratégicas do CEO
+              </p>
+              {suggestions && !dismissedSuggestions['prioridades'] && (
+                <SuggestionCard
+                  suggestion={suggestions.prioridades}
+                  label="Sugestão de prioridades"
+                  onAccept={handleAcceptPrioridadesSuggestion}
+                  onDismiss={() => handleDismissSuggestion('prioridades')}
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>
@@ -236,9 +289,19 @@ export function AgendaCEOBlock() {
           )}
           
           {localData.alocacaoTempo.length === 0 && (
-            <p className="text-center text-muted-foreground py-4">
-              Adicione as atividades e sua alocação de tempo ideal
-            </p>
+            <>
+              <p className="text-center text-muted-foreground py-4">
+                Adicione as atividades e sua alocação de tempo ideal
+              </p>
+              {suggestions && !dismissedSuggestions['alocacaoTempo'] && (
+                <SuggestionCard
+                  suggestion={suggestions.alocacaoTempo.map(a => `${a.atividade}: ${a.percentual}%`)}
+                  label="Sugestão de alocação de tempo"
+                  onAccept={handleAcceptAlocacaoSuggestion}
+                  onDismiss={() => handleDismissSuggestion('alocacaoTempo')}
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>

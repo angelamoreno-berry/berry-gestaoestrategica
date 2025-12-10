@@ -34,10 +34,8 @@ export function GoldenCircleBlock() {
     updateData('goldenCircle', newData);
   };
 
-  const handleAcceptSuggestion = (field: 'why' | 'how' | 'what') => {
-    if (suggestions) {
-      handleChange(field, suggestions[field]);
-    }
+  const handleAcceptSuggestion = (field: 'why' | 'how' | 'what', value: string | string[]) => {
+    handleChange(field, value as string);
   };
 
   const handleDismissSuggestion = (field: string) => {
@@ -101,7 +99,7 @@ export function GoldenCircleBlock() {
               <SuggestionCard
                 suggestion={suggestions!.why}
                 label="Sugestão baseada no seu segmento"
-                onAccept={() => handleAcceptSuggestion('why')}
+                onAccept={(value) => handleAcceptSuggestion('why', value)}
                 onDismiss={() => handleDismissSuggestion('why')}
               />
             )}
@@ -133,7 +131,7 @@ export function GoldenCircleBlock() {
               <SuggestionCard
                 suggestion={suggestions!.how}
                 label="Sugestão baseada no tamanho da empresa"
-                onAccept={() => handleAcceptSuggestion('how')}
+                onAccept={(value) => handleAcceptSuggestion('how', value)}
                 onDismiss={() => handleDismissSuggestion('how')}
               />
             )}
@@ -165,7 +163,7 @@ export function GoldenCircleBlock() {
               <SuggestionCard
                 suggestion={suggestions!.what}
                 label="Sugestão baseada no seu segmento"
-                onAccept={() => handleAcceptSuggestion('what')}
+                onAccept={(value) => handleAcceptSuggestion('what', value)}
                 onDismiss={() => handleDismissSuggestion('what')}
               />
             )}

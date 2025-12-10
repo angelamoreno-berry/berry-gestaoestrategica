@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { X, Plus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 const swotConfig = [
   { key: 'forcas', label: 'Forças Pessoais', icon: '💪', color: 'bg-green-500', description: 'Suas habilidades naturais, conhecimentos e talentos.', examples: 'Ex: Visão estratégica, Networking, Comunicação, Resiliência, Conhecimento técnico' },
@@ -15,10 +17,18 @@ const swotConfig = [
   { key: 'ameacas', label: 'Desafios', icon: '⚠️', color: 'bg-orange-500', description: 'Obstáculos que podem atrapalhar seu desenvolvimento.', examples: 'Ex: Burnout, Síndrome do impostor, Falta de tempo, Isolamento' },
 ] as const;
 
+type SwotPessoalKey = 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas';
+
 export function SWOTPessoalBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.swotPessoal);
   const [newItems, setNewItems] = useState<Record<string, string>>({});
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).swotPessoal;
+  }, [currentProject]);
 
   useEffect(() => {
     const hasForcas = localData.forcas.length > 0 ? 1 : 0;
@@ -36,7 +46,7 @@ export function SWOTPessoalBlock() {
   const addItem = (key: string) => {
     const item = newItems[key];
     if (item?.trim()) {
-      const newData = { ...localData, [key]: [...localData[key as keyof typeof localData], item.trim()] };
+      const newData = { ...localData, [key]: [...localData[key as SwotPessoalKey], item.trim()] };
       setLocalData(newData);
       updateData('swotPessoal', newData);
       setNewItems({ ...newItems, [key]: '' });
@@ -46,10 +56,24 @@ export function SWOTPessoalBlock() {
   const removeItem = (key: string, index: number) => {
     const newData = { 
       ...localData, 
-      [key]: localData[key as keyof typeof localData].filter((_, i) => i !== index) 
+      [key]: localData[key as SwotPessoalKey].filter((_, i) => i !== index) 
     };
     setLocalData(newData);
     updateData('swotPessoal', newData);
+  };
+
+  const handleAcceptSuggestion = (key: SwotPessoalKey, value: string | string[]) => {
+    const newData = { ...localData, [key]: value as string[] };
+    setLocalData(newData);
+    updateData('swotPessoal', newData);
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
+  const showSuggestion = (field: SwotPessoalKey) => {
+    return suggestions && localData[field].length === 0 && !dismissedSuggestions[field];
   };
 
   return (
@@ -103,9 +127,9 @@ export function SWOTPessoalBlock() {
                 </Button>
               </div>
               
-              {localData[item.key as keyof typeof localData].length > 0 && (
+              {localData[item.key as SwotPessoalKey].length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
-                  {localData[item.key as keyof typeof localData].map((swotItem, index) => (
+                  {localData[item.key as SwotPessoalKey].map((swotItem, index) => (
                     <Badge key={index} variant="secondary" className="px-2 py-1 text-xs">
                       {swotItem}
                       <button onClick={() => removeItem(item.key, index)} className="ml-1.5">
@@ -114,6 +138,15 @@ export function SWOTPessoalBlock() {
                     </Badge>
                   ))}
                 </div>
+              )}
+
+              {showSuggestion(item.key as SwotPessoalKey) && (
+                <SuggestionCard
+                  suggestion={suggestions![item.key as SwotPessoalKey]}
+                  label={`Sugestão de ${item.label.toLowerCase()}`}
+                  onAccept={(value) => handleAcceptSuggestion(item.key as SwotPessoalKey, value)}
+                  onDismiss={() => handleDismissSuggestion(item.key)}
+                />
               )}
             </CardContent>
           </Card>

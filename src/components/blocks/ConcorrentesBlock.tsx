@@ -78,10 +78,8 @@ export function ConcorrentesBlock() {
     updateData('concorrentes', newData);
   };
 
-  const handleAcceptSuggestion = (field: 'publicoAlvo' | 'propostaValor' | 'diferenciais') => {
-    if (suggestions) {
-      handleChange(field, suggestions[field]);
-    }
+  const handleAcceptSuggestion = (field: 'publicoAlvo' | 'propostaValor' | 'diferenciais', value: string | string[]) => {
+    handleChange(field, value);
   };
 
   const handleDismissSuggestion = (field: string) => {
@@ -205,7 +203,7 @@ export function ConcorrentesBlock() {
             <SuggestionCard
               suggestion={suggestions!.diferenciais}
               label="Sugestão de diferenciais"
-              onAccept={() => handleAcceptSuggestion('diferenciais')}
+              onAccept={(value) => handleAcceptSuggestion('diferenciais', value)}
               onDismiss={() => handleDismissSuggestion('diferenciais')}
             />
           )}
@@ -233,7 +231,7 @@ export function ConcorrentesBlock() {
             <SuggestionCard
               suggestion={suggestions!.publicoAlvo}
               label="Sugestão de público-alvo"
-              onAccept={() => handleAcceptSuggestion('publicoAlvo')}
+              onAccept={(value) => handleAcceptSuggestion('publicoAlvo', value)}
               onDismiss={() => handleDismissSuggestion('publicoAlvo')}
             />
           )}
@@ -264,7 +262,7 @@ export function ConcorrentesBlock() {
             <SuggestionCard
               suggestion={suggestions!.propostaValor}
               label="Sugestão de proposta de valor"
-              onAccept={() => handleAcceptSuggestion('propostaValor')}
+              onAccept={(value) => handleAcceptSuggestion('propostaValor', value)}
               onDismiss={() => handleDismissSuggestion('propostaValor')}
             />
           )}

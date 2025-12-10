@@ -52,10 +52,8 @@ export function IdentidadeBlock() {
     handleChange('valores', newValores);
   };
 
-  const handleAcceptSuggestion = (field: 'visao' | 'missao' | 'posicionamento' | 'valores') => {
-    if (suggestions) {
-      handleChange(field, suggestions[field]);
-    }
+  const handleAcceptSuggestion = (field: 'visao' | 'missao' | 'posicionamento' | 'valores', value: string | string[]) => {
+    handleChange(field, value as typeof localData[typeof field]);
   };
 
   const handleDismissSuggestion = (field: string) => {
@@ -98,7 +96,7 @@ export function IdentidadeBlock() {
               <SuggestionCard
                 suggestion={suggestions!.visao}
                 label="Sugestão de visão"
-                onAccept={() => handleAcceptSuggestion('visao')}
+                onAccept={(value) => handleAcceptSuggestion('visao', value)}
                 onDismiss={() => handleDismissSuggestion('visao')}
               />
             )}
@@ -129,7 +127,7 @@ export function IdentidadeBlock() {
               <SuggestionCard
                 suggestion={suggestions!.missao}
                 label="Sugestão de missão"
-                onAccept={() => handleAcceptSuggestion('missao')}
+                onAccept={(value) => handleAcceptSuggestion('missao', value)}
                 onDismiss={() => handleDismissSuggestion('missao')}
               />
             )}
@@ -181,7 +179,7 @@ export function IdentidadeBlock() {
               <SuggestionCard
                 suggestion={suggestions!.valores}
                 label="Sugestão de valores"
-                onAccept={() => handleAcceptSuggestion('valores')}
+                onAccept={(value) => handleAcceptSuggestion('valores', value)}
                 onDismiss={() => handleDismissSuggestion('valores')}
               />
             )}
@@ -212,7 +210,7 @@ export function IdentidadeBlock() {
               <SuggestionCard
                 suggestion={suggestions!.posicionamento}
                 label="Sugestão de posicionamento"
-                onAccept={() => handleAcceptSuggestion('posicionamento')}
+                onAccept={(value) => handleAcceptSuggestion('posicionamento', value)}
                 onDismiss={() => handleDismissSuggestion('posicionamento')}
               />
             )}

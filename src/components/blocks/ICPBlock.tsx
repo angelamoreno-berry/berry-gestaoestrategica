@@ -64,10 +64,8 @@ export function ICPBlock() {
     handleChange('desejos', localData.desejos.filter((_, i) => i !== index));
   };
 
-  const handleAcceptSuggestion = (field: 'caracteristicasDemograficas' | 'dores' | 'desejos') => {
-    if (suggestions) {
-      handleChange(field, suggestions[field]);
-    }
+  const handleAcceptSuggestion = (field: 'caracteristicasDemograficas' | 'dores' | 'desejos', value: string | string[]) => {
+    handleChange(field, value);
   };
 
   const handleDismissSuggestion = (field: string) => {
@@ -126,7 +124,7 @@ export function ICPBlock() {
             <SuggestionCard
               suggestion={suggestions!.caracteristicasDemograficas}
               label="Sugestão de perfil demográfico"
-              onAccept={() => handleAcceptSuggestion('caracteristicasDemograficas')}
+              onAccept={(value) => handleAcceptSuggestion('caracteristicasDemograficas', value)}
               onDismiss={() => handleDismissSuggestion('caracteristicasDemograficas')}
             />
           )}
@@ -175,7 +173,7 @@ export function ICPBlock() {
             <SuggestionCard
               suggestion={suggestions!.dores}
               label="Sugestão de dores do cliente"
-              onAccept={() => handleAcceptSuggestion('dores')}
+              onAccept={(value) => handleAcceptSuggestion('dores', value)}
               onDismiss={() => handleDismissSuggestion('dores')}
             />
           )}
@@ -224,7 +222,7 @@ export function ICPBlock() {
             <SuggestionCard
               suggestion={suggestions!.desejos}
               label="Sugestão de desejos do cliente"
-              onAccept={() => handleAcceptSuggestion('desejos')}
+              onAccept={(value) => handleAcceptSuggestion('desejos', value)}
               onDismiss={() => handleDismissSuggestion('desejos')}
             />
           )}
