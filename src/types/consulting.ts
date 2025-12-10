@@ -66,7 +66,7 @@ export interface PrecificacaoData {
 }
 
 export interface MotoresCrescimentoData {
-  motorPrincipal: string;
+  motoresPrincipais: string[];
   canais: string[];
   metricas: Array<{
     nome: string;
