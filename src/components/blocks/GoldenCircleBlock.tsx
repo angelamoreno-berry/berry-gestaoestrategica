@@ -1,12 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 export function GoldenCircleBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.goldenCircle);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).goldenCircle;
+  }, [currentProject]);
 
   useEffect(() => {
     const hasWhy = localData.why.trim().length > 0 ? 1 : 0;
@@ -24,6 +32,20 @@ export function GoldenCircleBlock() {
     const newData = { ...localData, [field]: value };
     setLocalData(newData);
     updateData('goldenCircle', newData);
+  };
+
+  const handleAcceptSuggestion = (field: 'why' | 'how' | 'what') => {
+    if (suggestions) {
+      handleChange(field, suggestions[field]);
+    }
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
+  const showSuggestion = (field: string, value: string) => {
+    return suggestions && !value.trim() && !dismissedSuggestions[field];
   };
 
   return (
@@ -67,7 +89,7 @@ export function GoldenCircleBlock() {
               Seu propósito vai além do lucro. O que te fez começar? Que impacto quer causar? Ex: Apple = "Desafiar o status quo"
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Textarea
               placeholder="Ex: Acreditamos que toda pequena empresa merece acesso a ferramentas de gestão profissionais. Existimos para democratizar a gestão de qualidade e ajudar empreendedores a realizarem seu potencial..."
               value={localData.why}
@@ -75,6 +97,14 @@ export function GoldenCircleBlock() {
               className="resize-none"
               rows={4}
             />
+            {showSuggestion('why', localData.why) && (
+              <SuggestionCard
+                suggestion={suggestions!.why}
+                label="Sugestão baseada no seu segmento"
+                onAccept={() => handleAcceptSuggestion('why')}
+                onDismiss={() => handleDismissSuggestion('why')}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -91,7 +121,7 @@ export function GoldenCircleBlock() {
               Sua forma única de entregar valor. Metodologia, processos ou valores que te diferenciam.
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Textarea
               placeholder="Ex: Através de uma metodologia prática de 90 dias com sprints semanais, ferramentas exclusivas, mentoria personalizada e foco obsessivo em resultados mensuráveis..."
               value={localData.how}
@@ -99,6 +129,14 @@ export function GoldenCircleBlock() {
               className="resize-none"
               rows={4}
             />
+            {showSuggestion('how', localData.how) && (
+              <SuggestionCard
+                suggestion={suggestions!.how}
+                label="Sugestão baseada no tamanho da empresa"
+                onAccept={() => handleAcceptSuggestion('how')}
+                onDismiss={() => handleDismissSuggestion('how')}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -115,7 +153,7 @@ export function GoldenCircleBlock() {
               Produtos e serviços concretos. O que o cliente leva para casa?
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Textarea
               placeholder="Ex: Consultoria em gestão empresarial, treinamentos para líderes, diagnósticos de maturidade, ferramentas de planejamento estratégico e acompanhamento mensal de resultados..."
               value={localData.what}
@@ -123,6 +161,14 @@ export function GoldenCircleBlock() {
               className="resize-none"
               rows={4}
             />
+            {showSuggestion('what', localData.what) && (
+              <SuggestionCard
+                suggestion={suggestions!.what}
+                label="Sugestão baseada no seu segmento"
+                onAccept={() => handleAcceptSuggestion('what')}
+                onDismiss={() => handleDismissSuggestion('what')}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

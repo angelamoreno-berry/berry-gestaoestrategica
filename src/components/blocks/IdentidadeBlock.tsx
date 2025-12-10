@@ -1,18 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 export function IdentidadeBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.identidade);
   const [newValor, setNewValor] = useState('');
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).identidade;
+  }, [currentProject]);
 
   useEffect(() => {
     const fields = [localData.visao, localData.missao, localData.posicionamento];
@@ -45,6 +52,21 @@ export function IdentidadeBlock() {
     handleChange('valores', newValores);
   };
 
+  const handleAcceptSuggestion = (field: 'visao' | 'missao' | 'posicionamento' | 'valores') => {
+    if (suggestions) {
+      handleChange(field, suggestions[field]);
+    }
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
+  const showSuggestion = (field: string, value: string | string[]) => {
+    const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
+    return suggestions && isEmpty && !dismissedSuggestions[field];
+  };
+
   return (
     <div className="space-y-6">
       <p className="text-muted-foreground">
@@ -64,7 +86,7 @@ export function IdentidadeBlock() {
               Onde a empresa quer chegar? Qual é o sonho grande a ser alcançado?
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Textarea
               placeholder="Ex: Ser a maior referência em consultoria de gestão para pequenas empresas no Brasil até 2030..."
               value={localData.visao}
@@ -72,6 +94,14 @@ export function IdentidadeBlock() {
               className="resize-none"
               rows={3}
             />
+            {showSuggestion('visao', localData.visao) && (
+              <SuggestionCard
+                suggestion={suggestions!.visao}
+                label="Sugestão de visão"
+                onAccept={() => handleAcceptSuggestion('visao')}
+                onDismiss={() => handleDismissSuggestion('visao')}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -87,7 +117,7 @@ export function IdentidadeBlock() {
               Qual é o propósito da empresa? Por que ela existe?
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Textarea
               placeholder="Ex: Transformar a gestão de pequenas empresas através de metodologias práticas e resultados mensuráveis..."
               value={localData.missao}
@@ -95,6 +125,14 @@ export function IdentidadeBlock() {
               className="resize-none"
               rows={3}
             />
+            {showSuggestion('missao', localData.missao) && (
+              <SuggestionCard
+                suggestion={suggestions!.missao}
+                label="Sugestão de missão"
+                onAccept={() => handleAcceptSuggestion('missao')}
+                onDismiss={() => handleDismissSuggestion('missao')}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -138,6 +176,15 @@ export function IdentidadeBlock() {
                 ))}
               </div>
             )}
+
+            {showSuggestion('valores', localData.valores) && (
+              <SuggestionCard
+                suggestion={suggestions!.valores}
+                label="Sugestão de valores"
+                onAccept={() => handleAcceptSuggestion('valores')}
+                onDismiss={() => handleDismissSuggestion('valores')}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -153,7 +200,7 @@ export function IdentidadeBlock() {
               Como a empresa quer ser percebida pelo mercado?
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Textarea
               placeholder="Ex: Somos a consultoria que entrega resultado real, com metodologia prática e acompanhamento próximo..."
               value={localData.posicionamento}
@@ -161,6 +208,14 @@ export function IdentidadeBlock() {
               className="resize-none"
               rows={3}
             />
+            {showSuggestion('posicionamento', localData.posicionamento) && (
+              <SuggestionCard
+                suggestion={suggestions!.posicionamento}
+                label="Sugestão de posicionamento"
+                onAccept={() => handleAcceptSuggestion('posicionamento')}
+                onDismiss={() => handleDismissSuggestion('posicionamento')}
+              />
+            )}
           </CardContent>
         </Card>
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { SuggestionCard } from '@/components/SuggestionCard';
+import { generateSuggestions } from '@/utils/suggestionsGenerator';
 
 const swotConfig = [
   { key: 'forcas', label: 'Forças', icon: '💪', color: 'bg-green-500', description: 'Vantagens internas: equipe, produto, marca, localização, tecnologia, processos.', examples: 'Ex: Equipe experiente, Produto único, Boa reputação' },
@@ -16,10 +18,18 @@ const swotConfig = [
   { key: 'ameacas', label: 'Ameaças', icon: '⛈️', color: 'bg-orange-500', description: 'Fatores externos negativos: concorrência, crise, regulação, mudanças.', examples: 'Ex: Novos concorrentes, Recessão, Mudança de hábitos' },
 ] as const;
 
+type SwotKey = 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas';
+
 export function SWOTBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.swot);
   const [newItems, setNewItems] = useState<Record<string, string>>({});
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const suggestions = useMemo(() => {
+    if (!currentProject) return null;
+    return generateSuggestions(currentProject).swot;
+  }, [currentProject]);
 
   useEffect(() => {
     const hasForcas = localData.forcas.length > 0 ? 1 : 0;
@@ -38,7 +48,7 @@ export function SWOTBlock() {
   const addItem = (key: string) => {
     const item = newItems[key];
     if (item?.trim()) {
-      const newData = { ...localData, [key]: [...localData[key as keyof Pick<typeof localData, 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas'>], item.trim()] };
+      const newData = { ...localData, [key]: [...localData[key as SwotKey], item.trim()] };
       setLocalData(newData);
       updateData('swot', newData);
       setNewItems({ ...newItems, [key]: '' });
@@ -48,7 +58,7 @@ export function SWOTBlock() {
   const removeItem = (key: string, index: number) => {
     const newData = { 
       ...localData, 
-      [key]: (localData[key as keyof Pick<typeof localData, 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas'>] as string[]).filter((_, i) => i !== index) 
+      [key]: (localData[key as SwotKey] as string[]).filter((_, i) => i !== index) 
     };
     setLocalData(newData);
     updateData('swot', newData);
@@ -58,6 +68,22 @@ export function SWOTBlock() {
     const newData = { ...localData, horizontes: { ...localData.horizontes, [key]: value } };
     setLocalData(newData);
     updateData('swot', newData);
+  };
+
+  const handleAcceptSuggestion = (key: SwotKey) => {
+    if (suggestions) {
+      const newData = { ...localData, [key]: suggestions[key] };
+      setLocalData(newData);
+      updateData('swot', newData);
+    }
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
+
+  const showSuggestion = (field: SwotKey) => {
+    return suggestions && localData[field].length === 0 && !dismissedSuggestions[field];
   };
 
   return (
@@ -94,9 +120,9 @@ export function SWOTBlock() {
                 </Button>
               </div>
               
-              {(localData[item.key as keyof Pick<typeof localData, 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas'>] as string[]).length > 0 && (
+              {(localData[item.key as SwotKey] as string[]).length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
-                  {(localData[item.key as keyof Pick<typeof localData, 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas'>] as string[]).map((swotItem, index) => (
+                  {(localData[item.key as SwotKey] as string[]).map((swotItem, index) => (
                     <Badge key={index} variant="secondary" className="px-2 py-1 text-xs">
                       {swotItem}
                       <button onClick={() => removeItem(item.key, index)} className="ml-1.5">
@@ -105,6 +131,15 @@ export function SWOTBlock() {
                     </Badge>
                   ))}
                 </div>
+              )}
+
+              {showSuggestion(item.key as SwotKey) && (
+                <SuggestionCard
+                  suggestion={suggestions![item.key as SwotKey]}
+                  label={`Sugestão de ${item.label.toLowerCase()}`}
+                  onAccept={() => handleAcceptSuggestion(item.key as SwotKey)}
+                  onDismiss={() => handleDismissSuggestion(item.key)}
+                />
               )}
             </CardContent>
           </Card>
