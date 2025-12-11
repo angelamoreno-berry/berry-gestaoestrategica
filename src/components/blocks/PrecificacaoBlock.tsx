@@ -93,6 +93,39 @@ export function PrecificacaoBlock() {
   const [editingSugestao, setEditingSugestao] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<{ valor: string; explicacao: string }>({ valor: '', explicacao: '' });
 
+  // Sincronizar produtos de Estratégias de Valor
+  useEffect(() => {
+    const ofertasEServicos = [
+      ...data.estrategiasValor.novasOfertas,
+      ...data.estrategiasValor.novosServicos
+    ];
+    
+    // Encontrar itens que ainda não existem na lista de produtos
+    const produtosExistentes = localData.produtos.map(p => p.nome.toLowerCase());
+    const novosItens = ofertasEServicos.filter(
+      item => item && !produtosExistentes.includes(item.toLowerCase())
+    );
+    
+    if (novosItens.length > 0) {
+      const novosProdutos: ProdutoServico[] = novosItens.map(nome => ({
+        id: crypto.randomUUID(),
+        nome,
+        precoAtual: 0,
+        descricao: ''
+      }));
+      
+      const produtosAtualizados = [...localData.produtos, ...novosProdutos];
+      const newData = { ...localData, produtos: produtosAtualizados };
+      setLocalData(newData);
+      updateData('precificacao', newData);
+      
+      // Selecionar o primeiro novo produto se nenhum estiver selecionado
+      if (!produtoSelecionado && novosProdutos.length > 0) {
+        setProdutoSelecionado(novosProdutos[0].id);
+      }
+    }
+  }, [data.estrategiasValor.novasOfertas, data.estrategiasValor.novosServicos]);
+
   useEffect(() => {
     const hasProdutos = localData.produtos.length > 0 ? 1 : 0;
     const hasProdutosComPreco = localData.produtos.some(p => p.precoAtual > 0) ? 1 : 0;
