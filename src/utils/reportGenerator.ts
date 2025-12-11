@@ -1,4 +1,88 @@
-import { ConsultingData, BlockStatus, Project } from '@/types/consulting';
+import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting';
+
+// Helper function to generate activity checklist suggestions for a position
+const generateCargoChecklist = (cargo: Cargo): string[] => {
+  const titulo = cargo.titulo.toLowerCase();
+  const nivel = cargo.nivel;
+  
+  // Base activities by level
+  const baseByLevel: Record<number, string[]> = {
+    1: [ // Strategic
+      "Definir metas e objetivos trimestrais da área",
+      "Reunião semanal de alinhamento com liderança",
+      "Análise mensal de indicadores estratégicos",
+      "Revisão trimestral de plano estratégico",
+      "Feedback mensal para líderes subordinados"
+    ],
+    2: [ // Tactical
+      "Acompanhamento diário de KPIs da equipe",
+      "Reunião semanal de status com equipe",
+      "Relatório semanal de progresso para diretoria",
+      "Treinamento contínuo da equipe",
+      "Identificação e resolução de gargalos operacionais"
+    ],
+    3: [ // Operational
+      "Execução das tarefas diárias conforme procedimentos",
+      "Registro de atividades realizadas",
+      "Comunicação de impedimentos ao supervisor",
+      "Manutenção da qualidade dos entregáveis",
+      "Participação em reuniões de equipe"
+    ]
+  };
+
+  // Specific activities by role keywords
+  const roleSpecific: Record<string, string[]> = {
+    'comercial': ["Prospecção de novos clientes", "Follow-up de propostas enviadas", "Atualização do CRM/pipeline", "Relatório de vendas semanal"],
+    'vendas': ["Prospecção de novos clientes", "Follow-up de propostas enviadas", "Atualização do CRM/pipeline", "Relatório de vendas semanal"],
+    'financeiro': ["Conciliação bancária diária", "Contas a pagar/receber", "Fechamento mensal", "Fluxo de caixa atualizado"],
+    'contabil': ["Lançamentos contábeis", "Conciliação de contas", "Apuração de impostos", "Demonstrativos financeiros"],
+    'rh': ["Processamento de folha", "Controle de ponto", "Recrutamento e seleção", "Treinamento e desenvolvimento"],
+    'pessoas': ["Acompanhamento de colaboradores", "Pesquisa de clima", "Plano de desenvolvimento individual", "Gestão de benefícios"],
+    'marketing': ["Gestão de redes sociais", "Análise de métricas de campanha", "Criação de conteúdo", "Planejamento de ações"],
+    'operacoes': ["Controle de qualidade", "Gestão de estoque", "Supervisão de processos", "Manutenção preventiva"],
+    'producao': ["Programação de produção", "Controle de qualidade", "Gestão de insumos", "Relatório de produtividade"],
+    'atendimento': ["Resposta a clientes", "Registro de chamados", "Pesquisa de satisfação", "Resolução de problemas"],
+    'suporte': ["Atendimento de tickets", "Documentação de soluções", "Escalonamento de problemas", "Base de conhecimento"],
+    'tecnologia': ["Manutenção de sistemas", "Backup de dados", "Suporte técnico", "Atualizações de segurança"],
+    'ti': ["Manutenção de infraestrutura", "Suporte aos usuários", "Gestão de acessos", "Monitoramento de sistemas"],
+    'administrativo': ["Organização de documentos", "Controle de agenda", "Gestão de fornecedores", "Compras e suprimentos"],
+    'logistica': ["Gestão de entregas", "Controle de estoque", "Roteirização", "Conferência de mercadorias"],
+    'juridico': ["Análise de contratos", "Acompanhamento processual", "Compliance", "Consultoria interna"],
+    'ceo': ["Reunião com conselho/sócios", "Análise de indicadores-chave", "Networking estratégico", "Desenvolvimento de parcerias"],
+    'diretor': ["Planejamento estratégico", "Gestão de budget", "Reuniões com stakeholders", "Desenvolvimento de lideranças"],
+    'gerente': ["Gestão de equipe", "Controle de metas", "Relatórios gerenciais", "Resolução de conflitos"],
+    'coordenador': ["Distribuição de tarefas", "Acompanhamento de entregas", "Feedback à equipe", "Interface com outras áreas"],
+    'supervisor': ["Supervisão de atividades", "Controle de qualidade", "Treinamento operacional", "Escala de trabalho"],
+    'analista': ["Análise de dados", "Elaboração de relatórios", "Propostas de melhoria", "Documentação de processos"],
+    'assistente': ["Apoio às atividades da área", "Organização de documentos", "Atendimento interno", "Controle de agendas"],
+    'auxiliar': ["Execução de tarefas operacionais", "Apoio à equipe", "Organização do ambiente", "Registro de informações"]
+  };
+
+  let checklist = [...baseByLevel[nivel] || baseByLevel[3]];
+  
+  // Add role-specific activities
+  for (const [keyword, activities] of Object.entries(roleSpecific)) {
+    if (titulo.includes(keyword)) {
+      checklist = [...checklist, ...activities.slice(0, 3)];
+      break;
+    }
+  }
+
+  // Add activities based on responsibilities
+  if (cargo.responsabilidades && cargo.responsabilidades.length > 0) {
+    cargo.responsabilidades.slice(0, 2).forEach(resp => {
+      checklist.push(`Executar: ${resp}`);
+    });
+  }
+
+  // Add KPI monitoring if KPIs exist
+  if (cargo.kpis && cargo.kpis.length > 0) {
+    checklist.push(`Monitorar KPIs: ${cargo.kpis.slice(0, 2).join(', ')}`);
+  }
+
+  // Return unique items, limited to 8
+  return [...new Set(checklist)].slice(0, 8);
+};
 
 // Helper functions for generating insights
 const generateMaturityInsights = (level: number, area: string): string => {
@@ -3257,7 +3341,9 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
                   <span class="org-level-title">${nivel === 1 ? '🏆 Nível Estratégico' : nivel === 2 ? '⚙️ Nível Tático' : '🔧 Nível Operacional'}</span>
                 </div>
                 <div class="org-cards">
-                  ${cargosNivel.map(cargo => `
+                  ${cargosNivel.map(cargo => {
+                    const checklist = generateCargoChecklist(cargo);
+                    return `
                     <div class="org-card">
                       <div class="org-title">${cargo.titulo}</div>
                       <div class="org-subordinate">Subordinado a: ${cargo.subordinadoA || 'Proprietário'}</div>
@@ -3273,8 +3359,19 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
                         </div>
                       </div>
                       ` : ''}
-                    </div>
-                  `).join('')}
+                      <div class="org-section" style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+                        <div class="org-section-title" style="color: var(--accent);">✅ Checklist de Atividades Sugeridas</div>
+                        <div class="org-checklist" style="margin-top: 12px;">
+                          ${checklist.map(item => `
+                            <div class="org-checklist-item" style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; font-size: 13px; color: var(--muted);">
+                              <span style="color: var(--accent); flex-shrink: 0;">☐</span>
+                              <span>${item}</span>
+                            </div>
+                          `).join('')}
+                        </div>
+                      </div>
+                    </div>`;
+                  }).join('')}
                 </div>
               </div>
             `;
