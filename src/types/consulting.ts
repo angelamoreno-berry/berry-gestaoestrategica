@@ -70,11 +70,17 @@ export interface EstrategiasValorData {
   }>;
 }
 
+export interface SugestaoPrecoCustom {
+  valor: string;
+  explicacao: string;
+}
+
 export interface ProdutoServico {
   id: string;
   nome: string;
   precoAtual: number;
   descricao: string;
+  sugestoesCustom?: Record<string, SugestaoPrecoCustom>;
 }
 
 export interface PrecificacaoData {

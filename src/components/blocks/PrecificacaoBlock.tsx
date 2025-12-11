@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, TrendingUp, Package, Crown, RefreshCw, Target, Anchor } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, Package, Crown, RefreshCw, Target, Anchor, Pencil, Check, X } from 'lucide-react';
 import { ProdutoServico } from '@/types/consulting';
 
 interface SugestaoPreco {
@@ -90,6 +90,8 @@ export function PrecificacaoBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
   const [localData, setLocalData] = useState(data.precificacao);
   const [produtoSelecionado, setProdutoSelecionado] = useState<string | null>(null);
+  const [editingSugestao, setEditingSugestao] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState<{ valor: string; explicacao: string }>({ valor: '', explicacao: '' });
 
   useEffect(() => {
     const hasProdutos = localData.produtos.length > 0 ? 1 : 0;
@@ -120,7 +122,7 @@ export function PrecificacaoBlock() {
     setProdutoSelecionado(novoProduto.id);
   };
 
-  const atualizarProduto = (id: string, campo: keyof ProdutoServico, valor: string | number) => {
+  const atualizarProduto = (id: string, campo: keyof ProdutoServico, valor: string | number | Record<string, { valor: string; explicacao: string }>) => {
     const novosProdutos = localData.produtos.map(p => 
       p.id === id ? { ...p, [campo]: valor } : p
     );
@@ -133,6 +135,29 @@ export function PrecificacaoBlock() {
     if (produtoSelecionado === id) {
       setProdutoSelecionado(novosProdutos[0]?.id || null);
     }
+  };
+
+  const startEditingSugestao = (tipo: string, valorAtual: string, explicacaoAtual: string) => {
+    setEditingSugestao(tipo);
+    setEditValues({ valor: valorAtual, explicacao: explicacaoAtual });
+  };
+
+  const saveEditingSugestao = () => {
+    if (!produtoAtivo || !editingSugestao) return;
+    
+    const novasCustom = {
+      ...(produtoAtivo.sugestoesCustom || {}),
+      [editingSugestao]: editValues
+    };
+    
+    atualizarProduto(produtoAtivo.id, 'sugestoesCustom', novasCustom);
+    setEditingSugestao(null);
+    setEditValues({ valor: '', explicacao: '' });
+  };
+
+  const cancelEditingSugestao = () => {
+    setEditingSugestao(null);
+    setEditValues({ valor: '', explicacao: '' });
   };
 
   const produtoAtivo = localData.produtos.find(p => p.id === produtoSelecionado);
@@ -245,9 +270,16 @@ export function PrecificacaoBlock() {
                     <span className="text-xl">💡</span>
                     Sugestões de Precificação para {produtoAtivo.nome || 'este produto'}
                   </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Clique no ícone de edição para personalizar os valores e legendas.
+                  </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {sugestoes.map((sugestao) => {
-                      const resultado = sugestao.calculo(produtoAtivo.precoAtual);
+                      const resultadoDefault = sugestao.calculo(produtoAtivo.precoAtual);
+                      const customValues = produtoAtivo.sugestoesCustom?.[sugestao.tipo];
+                      const resultado = customValues || resultadoDefault;
+                      const isEditing = editingSugestao === sugestao.tipo;
+                      
                       return (
                         <div 
                           key={sugestao.tipo}
@@ -262,10 +294,59 @@ export function PrecificacaoBlock() {
                               <h5 className="font-semibold text-sm">{sugestao.titulo}</h5>
                               <p className="text-xs text-muted-foreground mt-0.5">{sugestao.descricao}</p>
                             </div>
+                            {!isEditing && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => startEditingSugestao(sugestao.tipo, resultado.valor, resultado.explicacao)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            )}
                           </div>
                           <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                            <p className="text-lg font-bold text-primary">{resultado.valor}</p>
-                            <p className="text-xs text-muted-foreground mt-1">{resultado.explicacao}</p>
+                            {isEditing ? (
+                              <div className="space-y-3">
+                                <div className="space-y-1">
+                                  <Label className="text-xs">Preço</Label>
+                                  <Input
+                                    value={editValues.valor}
+                                    onChange={(e) => setEditValues(prev => ({ ...prev, valor: e.target.value }))}
+                                    placeholder="Ex: R$ 1.500,00"
+                                    className="h-8 text-sm"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <Label className="text-xs">Legenda</Label>
+                                  <Textarea
+                                    value={editValues.explicacao}
+                                    onChange={(e) => setEditValues(prev => ({ ...prev, explicacao: e.target.value }))}
+                                    placeholder="Descrição da estratégia..."
+                                    rows={2}
+                                    className="text-sm resize-none"
+                                  />
+                                </div>
+                                <div className="flex gap-2 justify-end">
+                                  <Button variant="ghost" size="sm" onClick={cancelEditingSugestao}>
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                  <Button variant="default" size="sm" onClick={saveEditingSugestao}>
+                                    <Check className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <p className="text-lg font-bold text-primary">{resultado.valor}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{resultado.explicacao}</p>
+                                {customValues && (
+                                  <span className="inline-block mt-2 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                    Personalizado
+                                  </span>
+                                )}
+                              </>
+                            )}
                           </div>
                         </div>
                       );
