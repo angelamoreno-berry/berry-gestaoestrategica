@@ -31,6 +31,7 @@ const segmentos = [
 export function ProjectSelector() {
   const { projects, currentProject, createProject, createDemoProject, selectProject, deleteProject } = useConsulting();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDemoDialogOpen, setIsDemoDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     nomeEmpresa: '',
     responsavel: '',
@@ -38,6 +39,11 @@ export function ProjectSelector() {
     faturamentoMedio: '',
     quantidadeColaboradores: '',
     emailResponsavel: ''
+  });
+  const [demoFormData, setDemoFormData] = useState({
+    segmento: '',
+    faturamentoMedio: '',
+    quantidadeColaboradores: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -59,6 +65,21 @@ export function ProjectSelector() {
       emailResponsavel: ''
     });
     setIsDialogOpen(false);
+  };
+
+  const handleDemoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createDemoProject({
+      segmento: demoFormData.segmento,
+      faturamentoMedio: parseFloat(demoFormData.faturamentoMedio) || 100000,
+      quantidadeColaboradores: parseInt(demoFormData.quantidadeColaboradores) || 10
+    });
+    setDemoFormData({
+      segmento: '',
+      faturamentoMedio: '',
+      quantidadeColaboradores: ''
+    });
+    setIsDemoDialogOpen(false);
   };
 
   const formatCurrency = (value: number) => {
@@ -257,14 +278,84 @@ export function ProjectSelector() {
             <Building2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum projeto cadastrado</h3>
             <p className="text-muted-foreground mb-6">Comece criando seu primeiro projeto de consultoria</p>
-            <Button 
-              variant="outline" 
-              onClick={createDemoProject}
-              className="gap-2"
-            >
-              <Sparkles className="h-4 w-4" />
-              Criar Projeto Demo (100% preenchido)
-            </Button>
+            <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Criar Projeto Demo (100% preenchido)
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[450px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5" />
+                    Personalizar Projeto Demo
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleDemoSubmit} className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="demoSegmento">Segmento de Atuação *</Label>
+                    <Select
+                      value={demoFormData.segmento}
+                      onValueChange={(value) => setDemoFormData({ ...demoFormData, segmento: value })}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o segmento" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {segmentos.map((seg) => (
+                          <SelectItem key={seg} value={seg}>
+                            {seg}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="demoFaturamento">Faturamento Médio Mensal (R$)</Label>
+                    <Input
+                      id="demoFaturamento"
+                      type="number"
+                      value={demoFormData.faturamentoMedio}
+                      onChange={(e) => setDemoFormData({ ...demoFormData, faturamentoMedio: e.target.value })}
+                      placeholder="Ex: 100000"
+                      min="0"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="demoColaboradores">Quantidade de Colaboradores</Label>
+                    <Input
+                      id="demoColaboradores"
+                      type="number"
+                      value={demoFormData.quantidadeColaboradores}
+                      onChange={(e) => setDemoFormData({ ...demoFormData, quantidadeColaboradores: e.target.value })}
+                      placeholder="Ex: 10"
+                      min="0"
+                    />
+                  </div>
+
+                  <p className="text-sm text-muted-foreground">
+                    O projeto será preenchido com dados personalizados para o segmento e porte selecionados.
+                  </p>
+
+                  <div className="flex gap-3 pt-4">
+                    <Button type="button" variant="outline" className="flex-1" onClick={() => setIsDemoDialogOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" className="flex-1" disabled={!demoFormData.segmento}>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Gerar Demo
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>
