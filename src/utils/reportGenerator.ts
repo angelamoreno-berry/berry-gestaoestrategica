@@ -155,6 +155,279 @@ const generateActionPlan = (area: string, level: number): string[] => {
   return plans[area]?.[level] || ["Avaliar necessidades específicas", "Desenvolver plano customizado", "Implementar melhorias incrementais"];
 };
 
+// Helper function to generate detailed strategies for each growth engine
+const generateMotorStrategies = (motor: string): { estrategias: string[], implementacao: string[], metricas: string[], ferramentas: string[] } => {
+  const motorLower = motor.toLowerCase();
+  
+  const strategies: Record<string, { estrategias: string[], implementacao: string[], metricas: string[], ferramentas: string[] }> = {
+    'inbound marketing': {
+      estrategias: [
+        'Criar blog com conteúdo educativo sobre as dores do ICP',
+        'Desenvolver materiais ricos (e-books, webinars, templates)',
+        'Implementar estratégia de SEO para palavras-chave relevantes',
+        'Criar landing pages otimizadas para conversão'
+      ],
+      implementacao: [
+        'Semana 1-2: Definir persona e mapear jornada de compra',
+        'Semana 3-4: Criar calendário editorial com 3 posts/semana',
+        'Mês 2: Lançar primeiro material rico para captura de leads',
+        'Mês 3: Implementar automação de nutrição de leads'
+      ],
+      metricas: ['Tráfego orgânico', 'Taxa de conversão landing pages', 'Leads gerados/mês', 'Custo por lead'],
+      ferramentas: ['WordPress/Ghost para blog', 'RD Station/HubSpot para automação', 'Google Analytics', 'SEMrush/Ahrefs para SEO']
+    },
+    'outbound sales': {
+      estrategias: [
+        'Construir lista de prospecção qualificada (ICP)',
+        'Criar cadência de prospecção multicanal (email + LinkedIn + telefone)',
+        'Desenvolver scripts e templates personalizados',
+        'Implementar social selling no LinkedIn'
+      ],
+      implementacao: [
+        'Semana 1: Definir ICP e critérios de qualificação',
+        'Semana 2-3: Construir lista de 500+ prospects',
+        'Semana 4: Criar sequência de 7 touchpoints',
+        'Mês 2+: Executar 50+ contatos/dia por vendedor'
+      ],
+      metricas: ['Taxa de resposta', 'Taxa de agendamento', 'Conversão em vendas', 'Ticket médio'],
+      ferramentas: ['Apollo.io/Lusha para prospecção', 'Pipedrive/HubSpot CRM', 'LinkedIn Sales Navigator', 'Outreach/Salesloft']
+    },
+    'indicações': {
+      estrategias: [
+        'Criar programa formal de indicações com incentivos',
+        'Pedir indicações no momento certo (após entrega de valor)',
+        'Facilitar o processo de indicação (link único, WhatsApp)',
+        'Reconhecer publicamente quem indica'
+      ],
+      implementacao: [
+        'Semana 1: Definir mecânica e recompensas do programa',
+        'Semana 2: Criar materiais e comunicação',
+        'Semana 3: Lançar para clientes mais engajados (NPS 9-10)',
+        'Mensal: Pedir indicação após cada entrega bem-sucedida'
+      ],
+      metricas: ['Indicações recebidas/mês', 'Taxa de conversão de indicados', 'NPS dos clientes', 'Custo por aquisição'],
+      ferramentas: ['Programa manual ou Viral Loops/ReferralCandy', 'Formulários Google/Typeform', 'CRM para tracking']
+    },
+    'parcerias': {
+      estrategias: [
+        'Mapear parceiros complementares (não concorrentes)',
+        'Criar proposta de valor clara para parceiros',
+        'Desenvolver programa de parceria com níveis',
+        'Oferecer co-marketing e leads recíprocos'
+      ],
+      implementacao: [
+        'Semana 1-2: Listar 20 potenciais parceiros ideais',
+        'Semana 3-4: Abordar e apresentar proposta',
+        'Mês 2: Formalizar primeiras parcerias',
+        'Trimestral: Revisar resultados e expandir programa'
+      ],
+      metricas: ['Parceiros ativos', 'Leads via parceiros', 'Receita de parcerias', 'ROI por parceiro'],
+      ferramentas: ['PartnerStack/Impact para gestão', 'CRM para tracking', 'Google Drive para materiais compartilhados']
+    },
+    'product-led growth': {
+      estrategias: [
+        'Criar versão freemium ou trial do produto',
+        'Otimizar onboarding para ativação rápida',
+        'Implementar loops virais no produto',
+        'Usar dados de uso para upsell'
+      ],
+      implementacao: [
+        'Mês 1: Definir modelo free vs paid (features)',
+        'Mês 2: Redesenhar onboarding para "aha moment" em <5min',
+        'Mês 3: Implementar convites e compartilhamento in-app',
+        'Contínuo: Analisar funil e otimizar conversão'
+      ],
+      metricas: ['Ativação (% que usa feature-chave)', 'Trial to paid conversion', 'Viral coefficient', 'Time to value'],
+      ferramentas: ['Amplitude/Mixpanel para analytics', 'Intercom/Pendo para onboarding', 'Stripe para billing']
+    },
+    'marketing de conteúdo': {
+      estrategias: [
+        'Desenvolver pilares de conteúdo alinhados ao negócio',
+        'Criar conteúdo em múltiplos formatos (texto, vídeo, áudio)',
+        'Distribuir em canais onde o ICP está',
+        'Reutilizar conteúdo em diferentes formatos'
+      ],
+      implementacao: [
+        'Semana 1: Definir 3-5 pilares temáticos',
+        'Semana 2: Criar calendário de 30 dias',
+        'Semanal: Produzir 2-3 peças de conteúdo',
+        'Mensal: Analisar performance e ajustar'
+      ],
+      metricas: ['Alcance/impressões', 'Engajamento', 'Leads gerados', 'Tráfego para site'],
+      ferramentas: ['Notion/Trello para planejamento', 'Canva para design', 'Buffer/Hootsuite para agendamento']
+    },
+    'seo local': {
+      estrategias: [
+        'Otimizar Google Meu Negócio completamente',
+        'Coletar avaliações positivas consistentemente',
+        'Criar páginas locais otimizadas',
+        'Construir citações em diretórios locais'
+      ],
+      implementacao: [
+        'Semana 1: Completar 100% do Google Meu Negócio',
+        'Semana 2: Criar processo para pedir avaliações',
+        'Semana 3-4: Listar em 20+ diretórios locais',
+        'Mensal: Responder todas avaliações em <24h'
+      ],
+      metricas: ['Posição no Google Maps', 'Avaliações (qtd e média)', 'Cliques no GMB', 'Ligações recebidas'],
+      ferramentas: ['Google Meu Negócio', 'BrightLocal para gestão', 'Google Search Console']
+    },
+    'eventos e networking': {
+      estrategias: [
+        'Identificar eventos-chave do setor',
+        'Participar como palestrante ou patrocinador',
+        'Criar eventos próprios (meetups, workshops)',
+        'Fazer follow-up estruturado pós-evento'
+      ],
+      implementacao: [
+        'Mês 1: Mapear calendário de eventos do ano',
+        'Mês 2: Submeter proposta para 3 eventos',
+        'Trimestral: Organizar evento próprio pequeno',
+        'Após cada evento: Follow-up em até 48h'
+      ],
+      metricas: ['Eventos participados', 'Leads coletados por evento', 'Conversão pós-evento', 'ROI por evento'],
+      ferramentas: ['Eventbrite/Sympla', 'Calendly para agendamento', 'CRM para tracking']
+    },
+    'social selling': {
+      estrategias: [
+        'Otimizar perfil LinkedIn para conversão',
+        'Criar conteúdo de valor consistentemente',
+        'Engajar estrategicamente com prospects',
+        'Converter conexões em conversas'
+      ],
+      implementacao: [
+        'Semana 1: Otimizar perfil LinkedIn (SSI > 70)',
+        'Diário: Postar ou comentar em 3+ posts relevantes',
+        'Semanal: Adicionar 50+ conexões qualificadas',
+        'Diário: Iniciar 5+ conversas no inbox'
+      ],
+      metricas: ['SSI (Social Selling Index)', 'Conexões/seguidores', 'Mensagens respondidas', 'Reuniões agendadas'],
+      ferramentas: ['LinkedIn Sales Navigator', 'Shield para analytics', 'Calendly para agendamento']
+    },
+    'comunidade': {
+      estrategias: [
+        'Criar espaço de comunidade (grupo/fórum)',
+        'Entregar valor exclusivo para membros',
+        'Facilitar conexões entre membros',
+        'Converter comunidade em clientes'
+      ],
+      implementacao: [
+        'Mês 1: Escolher plataforma e criar comunidade',
+        'Mês 2: Convidar primeiros 50 membros (clientes atuais)',
+        'Semanal: Criar conteúdo/evento exclusivo',
+        'Mensal: Analisar engajamento e ajustar'
+      ],
+      metricas: ['Membros ativos', 'Engajamento (posts/comentários)', 'Conversão para clientes', 'Retenção'],
+      ferramentas: ['Circle/Discord/Slack', 'Notion para recursos', 'Zoom para eventos']
+    },
+    'afiliados': {
+      estrategias: [
+        'Definir comissões atrativas e competitivas',
+        'Criar materiais de marketing para afiliados',
+        'Recrutar afiliados estratégicos do nicho',
+        'Treinar e suportar afiliados top performers'
+      ],
+      implementacao: [
+        'Semana 1-2: Definir estrutura de comissões',
+        'Semana 3-4: Criar kit de materiais para afiliados',
+        'Mês 2: Recrutar primeiros 10-20 afiliados',
+        'Mensal: Revisar performance e otimizar'
+      ],
+      metricas: ['Afiliados ativos', 'Vendas por afiliado', 'Comissões pagas', 'ROI do programa'],
+      ferramentas: ['Hotmart/Kiwify para infoprodutos', 'FirstPromoter/Rewardful para SaaS', 'Planilha de acompanhamento']
+    },
+    'account-based marketing': {
+      estrategias: [
+        'Selecionar 10-50 contas-alvo prioritárias',
+        'Criar campanhas personalizadas por conta',
+        'Alinhar marketing e vendas no processo',
+        'Executar touchpoints multicanal coordenados'
+      ],
+      implementacao: [
+        'Semana 1: Definir lista de target accounts',
+        'Semana 2-3: Pesquisar cada conta profundamente',
+        'Semana 4: Criar abordagem personalizada por conta',
+        'Mensal: Executar cadência e medir resultados'
+      ],
+      metricas: ['Contas engajadas', 'Reuniões com decision-makers', 'Pipeline gerado', 'Deals fechados'],
+      ferramentas: ['LinkedIn Sales Navigator', '6sense/Demandbase', 'CRM com segmentação por conta']
+    },
+    'influenciadores': {
+      estrategias: [
+        'Mapear micro e macro influenciadores do nicho',
+        'Criar proposta de parceria clara',
+        'Testar com micro-influenciadores primeiro',
+        'Medir ROI de cada parceria'
+      ],
+      implementacao: [
+        'Semana 1: Listar 30+ influenciadores relevantes',
+        'Semana 2: Abordar 10 micro-influenciadores',
+        'Mês 2: Fechar 3-5 parcerias piloto',
+        'Mensal: Analisar resultados e expandir'
+      ],
+      metricas: ['Alcance das campanhas', 'Engajamento', 'Código de desconto usado', 'ROI por influenciador'],
+      ferramentas: ['BuzzSumo/HypeAuditor', 'Instagram/TikTok', 'Tracking links (UTMs)']
+    },
+    'email marketing': {
+      estrategias: [
+        'Construir lista qualificada (lead magnets)',
+        'Segmentar lista por comportamento/interesse',
+        'Criar sequências de nutrição automatizadas',
+        'Testar assuntos, horários e conteúdo'
+      ],
+      implementacao: [
+        'Semana 1: Criar 3 lead magnets',
+        'Semana 2: Configurar sequência de boas-vindas',
+        'Semana 3-4: Criar newsletter semanal/quinzenal',
+        'Contínuo: Testar A/B e otimizar'
+      ],
+      metricas: ['Lista de emails', 'Taxa de abertura', 'Taxa de cliques', 'Conversões de email'],
+      ferramentas: ['Mailchimp/ConvertKit', 'RD Station', 'Google Analytics para tracking']
+    },
+    'webinars e workshops': {
+      estrategias: [
+        'Criar webinars educativos de alto valor',
+        'Promover via múltiplos canais',
+        'Converter participantes em leads/clientes',
+        'Reutilizar conteúdo em outros formatos'
+      ],
+      implementacao: [
+        'Semana 1: Definir tema e estrutura',
+        'Semana 2: Criar landing page e promoção',
+        'Semana 3: Executar webinar e gravar',
+        'Pós-evento: Follow-up em 24-48h'
+      ],
+      metricas: ['Inscritos', 'Taxa de comparecimento', 'Engajamento (perguntas)', 'Conversão pós-webinar'],
+      ferramentas: ['Zoom/StreamYard', 'WebinarJam/Demio', 'Landing pages + email marketing']
+    }
+  };
+
+  // Try to find exact match first, then partial match
+  for (const [key, value] of Object.entries(strategies)) {
+    if (motorLower.includes(key) || key.includes(motorLower)) {
+      return value;
+    }
+  }
+
+  // Default strategies for custom motors
+  return {
+    estrategias: [
+      'Definir público-alvo específico para este canal',
+      'Criar proposta de valor clara para o canal',
+      'Estabelecer processos e rotinas de execução',
+      'Medir resultados e otimizar continuamente'
+    ],
+    implementacao: [
+      'Semana 1: Pesquisar e planejar abordagem',
+      'Semana 2-3: Criar materiais e estrutura',
+      'Semana 4: Executar primeiro piloto',
+      'Mensal: Analisar resultados e escalar'
+    ],
+    metricas: ['Alcance', 'Engajamento', 'Leads gerados', 'Conversão em vendas'],
+    ferramentas: ['CRM para gestão', 'Planilhas para acompanhamento', 'Ferramentas específicas do canal']
+  };
+};
+
 export function generateReport(project: Project, data: ConsultingData, blocks: BlockStatus[]) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -3212,24 +3485,65 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
           </div>
         </div>
         
-        <div class="implementation-guide">
-          <div class="implementation-header">
-            <div class="implementation-icon">🎯</div>
-            <span class="implementation-title">Ativando cada motor de crescimento</span>
-          </div>
-          <div class="implementation-steps">
-            ${data.motoresCrescimento.motoresPrincipais.slice(0, 3).map((motor, i) => `
-            <div class="implementation-step">
-              <div class="implementation-step-number">${i + 1}</div>
-              <div class="implementation-step-content">
-                <h4>${motor}</h4>
-                <p><strong>Ação semanal:</strong> Defina 1 atividade específica por semana para este motor. Meça o resultado. Exemplo: se for "Indicações", a ação pode ser "Pedir 3 indicações por semana para clientes satisfeitos".<br>
-                <strong>Meta mensal:</strong> Quantifique: quantos leads/vendas este motor deve gerar por mês?</p>
+        <!-- Estratégias detalhadas para cada motor -->
+        ${data.motoresCrescimento.motoresPrincipais.map((motor, index) => {
+          const strategies = generateMotorStrategies(motor);
+          return `
+          <div class="motor-detail" style="margin-top: 32px; padding: 28px; background: var(--primary-lighter); border-radius: 16px; border-left: 4px solid var(--accent);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+              <div style="width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">${index + 1}</div>
+              <h3 style="font-size: 20px; font-weight: 600; color: var(--foreground); margin: 0;">${motor}</h3>
+            </div>
+            
+            <div style="display: grid; gap: 24px;">
+              <!-- Estratégias -->
+              <div>
+                <h4 style="font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                  <span>🎯</span> Estratégias Principais
+                </h4>
+                <ul style="margin: 0; padding-left: 20px; list-style: disc;">
+                  ${strategies.estrategias.map(e => `<li style="margin-bottom: 8px; color: var(--foreground); font-size: 14px; line-height: 1.6;">${e}</li>`).join('')}
+                </ul>
+              </div>
+              
+              <!-- Implementação -->
+              <div>
+                <h4 style="font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                  <span>📋</span> Plano de Implementação
+                </h4>
+                <div style="display: grid; gap: 8px;">
+                  ${strategies.implementacao.map((step, i) => `
+                    <div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: white; border-radius: 8px;">
+                      <span style="width: 24px; height: 24px; background: var(--foreground); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0;">${i + 1}</span>
+                      <span style="font-size: 14px; color: var(--foreground);">${step}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+              
+              <!-- Métricas e Ferramentas -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                  <h4 style="font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span>📊</span> Métricas a Acompanhar
+                  </h4>
+                  <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    ${strategies.metricas.map(m => `<span style="background: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; color: var(--foreground);">${m}</span>`).join('')}
+                  </div>
+                </div>
+                <div>
+                  <h4 style="font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <span>🛠️</span> Ferramentas Sugeridas
+                  </h4>
+                  <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    ${strategies.ferramentas.map(f => `<span style="background: var(--accent-light); padding: 6px 12px; border-radius: 6px; font-size: 12px; color: var(--accent);">${f}</span>`).join('')}
+                  </div>
+                </div>
               </div>
             </div>
-            `).join('')}
           </div>
-        </div>
+          `;
+        }).join('')}
         ` : ''}
         
         ${data.motoresCrescimento.canais.length > 0 ? `
