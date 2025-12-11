@@ -151,7 +151,7 @@ interface ConsultingContextType {
   getTotalProgress: () => number;
   resetAll: () => void;
   createProject: (projectData: Omit<Project, 'id' | 'dataCriacao'>) => void;
-  createDemoProject: () => void;
+  createDemoProject: (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number }) => void;
   selectProject: (id: string) => void;
   deleteProject: (id: string) => void;
   goToProjectList: () => void;
@@ -232,20 +232,44 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     setProjectsData(prev => [...prev, newProjectData]);
   }, []);
 
-  const createDemoProject = useCallback(() => {
+  const createDemoProject = useCallback((params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number }) => {
+    const { segmento, faturamentoMedio, quantidadeColaboradores } = params;
+    
+    // Gerar nome da empresa baseado no segmento
+    const nomesPorSegmento: Record<string, string> = {
+      'Agronegócio': 'AgroVerde Soluções',
+      'Alimentação': 'Sabor & Arte Gastronomia',
+      'Atacado e Distribuição': 'DistribuiMax Atacado',
+      'Automotivo': 'AutoPrime Motors',
+      'Engenharia e Construção': 'Construtora Horizonte',
+      'Educação': 'Instituto Conhecimento Vivo',
+      'Energia Solar': 'SolarTech Energia',
+      'Indústria': 'IndústriaForte Manufatura',
+      'Logística': 'LogiExpress Transportes',
+      'Negócios Digitais': 'DigitalFlow Solutions',
+      'Saúde e Bem Estar': 'VidaPlena Saúde',
+      'Serviços': 'Excellence Serviços',
+      'Supermercado': 'SuperBom Mercados',
+      'Tecnologia': 'TechFlow Solutions',
+      'Varejo': 'VarejoMax Lojas',
+      'Outro': 'Empresa Demonstração'
+    };
+    
+    const nomeEmpresa = nomesPorSegmento[segmento] || 'Empresa Demonstração';
+    
     const demoProject: Project = {
       id: crypto.randomUUID(),
-      nomeEmpresa: 'TechFlow Solutions',
+      nomeEmpresa,
       responsavel: 'Carlos Eduardo Silva',
-      segmento: 'Tecnologia e Software',
-      faturamentoMedio: 180000,
-      quantidadeColaboradores: 25,
-      emailResponsavel: 'carlos@techflow.com.br',
+      segmento,
+      faturamentoMedio,
+      quantidadeColaboradores,
+      emailResponsavel: 'contato@empresa.com.br',
       dataCriacao: new Date().toISOString()
     };
 
     const demoData: ConsultingData = {
-      clienteNome: 'TechFlow Solutions',
+      clienteNome: nomeEmpresa,
       consultorNome: 'Ana Consultoria',
       dataInicio: new Date().toISOString().split('T')[0],
       diagnostico: {
@@ -255,10 +279,10 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
         mercado: { area: 'Mercado', level: 3, notes: 'Posicionamento razoável, mas falta diferenciação clara da concorrência.' },
       },
       identidade: {
-        visao: 'Ser a principal referência em soluções tecnológicas para PMEs no Brasil até 2028, impactando positivamente mais de 5.000 empresas.',
-        missao: 'Transformar a gestão de pequenas e médias empresas através de tecnologia acessível, simples e eficiente, democratizando o acesso à inovação.',
-        valores: ['Inovação Contínua', 'Foco no Cliente', 'Simplicidade', 'Transparência', 'Colaboração'],
-        posicionamento: 'Somos a ponte entre a tecnologia complexa e a gestão simples. Entregamos soluções que funcionam sem complicação.',
+        visao: `Ser a principal referência em ${segmento.toLowerCase()} na nossa região até 2028, impactando positivamente milhares de clientes e parceiros.`,
+        missao: `Entregar soluções de ${segmento.toLowerCase()} de alta qualidade, com excelência no atendimento e compromisso com resultados sustentáveis.`,
+        valores: ['Excelência', 'Foco no Cliente', 'Inovação', 'Transparência', 'Colaboração'],
+        posicionamento: `Somos especialistas em ${segmento.toLowerCase()} que entregam resultados concretos com atendimento diferenciado.`,
       },
       concorrentes: {
         concorrentes: [
@@ -271,9 +295,9 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           { nome: 'CloudBiz', tipo: 'Direto', pontosFortes: 'Preço agressivo e marketing digital forte', pontosFracos: 'Suporte deficiente e muitos bugs' },
           { nome: 'GestãoPro', tipo: 'Indireto', pontosFortes: 'Funcionalidades completas e integrações', pontosFracos: 'Complexidade excessiva, curva de aprendizado alta' },
         ],
-        diferenciais: ['Implementação em 48h', 'Suporte humano 24/7', 'Interface intuitiva', 'Preço justo sem surpresas'],
-        publicoAlvo: 'PMEs de serviços com 10-100 funcionários que buscam modernizar a gestão',
-        propostaValor: 'Gestão descomplicada que funciona desde o primeiro dia, com suporte humano sempre que você precisar.',
+        diferenciais: ['Atendimento personalizado', 'Experiência no segmento', 'Qualidade superior', 'Preço justo'],
+        publicoAlvo: `Empresas e pessoas que buscam soluções de qualidade em ${segmento.toLowerCase()}`,
+        propostaValor: `Oferecemos ${segmento.toLowerCase()} de alta qualidade com atendimento humanizado e resultados comprovados.`,
       },
       icp: {
         caracteristicasDemograficas: 'Empresários de 35-55 anos, donos de empresas de serviços com faturamento entre R$100k-500k/mês, 10-50 funcionários, atuando há mais de 5 anos no mercado.',
@@ -374,45 +398,45 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
         ],
       },
       financeiro: {
-        despesasFixas: 95000,
-        despesasVariaveis: 25000,
-        faturamentoAtual: 180000,
-        faturamentoMensal: 180000,
+        despesasFixas: Math.round(faturamentoMedio * 0.53),
+        despesasVariaveis: Math.round(faturamentoMedio * 0.14),
+        faturamentoAtual: faturamentoMedio,
+        faturamentoMensal: faturamentoMedio,
         margemAtual: 33,
         margemLucro: 33,
-        custoFixoMensal: 95000,
-        pontoEquilibrio: 142000,
-        metaFaturamento: 300000,
-        ticketMedio: 720,
+        custoFixoMensal: Math.round(faturamentoMedio * 0.53),
+        pontoEquilibrio: Math.round(faturamentoMedio * 0.79),
+        metaFaturamento: Math.round(faturamentoMedio * 1.67),
+        ticketMedio: Math.round(faturamentoMedio / 250),
         quantidadeClientes: 250,
-        cac: 1500,
-        ltv: 8640,
+        cac: Math.round(faturamentoMedio * 0.008),
+        ltv: Math.round(faturamentoMedio * 0.048),
         prazoMedioRecebimento: 15,
         prazoMedioPagamento: 30,
-        capitalGiro: 85000,
-        reservaEmergencia: 120000,
+        capitalGiro: Math.round(faturamentoMedio * 0.47),
+        reservaEmergencia: Math.round(faturamentoMedio * 0.67),
         dividas: [
-          { descricao: 'Financiamento equipamentos', valorTotal: 50000, parcelasMensais: 2500, parcelasRestantes: 20, taxaJuros: 1.5 },
-          { descricao: 'Antecipação de recebíveis', valorTotal: 15000, parcelasMensais: 5200, parcelasRestantes: 3, taxaJuros: 2.8 },
+          { descricao: 'Financiamento equipamentos', valorTotal: Math.round(faturamentoMedio * 0.28), parcelasMensais: Math.round(faturamentoMedio * 0.014), parcelasRestantes: 20, taxaJuros: 1.5 },
+          { descricao: 'Antecipação de recebíveis', valorTotal: Math.round(faturamentoMedio * 0.08), parcelasMensais: Math.round(faturamentoMedio * 0.029), parcelasRestantes: 3, taxaJuros: 2.8 },
         ],
-        totalDividas: 65000,
+        totalDividas: Math.round(faturamentoMedio * 0.36),
         comprometimentoReceita: 4.3,
         oportunidades: [
-          'Aumentar ticket médio com upsell de módulos adicionais',
-          'Reduzir churn com programa de sucesso do cliente',
-          'Expandir para novos segmentos (varejo, saúde)',
-          'Criar modelo de implementação self-service para reduzir CAC',
-          'Lançar marketplace de integrações com parceiros'
+          'Aumentar ticket médio com upsell de produtos/serviços adicionais',
+          'Reduzir churn com programa de fidelidade e sucesso do cliente',
+          'Expandir para novos segmentos e regiões',
+          'Criar modelo de atendimento self-service para reduzir custos',
+          'Lançar parcerias estratégicas com players complementares'
         ],
         investimentos: [
-          { area: 'Marketing Digital', valor: 30000, prazo: '3 meses', prioridade: 'Alta' },
-          { area: 'Expansão de Time de CS', valor: 50000, prazo: '6 meses', prioridade: 'Alta' },
-          { area: 'Desenvolvimento de Integrações', valor: 25000, prazo: '6 meses', prioridade: 'Media' }
+          { area: 'Marketing Digital', valor: Math.round(faturamentoMedio * 0.17), prazo: '3 meses', prioridade: 'Alta' },
+          { area: 'Expansão de Equipe', valor: Math.round(faturamentoMedio * 0.28), prazo: '6 meses', prioridade: 'Alta' },
+          { area: 'Tecnologia e Infraestrutura', valor: Math.round(faturamentoMedio * 0.14), prazo: '6 meses', prioridade: 'Media' }
         ],
         riscos: [
           'Inadimplência acima de 5% pode comprometer fluxo de caixa',
-          'Dependência de poucos clientes grandes (top 10 = 35% receita)',
-          'Reserva de emergência cobre apenas 1.3 meses de operação'
+          'Dependência de poucos clientes grandes',
+          'Reserva de emergência precisa ser ampliada'
         ],
       },
       swot: {
@@ -451,9 +475,9 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
         },
       },
       goldenCircle: {
-        why: 'Acreditamos que toda empresa merece ter acesso a ferramentas de gestão de qualidade, independente do tamanho. A tecnologia deve simplificar, não complicar a vida do empreendedor.',
-        how: 'Desenvolvemos software com obsessão por simplicidade, ouvimos atentamente nossos clientes e entregamos suporte humano de verdade. Cada feature passa pelo teste: "minha mãe conseguiria usar?".',
-        what: 'Um sistema de gestão completo (CRM, Financeiro, RH) em uma única plataforma, com implementação em 48h e suporte humano 24/7.',
+        why: `Acreditamos que ${segmento.toLowerCase()} pode transformar vidas e negócios. Nossa paixão é entregar valor real e criar relacionamentos duradouros com cada cliente.`,
+        how: `Desenvolvemos soluções com obsessão por qualidade, ouvimos atentamente nossos clientes e entregamos experiências excepcionais. Cada projeto passa pelo nosso controle de qualidade rigoroso.`,
+        what: `Somos especialistas em ${segmento.toLowerCase()}, oferecendo produtos e serviços de alta qualidade com atendimento diferenciado e resultados comprovados.`,
       },
       swotPessoal: {
         forcas: [
