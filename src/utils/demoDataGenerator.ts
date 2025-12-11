@@ -567,6 +567,158 @@ function generateSWOTPessoal(size: string) {
   };
 }
 
+function generateDiagnostico(segmento: string, size: string, faturamento: number, colaboradores: number) {
+  const segmentoLower = segmento.toLowerCase();
+  
+  // Gerar níveis aleatórios baseados no tamanho da empresa (com variação)
+  const baseLevel = size === 'micro' ? 1 : size === 'pequena' ? 2 : size === 'media' ? 3 : 4;
+  const variation = () => Math.floor(Math.random() * 3) - 1; // -1, 0, ou 1
+  const clampLevel = (level: number) => Math.max(1, Math.min(5, level));
+  
+  const pessoasLevel = clampLevel(baseLevel + variation());
+  const processosLevel = clampLevel(baseLevel + variation());
+  const financasLevel = clampLevel(baseLevel + variation());
+  const mercadoLevel = clampLevel(baseLevel + variation());
+  
+  // Notas contextuais baseadas no nível
+  const pessoasNotes: Record<number, string[]> = {
+    1: [
+      'Equipe muito enxuta, proprietário faz múltiplas funções',
+      'Sem estrutura formal de RH ou desenvolvimento',
+      'Alta dependência do fundador para todas as decisões'
+    ],
+    2: [
+      `Equipe de ${colaboradores} pessoas em formação inicial`,
+      'Processos de contratação informais, sem descrição de cargos',
+      'Treinamentos acontecem de forma pontual e não estruturada'
+    ],
+    3: [
+      `Time de ${colaboradores} colaboradores com funções definidas`,
+      'Início de estruturação de RH e políticas internas',
+      'Planos de desenvolvimento individual em fase inicial'
+    ],
+    4: [
+      `Equipe de ${colaboradores} profissionais bem estruturada`,
+      'Processos de RH definidos, avaliações periódicas implementadas',
+      'Plano de carreira e desenvolvimento contínuo em andamento'
+    ],
+    5: [
+      `Time de alta performance com ${colaboradores} colaboradores`,
+      'RH estratégico com programas de retenção e desenvolvimento',
+      'Cultura organizacional forte e bem definida'
+    ]
+  };
+
+  const processosNotes: Record<number, string[]> = {
+    1: [
+      'Processos totalmente informais e dependentes de pessoas',
+      'Sem documentação ou padrões estabelecidos',
+      'Retrabalho frequente por falta de processos'
+    ],
+    2: [
+      'Alguns processos-chave identificados mas não documentados',
+      'Início de padronização nas atividades principais',
+      'Ainda há muita variação na forma de executar tarefas'
+    ],
+    3: [
+      'Processos principais mapeados e em fase de documentação',
+      'Indicadores básicos de acompanhamento implementados',
+      'Melhoria contínua acontecendo de forma estruturada'
+    ],
+    4: [
+      'Processos bem documentados e seguidos consistentemente',
+      'Sistema de gestão com indicadores e metas claras',
+      'Ciclos de melhoria contínua funcionando regularmente'
+    ],
+    5: [
+      'Excelência operacional com processos otimizados',
+      'Automação e tecnologia integradas aos processos',
+      'Benchmarking e inovação contínua em processos'
+    ]
+  };
+
+  const financasNotes: Record<number, string[]> = {
+    1: [
+      `Faturamento de R$ ${(faturamento / 1000).toFixed(0)}k/mês sem controle formal`,
+      'Mistura entre finanças pessoais e da empresa',
+      'Sem fluxo de caixa ou DRE estruturados'
+    ],
+    2: [
+      `Receita de R$ ${(faturamento / 1000).toFixed(0)}k/mês com controles básicos`,
+      'Início de separação entre finanças PJ e PF',
+      'Fluxo de caixa simples, precisa de mais estrutura'
+    ],
+    3: [
+      `Faturamento de R$ ${(faturamento / 1000).toFixed(0)}k/mês com gestão em evolução`,
+      'DRE e balanço básicos, controle de custos implementado',
+      'Planejamento financeiro de curto prazo existente'
+    ],
+    4: [
+      `R$ ${(faturamento / 1000).toFixed(0)}k/mês com gestão financeira estruturada`,
+      'Indicadores financeiros acompanhados mensalmente',
+      'Orçamento anual e planejamento de médio prazo'
+    ],
+    5: [
+      `Faturamento robusto de R$ ${(faturamento / 1000).toFixed(0)}k/mês`,
+      'Gestão financeira estratégica com análises avançadas',
+      'Planejamento de longo prazo e gestão de investimentos'
+    ]
+  };
+
+  const mercadoNotes: Record<number, string[]> = {
+    1: [
+      `Atuando em ${segmentoLower} de forma reativa`,
+      'Sem estratégia de marketing definida',
+      'Dependência de indicações espontâneas'
+    ],
+    2: [
+      `Posicionamento inicial em ${segmentoLower}`,
+      'Marketing básico, principalmente redes sociais',
+      'Conhecimento superficial dos concorrentes'
+    ],
+    3: [
+      `Posição em desenvolvimento no mercado de ${segmentoLower}`,
+      'Estratégia de marketing em estruturação',
+      'ICP definido, análise competitiva em andamento'
+    ],
+    4: [
+      `Boa posição no mercado de ${segmentoLower}`,
+      'Marketing estruturado com múltiplos canais',
+      'Diferenciação clara e proposta de valor definida'
+    ],
+    5: [
+      `Referência em ${segmentoLower} na região/segmento`,
+      'Liderança de mercado com marca forte',
+      'Estratégia de expansão e inovação contínua'
+    ]
+  };
+
+  const randomNote = (notes: string[]) => notes[Math.floor(Math.random() * notes.length)];
+
+  return {
+    pessoas: { 
+      area: 'Pessoas', 
+      level: pessoasLevel, 
+      notes: randomNote(pessoasNotes[pessoasLevel]) 
+    },
+    processos: { 
+      area: 'Processos', 
+      level: processosLevel, 
+      notes: randomNote(processosNotes[processosLevel]) 
+    },
+    financas: { 
+      area: 'Finanças', 
+      level: financasLevel, 
+      notes: randomNote(financasNotes[financasLevel]) 
+    },
+    mercado: { 
+      area: 'Mercado', 
+      level: mercadoLevel, 
+      notes: randomNote(mercadoNotes[mercadoLevel]) 
+    }
+  };
+}
+
 export function generateDemoData(params: DemoParams): { project: Omit<Project, 'id' | 'dataCriacao'>, data: ConsultingData } {
   const { segmento, faturamentoMedio, quantidadeColaboradores } = params;
   const size = getCompanySize(quantidadeColaboradores);
@@ -587,12 +739,7 @@ export function generateDemoData(params: DemoParams): { project: Omit<Project, '
     clienteNome: nomeEmpresa,
     consultorNome: 'Consultor Demo',
     dataInicio: new Date().toISOString().split('T')[0],
-    diagnostico: {
-      pessoas: { area: 'Pessoas', level: size === 'micro' ? 2 : size === 'pequena' ? 3 : 4, notes: `Equipe em desenvolvimento, ${quantidadeColaboradores} colaboradores atualmente.` },
-      processos: { area: 'Processos', level: size === 'micro' ? 2 : size === 'pequena' ? 3 : 4, notes: 'Processos existentes, em fase de documentação e melhoria contínua.' },
-      financas: { area: 'Finanças', level: size === 'micro' ? 2 : size === 'pequena' ? 3 : 4, notes: `Faturamento de R$ ${(faturamentoMedio / 1000).toFixed(0)}k/mês, controles em evolução.` },
-      mercado: { area: 'Mercado', level: size === 'micro' ? 2 : size === 'pequena' ? 3 : 4, notes: `Atuando em ${segmento}, buscando diferenciação.` },
-    },
+    diagnostico: generateDiagnostico(segmento, size, faturamentoMedio, quantidadeColaboradores),
     identidade: generateIdentidade(segmento, size, revenueSize),
     goldenCircle: generateGoldenCircle(segmento, size),
     swot: generateSWOT(segmento, size, quantidadeColaboradores),
