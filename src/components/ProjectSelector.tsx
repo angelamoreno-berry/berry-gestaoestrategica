@@ -5,28 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles } from 'lucide-react';
 import { Project } from '@/types/consulting';
-
-const segmentos = [
-  'Agronegócio',
-  'Alimentação',
-  'Atacado e Distribuição',
-  'Automotivo',
-  'Engenharia e Construção',
-  'Educação',
-  'Energia Solar',
-  'Indústria',
-  'Logística',
-  'Negócios Digitais',
-  'Saúde e Bem Estar',
-  'Serviços',
-  'Supermercado',
-  'Tecnologia',
-  'Varejo',
-  'Outro'
-];
 
 export function ProjectSelector() {
   const { projects, currentProject, createProject, createDemoProject, selectProject, deleteProject } = useConsulting();
@@ -216,22 +196,14 @@ export function ProjectSelector() {
 
                 <div className="space-y-2">
                   <Label htmlFor="segmento">Segmento de Atuação *</Label>
-                  <Select
+                  <Input
+                    id="segmento"
                     value={formData.segmento}
-                    onValueChange={(value) => setFormData({ ...formData, segmento: value })}
+                    onChange={(e) => setFormData({ ...formData, segmento: e.target.value })}
+                    placeholder="Ex: Clínica de estética, Loja de roupas femininas, Consultoria de TI..."
                     required
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o segmento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {segmentos.map((seg) => (
-                        <SelectItem key={seg} value={seg}>
-                          {seg}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  />
+                  <p className="text-xs text-muted-foreground">Seja específico para obter insights mais relevantes</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -298,22 +270,14 @@ export function ProjectSelector() {
                 <form onSubmit={handleDemoSubmit} className="space-y-4 mt-4">
                   <div className="space-y-2">
                     <Label htmlFor="demoSegmento">Segmento de Atuação *</Label>
-                    <Select
+                    <Input
+                      id="demoSegmento"
                       value={demoFormData.segmento}
-                      onValueChange={(value) => setDemoFormData({ ...demoFormData, segmento: value })}
+                      onChange={(e) => setDemoFormData({ ...demoFormData, segmento: e.target.value })}
+                      placeholder="Ex: Clínica de estética, Loja de roupas femininas..."
                       required
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o segmento" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {segmentos.map((seg) => (
-                          <SelectItem key={seg} value={seg}>
-                            {seg}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
+                    <p className="text-xs text-muted-foreground">Seja específico para obter insights personalizados</p>
                   </div>
 
                   <div className="space-y-2">
