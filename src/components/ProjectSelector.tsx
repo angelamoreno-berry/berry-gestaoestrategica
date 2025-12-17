@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation } from 'lucide-react';
+import { openSalesPresentationInNewTab } from '@/utils/salesPresentationGenerator';
 import { Project } from '@/types/consulting';
 
 export function ProjectSelector() {
@@ -322,6 +323,19 @@ export function ProjectSelector() {
             </Dialog>
           </div>
         )}
+
+        {/* Botão discreto para apresentação de vendas */}
+        <div className="fixed bottom-6 right-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={openSalesPresentationInNewTab}
+            className="text-muted-foreground hover:text-foreground text-xs gap-1.5 opacity-60 hover:opacity-100 transition-opacity"
+          >
+            <Presentation className="h-3.5 w-3.5" />
+            Apresentação de Vendas
+          </Button>
+        </div>
       </div>
     </div>
   );
