@@ -338,23 +338,23 @@ export function generateSalesPresentation() {
       <div class="maturity-grid">
         <div class="maturity-item">
           <div class="maturity-label">Pessoas</div>
-          <div class="maturity-bar"><div class="maturity-fill" style="width: 60%"></div></div>
-          <div class="maturity-value">Nível 3</div>
+          <div class="maturity-bar"><div class="maturity-fill" style="width: 60%; background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);"></div></div>
+          <div class="maturity-value" style="color: #3b82f6;">Nível 3</div>
         </div>
         <div class="maturity-item">
           <div class="maturity-label">Processos</div>
-          <div class="maturity-bar"><div class="maturity-fill" style="width: 40%"></div></div>
-          <div class="maturity-value">Nível 2</div>
+          <div class="maturity-bar"><div class="maturity-fill" style="width: 40%; background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);"></div></div>
+          <div class="maturity-value" style="color: #f59e0b;">Nível 2</div>
         </div>
         <div class="maturity-item">
           <div class="maturity-label">Finanças</div>
-          <div class="maturity-bar"><div class="maturity-fill" style="width: 60%"></div></div>
-          <div class="maturity-value">Nível 3</div>
+          <div class="maturity-bar"><div class="maturity-fill" style="width: 60%; background: linear-gradient(135deg, #10b981 0%, #34d399 100%);"></div></div>
+          <div class="maturity-value" style="color: #10b981;">Nível 3</div>
         </div>
         <div class="maturity-item">
           <div class="maturity-label">Mercado</div>
-          <div class="maturity-bar"><div class="maturity-fill" style="width: 80%"></div></div>
-          <div class="maturity-value">Nível 4</div>
+          <div class="maturity-bar"><div class="maturity-fill" style="width: 80%; background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);"></div></div>
+          <div class="maturity-value" style="color: #8b5cf6;">Nível 4</div>
         </div>
       </div>
       <p class="note">*Exemplo ilustrativo. Cada área terá análise detalhada com plano de ação específico.</p>
@@ -444,6 +444,29 @@ export function generateSalesPresentation() {
           <div class="swot-item">• Mudanças no setor</div>
         </div>
       </div>
+      
+      <!-- Horizontes de Planejamento -->
+      <div style="margin-top: 24px;">
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">📅 Horizontes de Planejamento</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div style="background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(248,113,113,0.05) 100%); border-left: 3px solid #ef4444; padding: 14px; border-radius: 8px;">
+            <div style="font-weight: 600; font-size: 13px; color: #ef4444;">Curto Prazo</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">0-6 meses</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Ações imediatas para resolver fraquezas críticas</div>
+          </div>
+          <div style="background: linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(251,191,36,0.05) 100%); border-left: 3px solid #f59e0b; padding: 14px; border-radius: 8px;">
+            <div style="font-weight: 600; font-size: 13px; color: #f59e0b;">Médio Prazo</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">6-18 meses</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Aproveitar oportunidades identificadas</div>
+          </div>
+          <div style="background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(52,211,153,0.05) 100%); border-left: 3px solid #10b981; padding: 14px; border-radius: 8px;">
+            <div style="font-weight: 600; font-size: 13px; color: #10b981;">Longo Prazo</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">18-36 meses</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Visão estratégica e posicionamento futuro</div>
+          </div>
+        </div>
+      </div>
+      
       <p class="note">*Exemplo. Sua análise será baseada na realidade específica do seu negócio.</p>
     </div>
     
