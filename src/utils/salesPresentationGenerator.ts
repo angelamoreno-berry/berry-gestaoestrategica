@@ -305,7 +305,15 @@ export function generateSalesPresentation() {
     
     <!-- Logo -->
     <div style="text-align: center; margin-bottom: 32px;">
-      <img src="/images/berry-logo.png" alt="Berry Consultoria Empresarial" style="max-width: 180px; height: auto;" />
+      <svg width="180" height="60" viewBox="0 0 360 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- Circles -->
+        <circle cx="30" cy="30" r="22" fill="none" stroke="#2563eb" stroke-width="8"/>
+        <circle cx="30" cy="75" r="22" fill="none" stroke="#2563eb" stroke-width="8"/>
+        <circle cx="68" cy="52" r="18" fill="none" stroke="#4ade80" stroke-width="7"/>
+        <!-- Text -->
+        <text x="100" y="65" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="700" fill="#1e293b">berry</text>
+        <text x="100" y="95" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="400" fill="#64748b">Consultoria empresarial</text>
+      </svg>
     </div>
     
     <!-- Hero -->
