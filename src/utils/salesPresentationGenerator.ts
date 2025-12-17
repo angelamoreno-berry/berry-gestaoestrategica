@@ -303,9 +303,14 @@ export function generateSalesPresentation() {
 <body>
   <div class="container">
     
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: 32px;">
+      <img src="/images/berry-logo.png" alt="Berry Consultoria Empresarial" style="max-width: 180px; height: auto;" />
+    </div>
+    
     <!-- Hero -->
     <div class="hero">
-      <h1>Programa de Estruturação em Gestão</h1>
+      <h1>Estruturação em Gestão</h1>
       <p class="hero-subtitle">
         Um trabalho completo de organização dos principais pilares do seu negócio, 
         com entregas práticas e personalizadas para sua realidade.
