@@ -10,15 +10,15 @@ export function generateSalesPresentation() {
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     :root {
-      --primary: #6366f1;
-      --primary-light: #818cf8;
-      --primary-dark: #4f46e5;
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --primary-dark: #1d4ed8;
       --secondary: #0ea5e9;
       --accent: #f59e0b;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      --gradient-primary: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
       --gradient-secondary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
       --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
       --text-primary: #1e293b;
@@ -116,8 +116,8 @@ export function generateSalesPresentation() {
     }
     
     .gc-why { width: 100px; height: 100px; background: var(--gradient-primary); font-size: 12px; z-index: 3; }
-    .gc-how { width: 160px; height: 160px; background: rgba(99,102,241,0.7); margin-left: -30px; font-size: 12px; z-index: 2; }
-    .gc-what { width: 220px; height: 220px; background: rgba(99,102,241,0.4); margin-left: -30px; font-size: 12px; z-index: 1; }
+    .gc-how { width: 160px; height: 160px; background: rgba(37,99,235,0.7); margin-left: -30px; font-size: 12px; z-index: 2; }
+    .gc-what { width: 220px; height: 220px; background: rgba(37,99,235,0.4); margin-left: -30px; font-size: 12px; z-index: 1; }
     
     .maturity-grid {
       display: grid;
@@ -512,24 +512,44 @@ export function generateSalesPresentation() {
         <h3 class="preview-title">Estratégia de Precificação</h3>
       </div>
       <p class="preview-desc">
-        Revisão do modelo de preços considerando custos, mercado e valor percebido. 
-        Cálculo de margem e ponto de equilíbrio.
+        Para cada produto/serviço, analisamos diferentes estratégias de precificação para maximizar valor percebido e rentabilidade.
       </p>
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <div class="pricing-label">Custo Real</div>
-          <div class="pricing-value">R$ 150</div>
-        </div>
-        <div class="pricing-card">
-          <div class="pricing-label">Preço Sugerido</div>
-          <div class="pricing-value">R$ 250</div>
-        </div>
-        <div class="pricing-card">
-          <div class="pricing-label">Margem</div>
-          <div class="pricing-value highlight">40%</div>
+      <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+        <div style="font-weight: 600; font-size: 14px; margin-bottom: 12px;">📦 Exemplo: Consultoria Estratégica - Preço base R$ 1.000</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #10b981;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">💎 Valor Agregado</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #10b981;">R$ 1.400</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">+40% com garantia e suporte VIP</div>
+          </div>
+          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #3b82f6;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">📦 Combo/Pacote</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #3b82f6;">R$ 2.500</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">3 serviços com 15% desconto</div>
+          </div>
+          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #f59e0b;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">👑 Plano Premium</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #f59e0b;">R$ 2.000</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">2x com atendimento prioritário</div>
+          </div>
+          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #8b5cf6;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">🔄 Recorrência</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #8b5cf6;">R$ 150/mês</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">15% mensal = 12x retorno anual</div>
+          </div>
+          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #ec4899;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">🎯 Baseado em ROI</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #ec4899;">R$ 3.000</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Se gera 10x retorno, 3x é "barato"</div>
+          </div>
+          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #06b6d4;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">⚓ Ancoragem</div>
+            <div style="font-size: 1.1rem; font-weight: 700; color: #06b6d4;">De R$ 2.000 por R$ 1.000</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Âncora alta = oportunidade</div>
+          </div>
         </div>
       </div>
-      <p class="note">*Valores ilustrativos. Cálculos serão feitos com seus números reais.</p>
+      <p class="note">*Cada produto/serviço terá análise completa com sugestões personalizáveis.</p>
     </div>
     
     <!-- 8. Estratégias de Valor -->
@@ -666,31 +686,67 @@ export function generateSalesPresentation() {
     <div class="preview-section">
       <div class="preview-header">
         <div class="preview-number">12</div>
-        <h3 class="preview-title">Dashboard Financeiro</h3>
+        <h3 class="preview-title">Painel com os Principais Indicadores Financeiros</h3>
       </div>
       <p class="preview-desc">
-        Visão clara dos números essenciais do negócio: faturamento, custos, margem e projeções. 
-        Informações para tomar decisões baseadas em dados.
+        Visão completa dos indicadores financeiros essenciais para gestão e tomada de decisão. 
+        Dados organizados para acompanhamento mensal.
       </p>
-      <div class="financial-grid">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
         <div class="financial-card">
-          <div class="financial-label">Faturamento</div>
-          <div class="financial-value">R$ 120K</div>
+          <div class="financial-label">Faturamento Bruto</div>
+          <div class="financial-value">R$ 150K</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">Custos Variáveis</div>
+          <div class="financial-value">R$ 52K</div>
         </div>
         <div class="financial-card">
           <div class="financial-label">Custos Fixos</div>
-          <div class="financial-value">R$ 45K</div>
+          <div class="financial-value">R$ 38K</div>
         </div>
         <div class="financial-card">
-          <div class="financial-label">Margem</div>
-          <div class="financial-value positive">28%</div>
-        </div>
-        <div class="financial-card">
-          <div class="financial-label">Ponto Equilíbrio</div>
-          <div class="financial-value">R$ 65K</div>
+          <div class="financial-label">Lucro Líquido</div>
+          <div class="financial-value positive">R$ 60K</div>
         </div>
       </div>
-      <p class="note">*Indicadores calculados com seus dados reais.</p>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px;">
+        <div class="financial-card">
+          <div class="financial-label">Margem de Contribuição</div>
+          <div class="financial-value positive">65%</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">Margem Líquida</div>
+          <div class="financial-value positive">40%</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">EBITDA</div>
+          <div class="financial-value">R$ 72K</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">Ponto de Equilíbrio</div>
+          <div class="financial-value">R$ 58K</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+        <div class="financial-card">
+          <div class="financial-label">Ticket Médio</div>
+          <div class="financial-value">R$ 850</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">CAC</div>
+          <div class="financial-value">R$ 120</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">LTV</div>
+          <div class="financial-value">R$ 3.400</div>
+        </div>
+        <div class="financial-card">
+          <div class="financial-label">LTV/CAC</div>
+          <div class="financial-value positive">28x</div>
+        </div>
+      </div>
+      <p class="note">*Indicadores calculados com seus dados reais. Inclui análise histórica e projeções.</p>
     </div>
     
     <!-- 13. SWOT Pessoal -->
