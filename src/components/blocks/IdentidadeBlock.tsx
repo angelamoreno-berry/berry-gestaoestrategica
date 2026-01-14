@@ -1,14 +1,21 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, RefreshCw } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
+
+interface IdentidadeSuggestions {
+  visao: string;
+  missao: string;
+  valores: string[];
+  posicionamento: string;
+}
 
 export function IdentidadeBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
@@ -16,10 +23,8 @@ export function IdentidadeBlock() {
   const [newValor, setNewValor] = useState('');
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).identidade;
-  }, [currentProject]);
+  const { suggestions: aiSuggestions, isLoading, error, refresh } = useAISuggestions('identidade', currentProject);
+  const suggestions = aiSuggestions as unknown as IdentidadeSuggestions | null;
 
   useEffect(() => {
     const fields = [localData.visao, localData.missao, localData.posicionamento];
@@ -62,17 +67,22 @@ export function IdentidadeBlock() {
 
   const showSuggestion = (field: string, value: string | string[]) => {
     const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
-    return suggestions && isEmpty && !dismissedSuggestions[field];
+    return isEmpty && !dismissedSuggestions[field];
   };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Defina ou ajuste os pilares fundamentais que guiarão todas as decisões estratégicas da empresa.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Defina ou ajuste os pilares fundamentais que guiarão todas as decisões estratégicas da empresa.
+        </p>
+        <Button variant="outline" size="sm" onClick={refresh} disabled={isLoading} className="gap-2">
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       <div className="grid gap-6">
-        {/* Visão */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -93,17 +103,21 @@ export function IdentidadeBlock() {
               rows={3}
             />
             {showSuggestion('visao', localData.visao) && (
-              <SuggestionCard
-                suggestion={suggestions!.visao}
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.visao}
+                fieldKey="visao"
                 label="Sugestão de visão"
                 onAccept={(value) => handleAcceptSuggestion('visao', value)}
                 onDismiss={() => handleDismissSuggestion('visao')}
+                onRetry={refresh}
+                currentValue={localData.visao}
               />
             )}
           </CardContent>
         </Card>
 
-        {/* Missão */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -124,17 +138,21 @@ export function IdentidadeBlock() {
               rows={3}
             />
             {showSuggestion('missao', localData.missao) && (
-              <SuggestionCard
-                suggestion={suggestions!.missao}
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.missao}
+                fieldKey="missao"
                 label="Sugestão de missão"
                 onAccept={(value) => handleAcceptSuggestion('missao', value)}
                 onDismiss={() => handleDismissSuggestion('missao')}
+                onRetry={refresh}
+                currentValue={localData.missao}
               />
             )}
           </CardContent>
         </Card>
 
-        {/* Valores */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -164,10 +182,7 @@ export function IdentidadeBlock() {
                 {localData.valores.map((valor, index) => (
                   <Badge key={index} variant="secondary" className="px-3 py-1.5 text-sm">
                     {valor}
-                    <button
-                      onClick={() => removeValor(index)}
-                      className="ml-2 hover:text-destructive"
-                    >
+                    <button onClick={() => removeValor(index)} className="ml-2 hover:text-destructive">
                       <X className="w-3 h-3" />
                     </button>
                   </Badge>
@@ -176,17 +191,21 @@ export function IdentidadeBlock() {
             )}
 
             {showSuggestion('valores', localData.valores) && (
-              <SuggestionCard
-                suggestion={suggestions!.valores}
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.valores}
+                fieldKey="valores"
                 label="Sugestão de valores"
                 onAccept={(value) => handleAcceptSuggestion('valores', value)}
                 onDismiss={() => handleDismissSuggestion('valores')}
+                onRetry={refresh}
+                currentValue={localData.valores}
               />
             )}
           </CardContent>
         </Card>
 
-        {/* Posicionamento */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -207,11 +226,16 @@ export function IdentidadeBlock() {
               rows={3}
             />
             {showSuggestion('posicionamento', localData.posicionamento) && (
-              <SuggestionCard
-                suggestion={suggestions!.posicionamento}
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.posicionamento}
+                fieldKey="posicionamento"
                 label="Sugestão de posicionamento"
                 onAccept={(value) => handleAcceptSuggestion('posicionamento', value)}
                 onDismiss={() => handleDismissSuggestion('posicionamento')}
+                onRetry={refresh}
+                currentValue={localData.posicionamento}
               />
             )}
           </CardContent>

@@ -1,20 +1,32 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
+import { Button } from '@/components/ui/button';
+import { RefreshCw } from 'lucide-react';
+
+interface GoldenCircleSuggestions {
+  why: string;
+  how: string;
+  what: string;
+}
 
 export function GoldenCircleBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.goldenCircle);
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).goldenCircle;
-  }, [currentProject]);
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('goldenCircle', currentProject);
+
+  const suggestions = aiSuggestions as unknown as GoldenCircleSuggestions | null;
 
   useEffect(() => {
     const hasWhy = localData.why.trim().length > 0 ? 1 : 0;
@@ -43,14 +55,26 @@ export function GoldenCircleBlock() {
   };
 
   const showSuggestion = (field: string, value: string) => {
-    return suggestions && !value.trim() && !dismissedSuggestions[field];
+    return !value.trim() && !dismissedSuggestions[field];
   };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Baseado no conceito de Simon Sinek, defina o propósito profundo da empresa começando pelo "porquê".
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Baseado no conceito de Simon Sinek, defina o propósito profundo da empresa começando pelo "porquê".
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* Golden Circle Visualization */}
       <div className="flex justify-center py-8">
@@ -96,11 +120,16 @@ export function GoldenCircleBlock() {
               rows={4}
             />
             {showSuggestion('why', localData.why) && (
-              <SuggestionCard
-                suggestion={suggestions!.why}
-                label="Sugestão baseada no seu segmento"
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.why}
+                fieldKey="why"
+                label="Sugestão de propósito"
                 onAccept={(value) => handleAcceptSuggestion('why', value)}
                 onDismiss={() => handleDismissSuggestion('why')}
+                onRetry={refresh}
+                currentValue={localData.why}
               />
             )}
           </CardContent>
@@ -128,11 +157,16 @@ export function GoldenCircleBlock() {
               rows={4}
             />
             {showSuggestion('how', localData.how) && (
-              <SuggestionCard
-                suggestion={suggestions!.how}
-                label="Sugestão baseada no tamanho da empresa"
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.how}
+                fieldKey="how"
+                label="Sugestão de metodologia"
                 onAccept={(value) => handleAcceptSuggestion('how', value)}
                 onDismiss={() => handleDismissSuggestion('how')}
+                onRetry={refresh}
+                currentValue={localData.how}
               />
             )}
           </CardContent>
@@ -160,11 +194,16 @@ export function GoldenCircleBlock() {
               rows={4}
             />
             {showSuggestion('what', localData.what) && (
-              <SuggestionCard
-                suggestion={suggestions!.what}
-                label="Sugestão baseada no seu segmento"
+              <AISuggestionLoader
+                isLoading={isLoading}
+                error={error}
+                suggestion={suggestions?.what}
+                fieldKey="what"
+                label="Sugestão de entregas"
                 onAccept={(value) => handleAcceptSuggestion('what', value)}
                 onDismiss={() => handleDismissSuggestion('what')}
+                onRetry={refresh}
+                currentValue={localData.what}
               />
             )}
           </CardContent>
