@@ -93,7 +93,7 @@ export function AISuggestionLoader({
   return (
     <SuggestionCard
       suggestion={suggestion}
-      label={`${label} (IA)`}
+      label={label}
       onAccept={onAccept}
       onDismiss={onDismiss}
     />
