@@ -1,15 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
 
 const swotConfig = [
   { key: 'forcas', label: 'Forças', icon: '💪', color: 'bg-green-500', description: 'Vantagens internas: equipe, produto, marca, localização, tecnologia, processos.', examples: 'Ex: Equipe experiente, Produto único, Boa reputação' },
@@ -20,16 +20,32 @@ const swotConfig = [
 
 type SwotKey = 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas';
 
+interface SwotSuggestions {
+  forcas: string[];
+  fraquezas: string[];
+  oportunidades: string[];
+  ameacas: string[];
+  horizontes?: {
+    curto: string;
+    medio: string;
+    longo: string;
+  };
+}
+
 export function SWOTBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.swot);
   const [newItems, setNewItems] = useState<Record<string, string>>({});
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).swot;
-  }, [currentProject]);
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('swot', currentProject);
+
+  const suggestions = aiSuggestions as unknown as SwotSuggestions | null;
 
   useEffect(() => {
     const hasForcas = localData.forcas.length > 0 ? 1 : 0;
@@ -70,10 +86,16 @@ export function SWOTBlock() {
     updateData('swot', newData);
   };
 
-  const handleAcceptSuggestion = (key: SwotKey, value: string | string[]) => {
-    const newData = { ...localData, [key]: value as string[] };
-    setLocalData(newData);
-    updateData('swot', newData);
+  const handleAcceptSuggestion = (key: SwotKey | 'horizontes', value: string | string[] | { curto: string; medio: string; longo: string }) => {
+    if (key === 'horizontes' && typeof value === 'object' && !Array.isArray(value)) {
+      const newData = { ...localData, horizontes: value };
+      setLocalData(newData);
+      updateData('swot', newData);
+    } else {
+      const newData = { ...localData, [key]: value as string[] };
+      setLocalData(newData);
+      updateData('swot', newData);
+    }
   };
 
   const handleDismissSuggestion = (field: string) => {
@@ -81,14 +103,30 @@ export function SWOTBlock() {
   };
 
   const showSuggestion = (field: SwotKey) => {
-    return suggestions && localData[field].length === 0 && !dismissedSuggestions[field];
+    return localData[field].length === 0 && !dismissedSuggestions[field];
+  };
+
+  const showHorizontesSuggestion = () => {
+    return !localData.horizontes.curto && !localData.horizontes.medio && !localData.horizontes.longo && !dismissedSuggestions['horizontes'];
   };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Realize uma análise SWOT completa e defina os horizontes de planejamento estratégico.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Realize uma análise SWOT completa e defina os horizontes de planejamento estratégico.
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* SWOT Matrix */}
       <div className="grid md:grid-cols-2 gap-4">
@@ -132,11 +170,16 @@ export function SWOTBlock() {
               )}
 
               {showSuggestion(item.key as SwotKey) && (
-                <SuggestionCard
-                  suggestion={suggestions![item.key as SwotKey]}
+                <AISuggestionLoader
+                  isLoading={isLoading}
+                  error={error}
+                  suggestion={suggestions?.[item.key as SwotKey]}
+                  fieldKey={item.key}
                   label={`Sugestão de ${item.label.toLowerCase()}`}
                   onAccept={(value) => handleAcceptSuggestion(item.key as SwotKey, value)}
                   onDismiss={() => handleDismissSuggestion(item.key)}
+                  onRetry={refresh}
+                  currentValue={localData[item.key as SwotKey]}
                 />
               )}
             </CardContent>
@@ -157,6 +200,22 @@ export function SWOTBlock() {
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
+          {showHorizontesSuggestion() && suggestions?.horizontes && (
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={[
+                `Curto Prazo: ${suggestions.horizontes.curto}`,
+                `Médio Prazo: ${suggestions.horizontes.medio}`,
+                `Longo Prazo: ${suggestions.horizontes.longo}`
+              ]}
+              fieldKey="horizontes"
+              label="Sugestão de horizontes"
+              onAccept={() => handleAcceptSuggestion('horizontes', suggestions.horizontes!)}
+              onDismiss={() => handleDismissSuggestion('horizontes')}
+              onRetry={refresh}
+            />
+          )}
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium mb-2 block flex items-center gap-2">

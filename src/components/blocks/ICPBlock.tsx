@@ -1,14 +1,25 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, RefreshCw } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
+
+interface ICPSuggestions {
+  caracteristicasDemograficas: string;
+  descricao?: string;
+  segmentos?: string[];
+  dores: string[];
+  desejos: string[];
+  necessidades?: string[];
+  comportamento: string;
+  ondeEncontrar: string;
+}
 
 export function ICPBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
@@ -17,10 +28,14 @@ export function ICPBlock() {
   const [newDesejo, setNewDesejo] = useState('');
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).icp;
-  }, [currentProject]);
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('icp', currentProject);
+
+  const suggestions = aiSuggestions as unknown as ICPSuggestions | null;
 
   useEffect(() => {
     const hasCaracteristicas = localData.caracteristicasDemograficas.trim().length > 0 ? 1 : 0;
@@ -64,7 +79,7 @@ export function ICPBlock() {
     handleChange('desejos', localData.desejos.filter((_, i) => i !== index));
   };
 
-  const handleAcceptSuggestion = (field: 'caracteristicasDemograficas' | 'dores' | 'desejos', value: string | string[]) => {
+  const handleAcceptSuggestion = (field: keyof ICPSuggestions, value: string | string[]) => {
     handleChange(field, value);
   };
 
@@ -74,14 +89,26 @@ export function ICPBlock() {
 
   const showSuggestion = (field: string, value: string | string[]) => {
     const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
-    return suggestions && isEmpty && !dismissedSuggestions[field];
+    return isEmpty && !dismissedSuggestions[field];
   };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Defina o Perfil de Cliente Ideal (ICP) para direcionar suas estratégias de marketing e vendas com precisão.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Defina o Perfil de Cliente Ideal (ICP) para direcionar suas estratégias de marketing e vendas com precisão.
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* Avatar Visual */}
       <Card className="bg-gradient-to-br from-primary/5 to-accent/5">
@@ -121,11 +148,16 @@ export function ICPBlock() {
             rows={4}
           />
           {showSuggestion('caracteristicasDemograficas', localData.caracteristicasDemograficas) && (
-            <SuggestionCard
-              suggestion={suggestions!.caracteristicasDemograficas}
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.caracteristicasDemograficas}
+              fieldKey="caracteristicasDemograficas"
               label="Sugestão de perfil demográfico"
               onAccept={(value) => handleAcceptSuggestion('caracteristicasDemograficas', value)}
               onDismiss={() => handleDismissSuggestion('caracteristicasDemograficas')}
+              onRetry={refresh}
+              currentValue={localData.caracteristicasDemograficas}
             />
           )}
         </CardContent>
@@ -170,11 +202,16 @@ export function ICPBlock() {
           )}
 
           {showSuggestion('dores', localData.dores) && (
-            <SuggestionCard
-              suggestion={suggestions!.dores}
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.dores}
+              fieldKey="dores"
               label="Sugestão de dores do cliente"
               onAccept={(value) => handleAcceptSuggestion('dores', value)}
               onDismiss={() => handleDismissSuggestion('dores')}
+              onRetry={refresh}
+              currentValue={localData.dores}
             />
           )}
         </CardContent>
@@ -219,11 +256,16 @@ export function ICPBlock() {
           )}
 
           {showSuggestion('desejos', localData.desejos) && (
-            <SuggestionCard
-              suggestion={suggestions!.desejos}
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.desejos}
+              fieldKey="desejos"
               label="Sugestão de desejos do cliente"
               onAccept={(value) => handleAcceptSuggestion('desejos', value)}
               onDismiss={() => handleDismissSuggestion('desejos')}
+              onRetry={refresh}
+              currentValue={localData.desejos}
             />
           )}
         </CardContent>
@@ -241,7 +283,7 @@ export function ICPBlock() {
             Como ele toma decisões? O que influencia suas escolhas?
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Textarea
             placeholder="Ex: Pesquisa bastante antes de comprar, valoriza indicações, busca provas de resultado, sensível a preço mas paga por qualidade..."
             value={localData.comportamento}
@@ -249,6 +291,19 @@ export function ICPBlock() {
             className="resize-none"
             rows={3}
           />
+          {showSuggestion('comportamento', localData.comportamento) && (
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.comportamento}
+              fieldKey="comportamento"
+              label="Sugestão de comportamento"
+              onAccept={(value) => handleAcceptSuggestion('comportamento', value)}
+              onDismiss={() => handleDismissSuggestion('comportamento')}
+              onRetry={refresh}
+              currentValue={localData.comportamento}
+            />
+          )}
         </CardContent>
       </Card>
 
@@ -264,7 +319,7 @@ export function ICPBlock() {
             Quais canais, redes sociais, eventos ou lugares seu cliente frequenta?
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-3">
           <Textarea
             placeholder="Ex: LinkedIn, eventos de negócios, associações comerciais, Instagram profissional, podcasts de empreendedorismo..."
             value={localData.ondeEncontrar}
@@ -272,6 +327,19 @@ export function ICPBlock() {
             className="resize-none"
             rows={3}
           />
+          {showSuggestion('ondeEncontrar', localData.ondeEncontrar) && (
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.ondeEncontrar}
+              fieldKey="ondeEncontrar"
+              label="Sugestão de onde encontrar"
+              onAccept={(value) => handleAcceptSuggestion('ondeEncontrar', value)}
+              onDismiss={() => handleDismissSuggestion('ondeEncontrar')}
+              onRetry={refresh}
+              currentValue={localData.ondeEncontrar}
+            />
+          )}
         </CardContent>
       </Card>
     </div>
