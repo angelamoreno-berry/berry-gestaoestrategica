@@ -1,14 +1,21 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, RefreshCw } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
+
+interface ConcorrentesSuggestions {
+  concorrentes: Array<{ nome: string; pontoForte: string; pontoFraco: string }>;
+  diferenciais: string[];
+  publicoAlvo: string;
+  propostaValor: string;
+}
 
 export function ConcorrentesBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
@@ -16,10 +23,14 @@ export function ConcorrentesBlock() {
   const [newDiferencial, setNewDiferencial] = useState('');
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).concorrentes;
-  }, [currentProject]);
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('concorrentes', currentProject);
+
+  const suggestions = aiSuggestions as unknown as ConcorrentesSuggestions | null;
 
   useEffect(() => {
     const hasConcorrentes = localData.concorrentes.length > 0 ? 1 : 0;
@@ -72,13 +83,13 @@ export function ConcorrentesBlock() {
     updateData('concorrentes', newData);
   };
 
-  const handleChange = (field: string, value: string | string[]) => {
+  const handleChange = (field: string, value: string | string[] | Array<{ nome: string; pontoForte: string; pontoFraco: string }>) => {
     const newData = { ...localData, [field]: value };
     setLocalData(newData);
     updateData('concorrentes', newData);
   };
 
-  const handleAcceptSuggestion = (field: 'publicoAlvo' | 'propostaValor' | 'diferenciais', value: string | string[]) => {
+  const handleAcceptSuggestion = (field: keyof ConcorrentesSuggestions, value: string | string[] | Array<{ nome: string; pontoForte: string; pontoFraco: string }>) => {
     handleChange(field, value);
   };
 
@@ -86,16 +97,28 @@ export function ConcorrentesBlock() {
     setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
   };
 
-  const showSuggestion = (field: string, value: string | string[]) => {
+  const showSuggestion = (field: string, value: string | string[] | Array<{ nome: string; pontoForte: string; pontoFraco: string }>) => {
     const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
-    return suggestions && isEmpty && !dismissedSuggestions[field];
+    return isEmpty && !dismissedSuggestions[field];
   };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Mapeie o cenário competitivo, identifique seus diferenciais e defina claramente seu público e proposta de valor.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Mapeie o cenário competitivo, identifique seus diferenciais e defina claramente seu público e proposta de valor.
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* Concorrentes */}
       <Card>
@@ -151,9 +174,23 @@ export function ConcorrentesBlock() {
             </div>
           ))}
           {localData.concorrentes.length === 0 && (
-            <p className="text-center text-muted-foreground py-4">
-              Clique em "Adicionar" para mapear seus concorrentes
-            </p>
+            <div className="space-y-4">
+              <p className="text-center text-muted-foreground py-4">
+                Clique em "Adicionar" para mapear seus concorrentes
+              </p>
+              {showSuggestion('concorrentes', localData.concorrentes) && suggestions?.concorrentes && (
+                <AISuggestionLoader
+                  isLoading={isLoading}
+                  error={error}
+                  suggestion={suggestions.concorrentes.map(c => `${c.nome} (Forte: ${c.pontoForte}, Fraco: ${c.pontoFraco})`)}
+                  fieldKey="concorrentes"
+                  label="Sugestão de concorrentes"
+                  onAccept={() => handleAcceptSuggestion('concorrentes', suggestions.concorrentes)}
+                  onDismiss={() => handleDismissSuggestion('concorrentes')}
+                  onRetry={refresh}
+                />
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -200,11 +237,16 @@ export function ConcorrentesBlock() {
           )}
 
           {showSuggestion('diferenciais', localData.diferenciais) && (
-            <SuggestionCard
-              suggestion={suggestions!.diferenciais}
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.diferenciais}
+              fieldKey="diferenciais"
               label="Sugestão de diferenciais"
               onAccept={(value) => handleAcceptSuggestion('diferenciais', value)}
               onDismiss={() => handleDismissSuggestion('diferenciais')}
+              onRetry={refresh}
+              currentValue={localData.diferenciais}
             />
           )}
         </CardContent>
@@ -228,11 +270,16 @@ export function ConcorrentesBlock() {
             rows={3}
           />
           {showSuggestion('publicoAlvo', localData.publicoAlvo) && (
-            <SuggestionCard
-              suggestion={suggestions!.publicoAlvo}
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.publicoAlvo}
+              fieldKey="publicoAlvo"
               label="Sugestão de público-alvo"
               onAccept={(value) => handleAcceptSuggestion('publicoAlvo', value)}
               onDismiss={() => handleDismissSuggestion('publicoAlvo')}
+              onRetry={refresh}
+              currentValue={localData.publicoAlvo}
             />
           )}
         </CardContent>
@@ -259,11 +306,16 @@ export function ConcorrentesBlock() {
             rows={4}
           />
           {showSuggestion('propostaValor', localData.propostaValor) && (
-            <SuggestionCard
-              suggestion={suggestions!.propostaValor}
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.propostaValor}
+              fieldKey="propostaValor"
               label="Sugestão de proposta de valor"
               onAccept={(value) => handleAcceptSuggestion('propostaValor', value)}
               onDismiss={() => handleDismissSuggestion('propostaValor')}
+              onRetry={refresh}
+              currentValue={localData.propostaValor}
             />
           )}
         </CardContent>

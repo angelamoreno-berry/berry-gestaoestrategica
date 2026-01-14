@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -6,11 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Plus, Trash2, Calendar, Clock } from 'lucide-react';
+import { Plus, Trash2, Calendar, Clock, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
 
 const importanciaLabels = {
   alta: { label: 'Alta', color: 'bg-red-500' },
@@ -18,15 +18,27 @@ const importanciaLabels = {
   baixa: { label: 'Baixa', color: 'bg-green-500' },
 };
 
+interface AgendaCEOSuggestions {
+  prioridades: Array<{ descricao: string; importancia: 'alta' | 'media' | 'baixa' }>;
+  alocacaoTempo: Array<{ atividade: string; percentual: number }>;
+  rotinas?: Array<{ atividade: string; frequencia: string; dia: string }>;
+  delegacoes?: Array<{ atividade: string; para: string }>;
+  focoTrimestre: string;
+}
+
 export function AgendaCEOBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.agendaCEO);
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).agendaCEO;
-  }, [currentProject]);
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('agendaCEO', currentProject);
+
+  const suggestions = aiSuggestions as unknown as AgendaCEOSuggestions | null;
 
   useEffect(() => {
     const hasPrioridades = localData.prioridades.length > 0 ? 1 : 0;
@@ -92,19 +104,16 @@ export function AgendaCEOBlock() {
     handleFocoChange(value as string);
   };
 
-  const handleAcceptPrioridadesSuggestion = (value: string | string[]) => {
-    const prioridades = (value as string[]).map(desc => ({
-      descricao: desc,
-      importancia: 'media' as const
-    }));
-    const newData = { ...localData, prioridades };
-    setLocalData(newData);
-    updateData('agendaCEO', newData);
+  const handleAcceptPrioridadesSuggestion = () => {
+    if (suggestions?.prioridades) {
+      const newData = { ...localData, prioridades: suggestions.prioridades };
+      setLocalData(newData);
+      updateData('agendaCEO', newData);
+    }
   };
 
-  const handleAcceptAlocacaoSuggestion = (value: string | string[]) => {
-    // value will be the original suggestion array from the generator
-    if (suggestions) {
+  const handleAcceptAlocacaoSuggestion = () => {
+    if (suggestions?.alocacaoTempo) {
       const newData = { ...localData, alocacaoTempo: suggestions.alocacaoTempo };
       setLocalData(newData);
       updateData('agendaCEO', newData);
@@ -119,9 +128,21 @@ export function AgendaCEOBlock() {
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Defina as prioridades estratégicas do CEO, a alocação ideal de tempo e o foco principal para o próximo trimestre.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Defina as prioridades estratégicas do CEO, a alocação ideal de tempo e o foco principal para o próximo trimestre.
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* Foco do Trimestre */}
       <Card className="border-primary">
@@ -143,12 +164,17 @@ export function AgendaCEOBlock() {
             className="resize-none"
             rows={3}
           />
-          {suggestions && !localData.focoTrimestre.trim() && !dismissedSuggestions['focoTrimestre'] && (
-            <SuggestionCard
-              suggestion={suggestions.focoTrimestre}
+          {!localData.focoTrimestre.trim() && !dismissedSuggestions['focoTrimestre'] && (
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.focoTrimestre}
+              fieldKey="focoTrimestre"
               label="Sugestão de foco trimestral"
               onAccept={handleAcceptFocoSuggestion}
               onDismiss={() => handleDismissSuggestion('focoTrimestre')}
+              onRetry={refresh}
+              currentValue={localData.focoTrimestre}
             />
           )}
         </CardContent>
@@ -212,12 +238,16 @@ export function AgendaCEOBlock() {
               <p className="text-center text-muted-foreground py-4">
                 Adicione as prioridades estratégicas do CEO
               </p>
-              {suggestions && !dismissedSuggestions['prioridades'] && (
-                <SuggestionCard
-                  suggestion={suggestions.prioridades}
+              {!dismissedSuggestions['prioridades'] && suggestions?.prioridades && (
+                <AISuggestionLoader
+                  isLoading={isLoading}
+                  error={error}
+                  suggestion={suggestions.prioridades.map(p => `${p.descricao} (${p.importancia})`)}
+                  fieldKey="prioridades"
                   label="Sugestão de prioridades"
                   onAccept={handleAcceptPrioridadesSuggestion}
                   onDismiss={() => handleDismissSuggestion('prioridades')}
+                  onRetry={refresh}
                 />
               )}
             </>
@@ -293,12 +323,16 @@ export function AgendaCEOBlock() {
               <p className="text-center text-muted-foreground py-4">
                 Adicione as atividades e sua alocação de tempo ideal
               </p>
-              {suggestions && !dismissedSuggestions['alocacaoTempo'] && (
-                <SuggestionCard
+              {!dismissedSuggestions['alocacaoTempo'] && suggestions?.alocacaoTempo && (
+                <AISuggestionLoader
+                  isLoading={isLoading}
+                  error={error}
                   suggestion={suggestions.alocacaoTempo.map(a => `${a.atividade}: ${a.percentual}%`)}
+                  fieldKey="alocacaoTempo"
                   label="Sugestão de alocação de tempo"
                   onAccept={handleAcceptAlocacaoSuggestion}
                   onDismiss={() => handleDismissSuggestion('alocacaoTempo')}
+                  onRetry={refresh}
                 />
               )}
             </>

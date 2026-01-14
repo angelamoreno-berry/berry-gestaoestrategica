@@ -4,14 +4,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, RefreshCw } from 'lucide-react';
 import { HelpTooltip } from '@/components/HelpTooltip';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
+
+interface EstrategiasValorSuggestions {
+  novasOfertas: string[];
+  novosServicos: string[];
+  pacotes?: Array<{ nome: string; descricao: string; preco: string }>;
+}
 
 export function EstrategiasValorBlock() {
-  const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
+  const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.estrategiasValor);
   const [newOferta, setNewOferta] = useState('');
   const [newServico, setNewServico] = useState('');
+  const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
+
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('estrategiasValor', currentProject);
+
+  const suggestions = aiSuggestions as unknown as EstrategiasValorSuggestions | null;
 
   useEffect(() => {
     const hasOfertas = localData.novasOfertas.length > 0 ? 1 : 0;
@@ -54,12 +72,33 @@ export function EstrategiasValorBlock() {
     updateData('estrategiasValor', newData);
   };
 
+  const handleAcceptSuggestion = (field: 'novasOfertas' | 'novosServicos', value: string | string[]) => {
+    const newData = { ...localData, [field]: value as string[] };
+    setLocalData(newData);
+    updateData('estrategiasValor', newData);
+  };
+
+  const handleDismissSuggestion = (field: string) => {
+    setDismissedSuggestions(prev => ({ ...prev, [field]: true }));
+  };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Identifique oportunidades para agregar valor ao negócio através de novas ofertas, serviços e pacotes estratégicos.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Identifique oportunidades para agregar valor ao negócio através de novas ofertas, serviços e pacotes estratégicos.
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* Novas Ofertas */}
       <Card>
@@ -97,6 +136,20 @@ export function EstrategiasValorBlock() {
                 </Badge>
               ))}
             </div>
+          )}
+
+          {localData.novasOfertas.length === 0 && !dismissedSuggestions['novasOfertas'] && (
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.novasOfertas}
+              fieldKey="novasOfertas"
+              label="Sugestão de novas ofertas"
+              onAccept={(value) => handleAcceptSuggestion('novasOfertas', value)}
+              onDismiss={() => handleDismissSuggestion('novasOfertas')}
+              onRetry={refresh}
+              currentValue={localData.novasOfertas}
+            />
           )}
         </CardContent>
       </Card>
@@ -138,9 +191,48 @@ export function EstrategiasValorBlock() {
               ))}
             </div>
           )}
+
+          {localData.novosServicos.length === 0 && !dismissedSuggestions['novosServicos'] && (
+            <AISuggestionLoader
+              isLoading={isLoading}
+              error={error}
+              suggestion={suggestions?.novosServicos}
+              fieldKey="novosServicos"
+              label="Sugestão de novos serviços"
+              onAccept={(value) => handleAcceptSuggestion('novosServicos', value)}
+              onDismiss={() => handleDismissSuggestion('novosServicos')}
+              onRetry={refresh}
+              currentValue={localData.novosServicos}
+            />
+          )}
         </CardContent>
       </Card>
 
+      {/* Pacotes Sugeridos pela IA */}
+      {suggestions?.pacotes && suggestions.pacotes.length > 0 && (
+        <Card className="bg-gradient-to-br from-primary/5 to-accent/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-2xl">📦</span>
+              Pacotes Sugeridos pela IA
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Sugestões de pacotes baseadas no seu segmento
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-4">
+              {suggestions.pacotes.map((pacote, index) => (
+                <div key={index} className="p-4 bg-card rounded-lg border">
+                  <h4 className="font-semibold mb-2">{pacote.nome}</h4>
+                  <p className="text-sm text-muted-foreground mb-2">{pacote.descricao}</p>
+                  <p className="text-sm font-medium text-primary">{pacote.preco}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

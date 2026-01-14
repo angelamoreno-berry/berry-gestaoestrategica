@@ -1,14 +1,14 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, User } from 'lucide-react';
+import { X, Plus, User, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { HelpTooltip } from '@/components/HelpTooltip';
-import { SuggestionCard } from '@/components/SuggestionCard';
-import { generateSuggestions } from '@/utils/suggestionsGenerator';
+import { AISuggestionLoader } from '@/components/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks/useAISuggestions';
 
 const swotConfig = [
   { key: 'forcas', label: 'Forças Pessoais', icon: '💪', color: 'bg-green-500', description: 'Suas habilidades naturais, conhecimentos e talentos.', examples: 'Ex: Visão estratégica, Networking, Comunicação, Resiliência, Conhecimento técnico' },
@@ -19,16 +19,27 @@ const swotConfig = [
 
 type SwotPessoalKey = 'forcas' | 'fraquezas' | 'oportunidades' | 'ameacas';
 
+interface SwotPessoalSuggestions {
+  forcas: string[];
+  fraquezas: string[];
+  oportunidades: string[];
+  ameacas: string[];
+}
+
 export function SWOTPessoalBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete, currentProject } = useConsulting();
   const [localData, setLocalData] = useState(data.swotPessoal);
   const [newItems, setNewItems] = useState<Record<string, string>>({});
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Record<string, boolean>>({});
 
-  const suggestions = useMemo(() => {
-    if (!currentProject) return null;
-    return generateSuggestions(currentProject).swotPessoal;
-  }, [currentProject]);
+  const { 
+    suggestions: aiSuggestions, 
+    isLoading, 
+    error, 
+    refresh 
+  } = useAISuggestions('swotPessoal', currentProject);
+
+  const suggestions = aiSuggestions as unknown as SwotPessoalSuggestions | null;
 
   useEffect(() => {
     const hasForcas = localData.forcas.length > 0 ? 1 : 0;
@@ -73,14 +84,26 @@ export function SWOTPessoalBlock() {
   };
 
   const showSuggestion = (field: SwotPessoalKey) => {
-    return suggestions && localData[field].length === 0 && !dismissedSuggestions[field];
+    return localData[field].length === 0 && !dismissedSuggestions[field];
   };
 
   return (
     <div className="space-y-6">
-      <p className="text-muted-foreground">
-        Realize uma análise SWOT pessoal do líder/CEO para identificar pontos de desenvolvimento e fortalecimento.
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground">
+          Realize uma análise SWOT pessoal do líder/CEO para identificar pontos de desenvolvimento e fortalecimento.
+        </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refresh}
+          disabled={isLoading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Gerar novas sugestões
+        </Button>
+      </div>
 
       {/* Personal Profile Card */}
       <Card className="bg-gradient-to-br from-primary/5 to-accent/5">
@@ -141,11 +164,16 @@ export function SWOTPessoalBlock() {
               )}
 
               {showSuggestion(item.key as SwotPessoalKey) && (
-                <SuggestionCard
-                  suggestion={suggestions![item.key as SwotPessoalKey]}
+                <AISuggestionLoader
+                  isLoading={isLoading}
+                  error={error}
+                  suggestion={suggestions?.[item.key as SwotPessoalKey]}
+                  fieldKey={item.key}
                   label={`Sugestão de ${item.label.toLowerCase()}`}
                   onAccept={(value) => handleAcceptSuggestion(item.key as SwotPessoalKey, value)}
                   onDismiss={() => handleDismissSuggestion(item.key)}
+                  onRetry={refresh}
+                  currentValue={localData[item.key as SwotPessoalKey]}
                 />
               )}
             </CardContent>
