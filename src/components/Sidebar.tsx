@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { ProgressRing } from './ProgressRing';
 import { cn } from '@/lib/utils';
@@ -6,6 +7,7 @@ import { openReportInNewTab } from '@/utils/reportGenerator';
 import { toast } from '@/hooks/use-toast';
 
 export function Sidebar() {
+  const navigate = useNavigate();
   const { blocks, currentBlock, setCurrentBlock, getTotalProgress, currentProject, goToProjectList, data } = useConsulting();
 
   const handleGenerateReport = () => {
@@ -23,7 +25,11 @@ export function Sidebar() {
       {/* Project Header */}
       <div className="p-4 border-b border-border">
         <button 
-          onClick={goToProjectList}
+          onClick={() => {
+            const route = currentProject?.projectType === 'simulation' ? '/simulacao' : '/projetos';
+            goToProjectList();
+            navigate(route);
+          }}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
           <ArrowLeft className="w-4 h-4" />
