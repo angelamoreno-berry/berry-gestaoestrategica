@@ -1,3 +1,4 @@
+// Force rebuild
 import { Sidebar } from '@/components/Sidebar';
 import { MainContent } from '@/components/MainContent';
 import { ProjectSelector } from '@/components/ProjectSelector';
