@@ -1,15 +1,21 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation } from 'lucide-react';
+import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft } from 'lucide-react';
 import { openSalesPresentationInNewTab } from '@/utils/salesPresentationGenerator';
-import { Project } from '@/types/consulting';
+import { Project, ProjectType } from '@/types/consulting';
 
-export function ProjectSelector() {
+interface ProjectSelectorProps {
+  projectType: ProjectType;
+}
+
+export function ProjectSelector({ projectType }: ProjectSelectorProps) {
+  const navigate = useNavigate();
   const { projects, currentProject, createProject, createDemoProject, selectProject, deleteProject } = useConsulting();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDemoDialogOpen, setIsDemoDialogOpen] = useState(false);
@@ -35,7 +41,8 @@ export function ProjectSelector() {
       segmento: formData.segmento,
       faturamentoMedio: parseFloat(formData.faturamentoMedio) || 0,
       quantidadeColaboradores: parseInt(formData.quantidadeColaboradores) || 0,
-      emailResponsavel: formData.emailResponsavel
+      emailResponsavel: formData.emailResponsavel,
+      projectType,
     });
     setFormData({
       nomeEmpresa: '',
@@ -63,6 +70,9 @@ export function ProjectSelector() {
     setIsDemoDialogOpen(false);
   };
 
+  const isSimulation = projectType === 'simulation';
+  const filteredProjects = projects.filter(p => (p.projectType || 'real') === projectType);
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -73,17 +83,28 @@ export function ProjectSelector() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
+        <div className="mb-6">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar ao início
+          </button>
+        </div>
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Ferramenta de Estruturação
+            {isSimulation ? 'Simulação de Projetos' : 'Projetos Reais'}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Gerencie e estruture o essencial da gestão de cada empresa
+            {isSimulation 
+              ? 'Simule projetos com dados gerados para demonstrações e testes'
+              : 'Gerencie e estruture o essencial da gestão de cada empresa'}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <Card 
               key={project.id} 
               className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${
@@ -141,18 +162,19 @@ export function ProjectSelector() {
             </Card>
           ))}
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
-                <div className="text-center p-6">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Plus className="h-6 w-6 text-primary" />
+          {!isSimulation && (
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
+                  <div className="text-center p-6">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <Plus className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-1">Novo Projeto</h3>
+                    <p className="text-sm text-muted-foreground">Adicione uma nova empresa</p>
                   </div>
-                  <h3 className="font-semibold text-foreground mb-1">Novo Projeto</h3>
-                  <p className="text-sm text-muted-foreground">Adicione uma nova empresa</p>
-                </div>
-              </Card>
-            </DialogTrigger>
+                </Card>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
@@ -243,29 +265,27 @@ export function ProjectSelector() {
                 </div>
               </form>
             </DialogContent>
-          </Dialog>
-        </div>
+           </Dialog>
+          )}
 
-        {projects.length === 0 && (
-          <div className="text-center py-12">
-            <Building2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum projeto cadastrado</h3>
-            <p className="text-muted-foreground mb-6">Comece criando seu primeiro projeto de consultoria</p>
+          {isSimulation && (
             <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
               <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  className="gap-2"
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Criar Projeto Demo (100% preenchido)
-                </Button>
+                <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
+                  <div className="text-center p-6">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <Sparkles className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-1">Nova Simulação</h3>
+                    <p className="text-sm text-muted-foreground">Gere um projeto demo 100% preenchido</p>
+                  </div>
+                </Card>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[450px]">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5" />
-                    Personalizar Projeto Demo
+                    Personalizar Simulação
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleDemoSubmit} className="space-y-4 mt-4">
@@ -315,12 +335,20 @@ export function ProjectSelector() {
                     </Button>
                     <Button type="submit" className="flex-1" disabled={!demoFormData.segmento}>
                       <Sparkles className="h-4 w-4 mr-2" />
-                      Gerar Demo
+                      Gerar Simulação
                     </Button>
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
+          )}
+        </div>
+
+        {filteredProjects.length === 0 && !isSimulation && (
+          <div className="text-center py-12">
+            <Building2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum projeto cadastrado</h3>
+            <p className="text-muted-foreground">Comece criando seu primeiro projeto de consultoria</p>
           </div>
         )}
 

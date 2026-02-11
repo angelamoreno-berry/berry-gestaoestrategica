@@ -1,3 +1,5 @@
+export type ProjectType = 'real' | 'simulation';
+
 export interface Project {
   id: string;
   nomeEmpresa: string;
@@ -7,6 +9,7 @@ export interface Project {
   quantidadeColaboradores: number;
   emailResponsavel: string;
   dataCriacao: string;
+  projectType: ProjectType;
 }
 
 export interface MaturityLevel {

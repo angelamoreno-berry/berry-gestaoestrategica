@@ -216,7 +216,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           } : { ...initialData, segmento: '', faturamentoMedio: 0, quantidadeColaboradores: 0, responsavel: '', emailResponsavel: '' };
           
           return {
-            project: {
+          project: {
               id: dbProject.id,
               nomeEmpresa: dbProject.name,
               segmento: projectData.segmento || '',
@@ -225,6 +225,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
               responsavel: projectData.responsavel || '',
               emailResponsavel: projectData.emailResponsavel || '',
               dataCriacao: dbProject.created_at,
+              projectType: ((rawData?.projectType as string) || 'real') as 'real' | 'simulation',
             },
             data: projectData as ConsultingData,
             blocks: (dbProject.blocks as unknown as BlockStatus[]) || initialBlocks.map(b => ({ ...b })),
@@ -249,6 +250,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
         quantidadeColaboradores: projectData.project.quantidadeColaboradores,
         responsavel: projectData.project.responsavel,
         emailResponsavel: projectData.project.emailResponsavel,
+        projectType: projectData.project.projectType,
       };
 
       const { error } = await supabase

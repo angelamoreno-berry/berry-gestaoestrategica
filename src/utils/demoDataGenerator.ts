@@ -732,7 +732,8 @@ export function generateDemoData(params: DemoParams): { project: Omit<Project, '
     segmento,
     faturamentoMedio,
     quantidadeColaboradores,
-    emailResponsavel: 'contato@empresa.com.br'
+    emailResponsavel: 'contato@empresa.com.br',
+    projectType: 'simulation'
   };
 
   const data: ConsultingData = {

@@ -2,12 +2,17 @@ import { Sidebar } from '@/components/Sidebar';
 import { MainContent } from '@/components/MainContent';
 import { ProjectSelector } from '@/components/ProjectSelector';
 import { useConsulting } from '@/contexts/ConsultingContext';
+import { ProjectType } from '@/types/consulting';
 
-const Index = () => {
+interface IndexProps {
+  projectType: ProjectType;
+}
+
+const Index = ({ projectType }: IndexProps) => {
   const { currentProject } = useConsulting();
 
   if (!currentProject) {
-    return <ProjectSelector />;
+    return <ProjectSelector projectType={projectType} />;
   }
 
   return (
