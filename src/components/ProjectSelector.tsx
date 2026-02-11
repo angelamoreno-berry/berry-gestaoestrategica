@@ -83,15 +83,17 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 p-6 md:p-10">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6">
-          <button 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Voltar ao início
-          </button>
-        </div>
+        {projectType !== 'simulation' && (
+          <div className="mb-6">
+            <button 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Voltar ao início
+            </button>
+          </div>
+        )}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             {isSimulation ? 'Simulação de Projetos' : 'Projetos Reais'}
