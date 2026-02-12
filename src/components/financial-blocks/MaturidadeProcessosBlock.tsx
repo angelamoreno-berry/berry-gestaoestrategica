@@ -2,29 +2,79 @@ import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MaturidadeProcessosData } from '@/types/financialSimulation';
 
-const dimensions = [
-  { key: 'padronizacao', label: 'Padronização', desc: 'Processos financeiros documentados e seguidos consistentemente' },
-  { key: 'rotinas', label: 'Rotinas Financeiras', desc: 'Conciliações, fechamentos e conferências realizados periodicamente' },
-  { key: 'controles', label: 'Controles Internos', desc: 'Alçadas de aprovação, conferências e segregação de funções' },
-  { key: 'previsibilidade', label: 'Previsibilidade', desc: 'Capacidade de prever receitas, despesas e fluxo de caixa' },
-  { key: 'usoDeDados', label: 'Uso de Dados', desc: 'Decisões financeiras baseadas em dados e indicadores' },
+interface Dimension {
+  key: string;
+  label: string;
+  desc: string;
+}
+
+const categories = [
+  {
+    id: 'processos',
+    label: 'Processos',
+    icon: '⚙️',
+    dimensions: [
+      { key: 'padronizacao', label: 'Padronização', desc: 'Processos financeiros documentados e seguidos consistentemente' },
+      { key: 'rotinas', label: 'Rotinas Financeiras', desc: 'Conciliações, fechamentos e conferências realizados periodicamente' },
+      { key: 'controles', label: 'Controles Internos', desc: 'Alçadas de aprovação, conferências e segregação de funções' },
+      { key: 'previsibilidade', label: 'Previsibilidade', desc: 'Capacidade de prever receitas, despesas e fluxo de caixa' },
+      { key: 'usoDeDados', label: 'Uso de Dados', desc: 'Decisões financeiras baseadas em dados e indicadores' },
+    ] as Dimension[],
+  },
+  {
+    id: 'ferramentas',
+    label: 'Ferramentas',
+    icon: '🛠️',
+    dimensions: [
+      { key: 'sistemaGestao', label: 'Sistema de Gestão (ERP)', desc: 'Utilização de ERP ou sistema integrado para controle financeiro' },
+      { key: 'automacaoFinanceira', label: 'Automação Financeira', desc: 'Automação de cobranças, pagamentos, emissão de notas e conciliações' },
+      { key: 'integracaoSistemas', label: 'Integração de Sistemas', desc: 'Integração entre banco, ERP, CRM e ferramentas de gestão' },
+    ] as Dimension[],
+  },
+  {
+    id: 'relatorios',
+    label: 'Relatórios',
+    icon: '📊',
+    dimensions: [
+      { key: 'dre', label: 'DRE (Demonstração de Resultado)', desc: 'Elaboração e análise mensal da DRE para avaliar lucro/prejuízo' },
+      { key: 'fluxoCaixaRelatorio', label: 'Fluxo de Caixa', desc: 'Controle detalhado de entradas e saídas com projeções futuras' },
+      { key: 'balancoPatrimonial', label: 'Balanço Patrimonial', desc: 'Elaboração e análise do balanço para entender a saúde financeira' },
+      { key: 'conciliacaoBancaria', label: 'Conciliação Bancária', desc: 'Conferência periódica entre extratos bancários e controle interno' },
+      { key: 'analiseIndicadores', label: 'Análise de Indicadores', desc: 'Acompanhamento regular de KPIs financeiros (margens, liquidez, etc.)' },
+    ] as Dimension[],
+  },
+  {
+    id: 'planejamento',
+    label: 'Planejamento',
+    icon: '📋',
+    dimensions: [
+      { key: 'orcamentoAnual', label: 'Orçamento Anual', desc: 'Planejamento orçamentário anual com metas e acompanhamento mensal' },
+      { key: 'planejamentoTributario', label: 'Planejamento Tributário', desc: 'Estratégia tributária ativa para otimizar a carga fiscal' },
+      { key: 'gestaoContratos', label: 'Gestão de Contratos', desc: 'Controle de contratos de receita e despesa com alertas de vencimento' },
+      { key: 'projecaoFinanceira', label: 'Projeção Financeira', desc: 'Modelos de projeção de receita, custos e lucro para 6-12 meses' },
+    ] as Dimension[],
+  },
 ];
 
+const allDimensions = categories.flatMap(c => c.dimensions);
+
 const levelLabels = ['', 'Inexistente', 'Inicial', 'Definido', 'Gerenciado', 'Otimizado'];
+const levelColors = ['', 'bg-destructive/80', 'bg-orange-500/80', 'bg-yellow-500/80', 'bg-blue-500/80', 'bg-green-500/80'];
 
 export function MaturidadeProcessosBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
   const financialData = (data as any).financialSimulation;
-  const localData: MaturidadeProcessosData = financialData?.maturidadeProcessos || { padronizacao: 0, rotinas: 0, controles: 0, previsibilidade: 0, usoDeDados: 0, notes: '' };
+  const localData: MaturidadeProcessosData = financialData?.maturidadeProcessos || {};
 
-  const [state, setState] = useState(localData);
+  const [state, setState] = useState<Record<string, any>>(localData);
 
   useEffect(() => {
-    const values = dimensions.map(d => state[d.key as keyof MaturidadeProcessosData] as number);
+    const values = allDimensions.map(d => (state[d.key] as number) || 0);
     const filled = values.filter(v => v > 0).length;
-    const progress = Math.round((filled / dimensions.length) * 100);
+    const progress = Math.round((filled / allDimensions.length) * 100);
     updateBlockProgress('maturidadeProcessos', progress);
     if (progress === 100) markBlockComplete('maturidadeProcessos');
   }, [state, updateBlockProgress, markBlockComplete]);
@@ -41,68 +91,104 @@ export function MaturidadeProcessosBlock() {
     updateData('financialSimulation' as any, { ...financialData, maturidadeProcessos: newState });
   };
 
-  const average = (() => {
-    const values = dimensions.map(d => state[d.key as keyof MaturidadeProcessosData] as number).filter(v => v > 0);
-    return values.length > 0 ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1) : '0';
+  const getCategoryScore = (dims: Dimension[]) => {
+    const values = dims.map(d => (state[d.key] as number) || 0).filter(v => v > 0);
+    return values.length > 0 ? (values.reduce((a, b) => a + b, 0) / values.length) : 0;
+  };
+
+  const overallAverage = (() => {
+    const values = allDimensions.map(d => (state[d.key] as number) || 0).filter(v => v > 0);
+    return values.length > 0 ? (values.reduce((a, b) => a + b, 0) / values.length) : 0;
   })();
+
+  const getCategoryCompletion = (dims: Dimension[]) => {
+    const filled = dims.filter(d => (state[d.key] as number) > 0).length;
+    return `${filled}/${dims.length}`;
+  };
 
   return (
     <div className="space-y-6">
       <p className="text-muted-foreground">
-        Avalie o nível de maturidade dos processos financeiros da empresa em 5 dimensões. Cada dimensão recebe uma nota de 1 a 5.
+        Avalie o nível de maturidade dos processos financeiros da empresa em {allDimensions.length} dimensões organizadas em 4 categorias. Cada dimensão recebe uma nota de 1 a 5.
       </p>
 
-      {/* Score Card */}
-      <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-        <CardContent className="p-6 text-center">
-          <p className="text-sm text-muted-foreground mb-1">Score Médio de Maturidade</p>
-          <p className="text-4xl font-bold text-primary">{average}</p>
-          <p className="text-sm text-muted-foreground mt-1">de 5.0</p>
-        </CardContent>
-      </Card>
-
-      {/* Dimensions */}
-      <div className="space-y-4">
-        {dimensions.map((dim) => {
-          const value = state[dim.key as keyof MaturidadeProcessosData] as number;
+      {/* Score Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <Card className="col-span-2 md:col-span-1 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <CardContent className="p-4 text-center">
+            <p className="text-[11px] text-muted-foreground mb-1">Score Geral</p>
+            <p className="text-3xl font-bold text-primary">{overallAverage.toFixed(1)}</p>
+            <p className="text-[11px] text-muted-foreground">de 5.0</p>
+          </CardContent>
+        </Card>
+        {categories.map(cat => {
+          const score = getCategoryScore(cat.dimensions);
           return (
-            <Card key={dim.key}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{dim.label}</CardTitle>
-                <p className="text-sm text-muted-foreground">{dim.desc}</p>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((level) => (
-                    <button
-                      key={level}
-                      onClick={() => handleChange(dim.key, level)}
-                      className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${
-                        value === level
-                          ? 'bg-primary text-primary-foreground shadow-md scale-105'
-                          : 'bg-muted hover:bg-muted-foreground/10 text-muted-foreground'
-                      }`}
-                    >
-                      <div className="text-lg font-bold">{level}</div>
-                      <div className="text-[10px] mt-0.5">{levelLabels[level]}</div>
-                    </button>
-                  ))}
-                </div>
+            <Card key={cat.id} className="border-border/50">
+              <CardContent className="p-4 text-center">
+                <p className="text-[11px] text-muted-foreground mb-1">{cat.icon} {cat.label}</p>
+                <p className="text-2xl font-bold">{score > 0 ? score.toFixed(1) : '—'}</p>
+                <p className="text-[11px] text-muted-foreground">{getCategoryCompletion(cat.dimensions)}</p>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
+      {/* Tabs by Category */}
+      <Tabs defaultValue="processos" className="w-full">
+        <TabsList className="w-full grid grid-cols-4">
+          {categories.map(cat => (
+            <TabsTrigger key={cat.id} value={cat.id} className="text-xs md:text-sm">
+              <span className="hidden md:inline mr-1">{cat.icon}</span> {cat.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {categories.map(cat => (
+          <TabsContent key={cat.id} value={cat.id} className="space-y-3 mt-4">
+            {cat.dimensions.map((dim) => {
+              const value = (state[dim.key] as number) || 0;
+              return (
+                <Card key={dim.key}>
+                  <CardHeader className="pb-2 pt-4 px-4">
+                    <CardTitle className="text-sm font-semibold">{dim.label}</CardTitle>
+                    <p className="text-xs text-muted-foreground">{dim.desc}</p>
+                  </CardHeader>
+                  <CardContent className="px-4 pb-4">
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((level) => (
+                        <button
+                          key={level}
+                          onClick={() => handleChange(dim.key, level)}
+                          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                            value === level
+                              ? `${levelColors[level]} text-white shadow-md scale-105`
+                              : 'bg-muted hover:bg-muted-foreground/10 text-muted-foreground'
+                          }`}
+                        >
+                          <div className="text-base font-bold">{level}</div>
+                          <div className="text-[9px] mt-0.5 leading-tight">{levelLabels[level]}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </TabsContent>
+        ))}
+      </Tabs>
+
       {/* Notes */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-2">
           <CardTitle className="text-base">Observações</CardTitle>
         </CardHeader>
         <CardContent>
           <Textarea
             placeholder="Observações sobre a maturidade dos processos financeiros..."
-            value={state.notes}
+            value={state.notes || ''}
             onChange={(e) => handleNotes(e.target.value)}
             rows={3}
           />
