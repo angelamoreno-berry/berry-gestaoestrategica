@@ -1,11 +1,27 @@
 // Financial Simulation Types
 
 export interface MaturidadeProcessosData {
+  // Processos & Padronização
   padronizacao: number; // 1-5
   rotinas: number;
   controles: number;
   previsibilidade: number;
   usoDeDados: number;
+  // Ferramentas & Sistemas
+  sistemaGestao: number;
+  automacaoFinanceira: number;
+  integracaoSistemas: number;
+  // Demonstrações & Relatórios
+  dre: number;
+  fluxoCaixaRelatorio: number;
+  balancoPatrimonial: number;
+  conciliacaoBancaria: number;
+  analiseIndicadores: number;
+  // Planejamento & Orçamento
+  orcamentoAnual: number;
+  planejamentoTributario: number;
+  gestaoContratos: number;
+  projecaoFinanceira: number;
   notes: string;
   answers?: Record<string, number>;
 }
@@ -131,7 +147,7 @@ export interface FinancialSimulationData {
 }
 
 export const initialFinancialData: FinancialSimulationData = {
-  maturidadeProcessos: { padronizacao: 0, rotinas: 0, controles: 0, previsibilidade: 0, usoDeDados: 0, notes: '' },
+  maturidadeProcessos: { padronizacao: 0, rotinas: 0, controles: 0, previsibilidade: 0, usoDeDados: 0, sistemaGestao: 0, automacaoFinanceira: 0, integracaoSistemas: 0, dre: 0, fluxoCaixaRelatorio: 0, balancoPatrimonial: 0, conciliacaoBancaria: 0, analiseIndicadores: 0, orcamentoAnual: 0, planejamentoTributario: 0, gestaoContratos: 0, projecaoFinanceira: 0, notes: '' },
   governancaFinanceira: { separacaoCpfCnpj: 0, disciplinaGestao: 0, tomadaDecisao: 0, proLabore: 0, planejamentoTributario: 0, notes: '' },
   analiseFinanceira: { faturamentoMensal: 0, despesasFixas: 0, despesasVariaveis: 0, lucroLiquido: 0, margemLiquida: 0, ticketMedio: 0, quantidadeClientes: 0, notes: '' },
   fluxoCaixa: { saldoAtual: 0, entradasPrevistas30d: 0, saidasPrevistas30d: 0, entradasPrevistas60d: 0, saidasPrevistas60d: 0, entradasPrevistas90d: 0, saidasPrevistas90d: 0, notes: '' },
