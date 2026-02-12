@@ -13,6 +13,17 @@ import { SWOTBlock } from './blocks/SWOTBlock';
 import { GoldenCircleBlock } from './blocks/GoldenCircleBlock';
 import { SWOTPessoalBlock } from './blocks/SWOTPessoalBlock';
 import { AgendaCEOBlock } from './blocks/AgendaCEOBlock';
+import { MaturidadeProcessosBlock } from './financial-blocks/MaturidadeProcessosBlock';
+import { GovernancaFinanceiraBlock } from './financial-blocks/GovernancaFinanceiraBlock';
+import { AnaliseFinanceiraFBlock } from './financial-blocks/AnaliseFinanceiraFBlock';
+import { FluxoCaixaBlock } from './financial-blocks/FluxoCaixaBlock';
+import { EstruturaCustosBlock } from './financial-blocks/EstruturaCustosBlock';
+import { CapitalGiroBlock } from './financial-blocks/CapitalGiroBlock';
+import { MargensRentabilidadeBlock } from './financial-blocks/MargensRentabilidadeBlock';
+import { IndicadoresKPIsBlock } from './financial-blocks/IndicadoresKPIsBlock';
+import { RiscoEndividamentoBlock } from './financial-blocks/RiscoEndividamentoBlock';
+import { SimuladorDecisoesBlock } from './financial-blocks/SimuladorDecisoesBlock';
+import { ScoreGeralBlock } from './financial-blocks/ScoreGeralBlock';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -31,6 +42,18 @@ const blockComponents: Record<string, React.ComponentType> = {
   goldenCircle: GoldenCircleBlock,
   swotPessoal: SWOTPessoalBlock,
   agendaCEO: AgendaCEOBlock,
+  // Financial simulation blocks
+  maturidadeProcessos: MaturidadeProcessosBlock,
+  governancaFinanceira: GovernancaFinanceiraBlock,
+  analiseFinanceira: AnaliseFinanceiraFBlock,
+  fluxoCaixa: FluxoCaixaBlock,
+  estruturaCustos: EstruturaCustosBlock,
+  capitalGiro: CapitalGiroBlock,
+  margensRentabilidade: MargensRentabilidadeBlock,
+  indicadoresKPIs: IndicadoresKPIsBlock,
+  riscoEndividamento: RiscoEndividamentoBlock,
+  simuladorDecisoes: SimuladorDecisoesBlock,
+  scoreGeral: ScoreGeralBlock,
 };
 
 export function MainContent() {

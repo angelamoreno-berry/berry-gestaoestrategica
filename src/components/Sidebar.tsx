@@ -49,9 +49,11 @@ export function Sidebar() {
       {/* Header */}
       <div className="p-6 border-b border-border">
         <h1 className="font-display text-xl font-bold text-foreground">
-          Estruturação em Gestão
+          {currentProject?.simulationType === 'financeira' ? 'Diagnóstico Financeiro' : 'Estruturação em Gestão'}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">Ferramenta de Diagnóstico</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          {currentProject?.simulationType === 'financeira' ? 'Gestão Financeira para PMEs' : 'Ferramenta de Diagnóstico'}
+        </p>
         
         {/* Overall Progress */}
         <div className="mt-4 flex items-center gap-4">
