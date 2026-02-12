@@ -16,6 +16,7 @@ export interface MaturityLevel {
   area: string;
   level: number;
   notes: string;
+  answers?: Record<string, number>;
 }
 
 export interface DiagnosticoData {
