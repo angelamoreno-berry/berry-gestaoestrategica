@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft } from 'lucide-react';
+import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft, BarChart3, LayoutGrid } from 'lucide-react';
 import { openSalesPresentationInNewTab } from '@/utils/salesPresentationGenerator';
-import { Project, ProjectType } from '@/types/consulting';
+import { Project, ProjectType, SimulationType } from '@/types/consulting';
 
 interface ProjectSelectorProps {
   projectType: ProjectType;
@@ -32,6 +32,7 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
     faturamentoMedio: '',
     quantidadeColaboradores: ''
   });
+  const [simulationType, setSimulationType] = useState<SimulationType>('completa');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,13 +61,15 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
     createDemoProject({
       segmento: demoFormData.segmento,
       faturamentoMedio: parseFloat(demoFormData.faturamentoMedio) || 100000,
-      quantidadeColaboradores: parseInt(demoFormData.quantidadeColaboradores) || 10
+      quantidadeColaboradores: parseInt(demoFormData.quantidadeColaboradores) || 10,
+      simulationType,
     });
     setDemoFormData({
       segmento: '',
       faturamentoMedio: '',
       quantidadeColaboradores: ''
     });
+    setSimulationType('completa');
     setIsDemoDialogOpen(false);
   };
 
@@ -121,7 +124,12 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
                       <Building2 className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{project.nomeEmpresa}</CardTitle>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-lg">{project.nomeEmpresa}</CardTitle>
+                        {project.simulationType === 'financeira' && (
+                          <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">Financeiro</span>
+                        )}
+                      </div>
                       <CardDescription>{project.segmento}</CardDescription>
                     </div>
                   </div>
@@ -291,6 +299,39 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleDemoSubmit} className="space-y-4 mt-4">
+                  {/* Simulation Type Selector */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Tipo de Simulação</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSimulationType('completa')}
+                        className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          simulationType === 'completa'
+                            ? 'border-primary bg-primary/5 shadow-md'
+                            : 'border-border hover:border-muted-foreground/30'
+                        }`}
+                      >
+                        <LayoutGrid className={`w-6 h-6 mb-2 ${simulationType === 'completa' ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <p className="font-semibold text-sm">Gestão Completa</p>
+                        <p className="text-xs text-muted-foreground mt-1">14 módulos de gestão estratégica</p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSimulationType('financeira')}
+                        className={`p-4 rounded-lg border-2 transition-all text-left ${
+                          simulationType === 'financeira'
+                            ? 'border-primary bg-primary/5 shadow-md'
+                            : 'border-border hover:border-muted-foreground/30'
+                        }`}
+                      >
+                        <BarChart3 className={`w-6 h-6 mb-2 ${simulationType === 'financeira' ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <p className="font-semibold text-sm">Gestão Financeira</p>
+                        <p className="text-xs text-muted-foreground mt-1">11 módulos focados em finanças</p>
+                      </button>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="demoSegmento">Segmento de Atuação *</Label>
                     <Input

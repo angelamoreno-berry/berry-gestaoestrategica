@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { ConsultingData, BlockStatus, Project } from '@/types/consulting';
+import { ConsultingData, BlockStatus, Project, SimulationType } from '@/types/consulting';
 import { generateDemoData } from '@/utils/demoDataGenerator';
 import { supabase } from '@/integrations/supabase/client';
+import { initialFinancialData, financialBlocks } from '@/types/financialSimulation';
 import { toast } from 'sonner';
 
 const initialData: ConsultingData = {
@@ -163,7 +164,7 @@ interface ConsultingContextType {
   getTotalProgress: () => number;
   resetAll: () => void;
   createProject: (projectData: Omit<Project, 'id' | 'dataCriacao'>) => void;
-  createDemoProject: (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number }) => void;
+  createDemoProject: (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number; simulationType?: SimulationType }) => void;
   selectProject: (id: string) => void;
   deleteProject: (id: string) => void;
   goToProjectList: () => void;
@@ -215,21 +216,26 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
             emailResponsavel: (rawData.emailResponsavel as string) || '',
           } : { ...initialData, segmento: '', faturamentoMedio: 0, quantidadeColaboradores: 0, responsavel: '', emailResponsavel: '' };
           
-          return {
-          project: {
-              id: dbProject.id,
-              nomeEmpresa: dbProject.name,
-              segmento: projectData.segmento || '',
-              faturamentoMedio: projectData.faturamentoMedio || 0,
-              quantidadeColaboradores: projectData.quantidadeColaboradores || 0,
-              responsavel: projectData.responsavel || '',
-              emailResponsavel: projectData.emailResponsavel || '',
-              dataCriacao: dbProject.created_at,
-              projectType: ((rawData?.projectType as string) || 'real') as 'real' | 'simulation',
-            },
-            data: projectData as ConsultingData,
-            blocks: (dbProject.blocks as unknown as BlockStatus[]) || initialBlocks.map(b => ({ ...b })),
-          };
+            const projectType = ((rawData?.projectType as string) || 'real') as 'real' | 'simulation';
+            const simulationType = (rawData?.simulationType as string) as 'completa' | 'financeira' | undefined;
+            const isFinancial = simulationType === 'financeira';
+            
+            return {
+              project: {
+                id: dbProject.id,
+                nomeEmpresa: dbProject.name,
+                segmento: projectData.segmento || '',
+                faturamentoMedio: projectData.faturamentoMedio || 0,
+                quantidadeColaboradores: projectData.quantidadeColaboradores || 0,
+                responsavel: projectData.responsavel || '',
+                emailResponsavel: projectData.emailResponsavel || '',
+                dataCriacao: dbProject.created_at,
+                projectType,
+                simulationType,
+              },
+              data: projectData as ConsultingData,
+              blocks: (dbProject.blocks as unknown as BlockStatus[]) || (isFinancial ? financialBlocks.map(b => ({ ...b })) : initialBlocks.map(b => ({ ...b }))),
+            };
         });
         setProjectsData(loadedProjects);
       }
@@ -251,6 +257,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
         responsavel: projectData.project.responsavel,
         emailResponsavel: projectData.project.emailResponsavel,
         projectType: projectData.project.projectType,
+        simulationType: projectData.project.simulationType,
       };
 
       const { error } = await supabase
@@ -351,40 +358,83 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     toast.success('Projeto criado com sucesso!');
   }, []);
 
-  const createDemoProject = useCallback(async (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number }) => {
-    const { project: projectData, data: demoData } = generateDemoData(params);
+  const createDemoProject = useCallback(async (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number; simulationType?: SimulationType }) => {
+    const isFinancial = params.simulationType === 'financeira';
     
-    const demoProject: Project = {
-      ...projectData,
-      id: crypto.randomUUID(),
-      dataCriacao: new Date().toISOString()
-    };
+    if (isFinancial) {
+      // Create financial simulation project
+      const demoProject: Project = {
+        id: crypto.randomUUID(),
+        nomeEmpresa: `${params.segmento} (Financeiro)`,
+        responsavel: 'Simulação',
+        segmento: params.segmento,
+        faturamentoMedio: params.faturamentoMedio,
+        quantidadeColaboradores: params.quantidadeColaboradores,
+        emailResponsavel: 'simulacao@demo.com',
+        dataCriacao: new Date().toISOString(),
+        projectType: 'simulation',
+        simulationType: 'financeira',
+      };
 
-    const demoBlocks: BlockStatus[] = initialBlocks.map(b => ({
-      ...b,
-      completed: true,
-      progress: 100
-    }));
+      const demoBlocks: BlockStatus[] = financialBlocks.map(b => ({ ...b }));
 
-    const newProjectData: ProjectData = {
-      project: demoProject,
-      data: demoData,
-      blocks: demoBlocks
-    };
+      // Generate demo financial data
+      const fat = params.faturamentoMedio || 100000;
+      const demoFinancialData = {
+        ...initialFinancialData,
+        maturidadeProcessos: { padronizacao: 3, rotinas: 2, controles: 2, previsibilidade: 3, usoDeDados: 2, notes: '' },
+        governancaFinanceira: { separacaoCpfCnpj: 3, disciplinaGestao: 2, tomadaDecisao: 3, proLabore: 2, planejamentoTributario: 2, notes: '' },
+        analiseFinanceira: { faturamentoMensal: fat, despesasFixas: Math.round(fat * 0.45), despesasVariaveis: Math.round(fat * 0.25), lucroLiquido: Math.round(fat * 0.3), margemLiquida: 30, ticketMedio: Math.round(fat / 80), quantidadeClientes: 80, notes: '' },
+        fluxoCaixa: { saldoAtual: Math.round(fat * 0.8), entradasPrevistas30d: fat, saidasPrevistas30d: Math.round(fat * 0.7), entradasPrevistas60d: Math.round(fat * 1.05), saidasPrevistas60d: Math.round(fat * 0.72), entradasPrevistas90d: Math.round(fat * 1.1), saidasPrevistas90d: Math.round(fat * 0.75), notes: '' },
+      };
 
-    setProjectsData(prev => [...prev, newProjectData]);
-    setCurrentProjectId(demoProject.id);
-    setCurrentBlock('goldenCircle');
-    
-    // Save to database immediately
-    await saveProject(newProjectData);
-    toast.success('Projeto demo criado com sucesso!');
+      const newProjectData: ProjectData = {
+        project: demoProject,
+        data: { ...initialData, financialSimulation: demoFinancialData } as any,
+        blocks: demoBlocks,
+      };
+
+      setProjectsData(prev => [...prev, newProjectData]);
+      setCurrentProjectId(demoProject.id);
+      setCurrentBlock('maturidadeProcessos');
+      await saveProject(newProjectData);
+      toast.success('Simulação financeira criada com sucesso!');
+    } else {
+      const { project: projectData, data: demoData } = generateDemoData(params);
+      
+      const demoProject: Project = {
+        ...projectData,
+        id: crypto.randomUUID(),
+        dataCriacao: new Date().toISOString(),
+        simulationType: 'completa',
+      };
+
+      const demoBlocks: BlockStatus[] = initialBlocks.map(b => ({
+        ...b,
+        completed: true,
+        progress: 100
+      }));
+
+      const newProjectData: ProjectData = {
+        project: demoProject,
+        data: demoData,
+        blocks: demoBlocks
+      };
+
+      setProjectsData(prev => [...prev, newProjectData]);
+      setCurrentProjectId(demoProject.id);
+      setCurrentBlock('goldenCircle');
+      await saveProject(newProjectData);
+      toast.success('Projeto demo criado com sucesso!');
+    }
   }, []);
 
   const selectProject = useCallback((id: string) => {
+    const project = projectsData.find(p => p.project.id === id);
     setCurrentProjectId(id);
-    setCurrentBlock('goldenCircle');
-  }, []);
+    const isFinancial = project?.project.simulationType === 'financeira';
+    setCurrentBlock(isFinancial ? 'maturidadeProcessos' : 'goldenCircle');
+  }, [projectsData]);
 
   const deleteProject = useCallback(async (id: string) => {
     try {
