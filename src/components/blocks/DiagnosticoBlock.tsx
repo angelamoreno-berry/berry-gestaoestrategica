@@ -304,10 +304,14 @@ export function DiagnosticoBlock() {
     const initial: DiagnosticoState = {};
     areasConfig.forEach(area => {
       const areaData = data.diagnostico[area.key as keyof typeof data.diagnostico];
-      const answers: AreaAnswers = {};
+      let answers: AreaAnswers = {};
       
-      // If the area has a level set (e.g. from demo data), pre-fill all questions with that level
-      if (areaData?.level && areaData.level > 0) {
+      // First try to restore saved answers
+      if (areaData?.answers && Object.keys(areaData.answers).length > 0) {
+        answers = { ...areaData.answers };
+      }
+      // Otherwise, if the area has a level set (e.g. from demo data), pre-fill all questions with that level
+      else if (areaData?.level && areaData.level > 0) {
         area.questions.forEach(q => {
           answers[q.id] = areaData.level;
         });
@@ -338,17 +342,19 @@ export function DiagnosticoBlock() {
       markBlockComplete('diagnostico');
     }
 
-    // Update context data with calculated averages
+    // Update context data with calculated averages AND persist answers
     const newDiagnostico = { ...data.diagnostico };
     areasConfig.forEach(area => {
-      const answers = Object.values(localState[area.key]?.answers || {});
-      const avgLevel = answers.length > 0 
-        ? Math.round(answers.reduce((a, b) => a + b, 0) / answers.length) 
-        : 0;
+      const answers = localState[area.key]?.answers || {};
+      const answerValues = Object.values(answers);
+      const avgLevel = answerValues.length > 0 
+        ? Math.round(answerValues.reduce((a, b) => a + b, 0) / answerValues.length) 
+        : data.diagnostico[area.key as keyof typeof data.diagnostico]?.level || 0;
       newDiagnostico[area.key as keyof typeof newDiagnostico] = {
         area: area.label,
         level: avgLevel,
         notes: localState[area.key]?.notes || '',
+        answers: { ...answers },
       };
     });
     updateData('diagnostico', newDiagnostico);
