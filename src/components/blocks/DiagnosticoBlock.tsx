@@ -303,9 +303,19 @@ export function DiagnosticoBlock() {
   const [localState, setLocalState] = useState<DiagnosticoState>(() => {
     const initial: DiagnosticoState = {};
     areasConfig.forEach(area => {
+      const areaData = data.diagnostico[area.key as keyof typeof data.diagnostico];
+      const answers: AreaAnswers = {};
+      
+      // If the area has a level set (e.g. from demo data), pre-fill all questions with that level
+      if (areaData?.level && areaData.level > 0) {
+        area.questions.forEach(q => {
+          answers[q.id] = areaData.level;
+        });
+      }
+      
       initial[area.key] = {
-        answers: {},
-        notes: data.diagnostico[area.key as keyof typeof data.diagnostico]?.notes || '',
+        answers,
+        notes: areaData?.notes || '',
       };
     });
     return initial;
