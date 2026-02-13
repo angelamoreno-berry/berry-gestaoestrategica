@@ -17,7 +17,6 @@ import { MaturidadeProcessosBlock } from './financial-blocks/MaturidadeProcessos
 import { GovernancaFinanceiraBlock } from './financial-blocks/GovernancaFinanceiraBlock';
 import { AnaliseFinanceiraFBlock } from './financial-blocks/AnaliseFinanceiraFBlock';
 import { FluxoCaixaBlock } from './financial-blocks/FluxoCaixaBlock';
-import { EstruturaCustosBlock } from './financial-blocks/EstruturaCustosBlock';
 import { CapitalGiroBlock } from './financial-blocks/CapitalGiroBlock';
 import { MargensRentabilidadeBlock } from './financial-blocks/MargensRentabilidadeBlock';
 import { IndicadoresKPIsBlock } from './financial-blocks/IndicadoresKPIsBlock';
@@ -47,7 +46,6 @@ const blockComponents: Record<string, React.ComponentType> = {
   governancaFinanceira: GovernancaFinanceiraBlock,
   analiseFinanceira: AnaliseFinanceiraFBlock,
   fluxoCaixa: FluxoCaixaBlock,
-  estruturaCustos: EstruturaCustosBlock,
   capitalGiro: CapitalGiroBlock,
   margensRentabilidade: MargensRentabilidadeBlock,
   indicadoresKPIs: IndicadoresKPIsBlock,

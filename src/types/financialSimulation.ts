@@ -60,14 +60,6 @@ export interface FluxoCaixaData {
   notes: string;
 }
 
-export interface EstruturaCustosData {
-  custosFixos: Array<{ descricao: string; valor: number }>;
-  custosVariaveis: Array<{ descricao: string; percentual: number }>;
-  pontoEquilibrio: number;
-  margemContribuicao: number;
-  notes: string;
-}
-
 export interface CapitalGiroData {
   prazoMedioRecebimento: number;
   prazoMedioPagamento: number;
@@ -139,7 +131,6 @@ export interface FinancialSimulationData {
   governancaFinanceira: GovernancaFinanceiraData;
   analiseFinanceira: AnaliseFinanceiraData;
   fluxoCaixa: FluxoCaixaData;
-  estruturaCustos: EstruturaCustosData;
   capitalGiro: CapitalGiroData;
   margensRentabilidade: MargensRentabilidadeData;
   indicadoresKPIs: IndicadoresKPIsData;
@@ -153,7 +144,6 @@ export const initialFinancialData: FinancialSimulationData = {
   governancaFinanceira: { separacaoCpfCnpj: 0, disciplinaGestao: 0, tomadaDecisao: 0, proLabore: 0, planejamentoTributario: 0, notes: '' },
   analiseFinanceira: { faturamentoMensal: 0, despesasFixas: 0, despesasVariaveis: 0, lucroLiquido: 0, margemLiquida: 0, ticketMedio: 0, quantidadeClientes: 0, notes: '' },
   fluxoCaixa: { saldoAtual: 0, entradasPrevistas30d: 0, saidasPrevistas30d: 0, entradasPrevistas60d: 0, saidasPrevistas60d: 0, entradasPrevistas90d: 0, saidasPrevistas90d: 0, notes: '' },
-  estruturaCustos: { custosFixos: [], custosVariaveis: [], pontoEquilibrio: 0, margemContribuicao: 0, notes: '' },
   capitalGiro: { prazoMedioRecebimento: 0, prazoMedioPagamento: 0, prazoMedioEstoque: 0, cicloOperacional: 0, cicloFinanceiro: 0, necessidadeCapitalGiro: 0, capitalGiroDisponivel: 0, notes: '' },
   margensRentabilidade: { margemBruta: 0, margemContribuicao: 0, margemLiquida: 0, roe: 0, roiMedio: 0, notes: '' },
   indicadoresKPIs: { ebitda: 0, ebitdaMargin: 0, geracaoCaixa: 0, eficienciaOperacional: 0, cac: 0, ltv: 0, ltvCacRatio: 0, notes: '' },
@@ -167,7 +157,6 @@ export const financialBlocks = [
   { id: 'governancaFinanceira', name: 'Governança Financeira', icon: '🏛️', completed: false, progress: 0 },
   { id: 'analiseFinanceira', name: 'Análise Financeira', icon: '📊', completed: false, progress: 0 },
   { id: 'fluxoCaixa', name: 'Fluxo de Caixa & Projeções', icon: '💧', completed: false, progress: 0 },
-  { id: 'estruturaCustos', name: 'Custos & Ponto de Equilíbrio', icon: '⚖️', completed: false, progress: 0 },
   { id: 'capitalGiro', name: 'Capital de Giro & Ciclo', icon: '🔄', completed: false, progress: 0 },
   { id: 'margensRentabilidade', name: 'Margens & Rentabilidade', icon: '📈', completed: false, progress: 0 },
   { id: 'indicadoresKPIs', name: 'Indicadores (KPIs)', icon: '🎯', completed: false, progress: 0 },
