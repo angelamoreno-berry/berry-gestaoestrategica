@@ -1,6 +1,8 @@
+import { useState, useRef, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import { HelpCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { HelpCircle, Pencil } from 'lucide-react';
 
 interface ValueSliderProps {
   label: string;
@@ -33,10 +35,14 @@ export function ValueSlider({
   naoSabe = false,
   onNaoSabeChange,
 }: ValueSliderProps) {
+  const [editing, setEditing] = useState(false);
+  const [rawInput, setRawInput] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isCurrency = formatValue ? formatValue(1000).includes('R$') || formatValue(1000).includes('$') : false;
+
   const range = max - min;
   const normalizedPosition = range > 0 ? ((value - min) / range) * 100 : 0;
 
-  // Color logic: green = good, red = bad
   const getTrackColor = () => {
     if (naoSabe) return 'bg-muted';
     const pos = invertColors ? 100 - normalizedPosition : normalizedPosition;
@@ -44,6 +50,38 @@ export function ValueSlider({
     if (pos <= 50) return 'bg-orange-500/70';
     if (pos <= 75) return 'bg-yellow-500/70';
     return 'bg-green-500/70';
+  };
+
+  const formatInputNumber = (raw: string) => {
+    const digits = raw.replace(/\D/g, '');
+    if (!digits) return '';
+    return Number(digits).toLocaleString('pt-BR');
+  };
+
+  const handleStartEdit = () => {
+    if (naoSabe) return;
+    setRawInput(value > 0 ? value.toLocaleString('pt-BR') : '');
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatInputNumber(e.target.value);
+    setRawInput(formatted);
+  };
+
+  const handleInputConfirm = () => {
+    const digits = rawInput.replace(/\D/g, '');
+    let num = digits ? Number(digits) : 0;
+    if (num > max) num = max;
+    if (num < min) num = min;
+    onChange(num);
+    setEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleInputConfirm();
+    if (e.key === 'Escape') setEditing(false);
   };
 
   const displayValue = naoSabe
@@ -59,9 +97,29 @@ export function ValueSlider({
           <p className="text-sm font-medium">{label}</p>
           {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
         </div>
-        <span className={`text-sm font-bold ml-3 shrink-0 ${naoSabe ? 'text-muted-foreground italic text-xs' : 'text-primary'}`}>
-          {displayValue}
-        </span>
+        {editing ? (
+          <div className="flex items-center gap-1 ml-3 shrink-0">
+            <span className="text-xs text-muted-foreground">R$</span>
+            <Input
+              ref={inputRef}
+              value={rawInput}
+              onChange={handleInputChange}
+              onBlur={handleInputConfirm}
+              onKeyDown={handleKeyDown}
+              className="w-32 h-7 text-sm font-bold text-right px-2"
+              placeholder="0"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={handleStartEdit}
+            className={`text-sm font-bold ml-3 shrink-0 flex items-center gap-1 hover:opacity-70 transition-opacity ${naoSabe ? 'text-muted-foreground italic text-xs cursor-default' : 'text-primary cursor-pointer'}`}
+            disabled={naoSabe}
+          >
+            {displayValue}
+            {!naoSabe && isCurrency && <Pencil className="w-3 h-3 opacity-40" />}
+          </button>
+        )}
       </div>
 
       <div className="mt-3">
