@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { TrendingUp, TrendingDown, DollarSign, Target } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle } from 'lucide-react';
 import { ValueSlider } from './ValueSlider';
 
 const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
@@ -17,6 +17,16 @@ export function AnaliseFinanceiraFBlock() {
 
   const lucro = state.faturamentoMensal - state.despesasFixas - state.despesasVariaveis;
   const margem = state.faturamentoMensal > 0 ? ((lucro / state.faturamentoMensal) * 100).toFixed(1) : '0';
+
+  // Ponto de Equilíbrio calculation
+  const margemContribuicaoPct = state.faturamentoMensal > 0
+    ? ((state.faturamentoMensal - state.despesasVariaveis) / state.faturamentoMensal)
+    : 0;
+  const pontoEquilibrio = margemContribuicaoPct > 0
+    ? state.despesasFixas / margemContribuicaoPct
+    : 0;
+  const folga = state.faturamentoMensal - pontoEquilibrio;
+  const folgaPct = pontoEquilibrio > 0 ? ((folga / pontoEquilibrio) * 100).toFixed(1) : '0';
 
   useEffect(() => {
     const fields = ['faturamentoMensal', 'despesasFixas', 'quantidadeClientes', 'ticketMedio'];
@@ -70,6 +80,40 @@ export function AnaliseFinanceiraFBlock() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Ponto de Equilíbrio */}
+      {(state.faturamentoMensal > 0 || state.despesasFixas > 0) && (
+        <Card className="border-dashed border-2 border-orange-500/30 bg-orange-500/5">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="w-5 h-5 text-orange-500" />
+              <h3 className="font-semibold text-foreground">Ponto de Equilíbrio (Break-even)</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Faturamento mínimo necessário</p>
+                <p className="text-xl font-bold text-foreground">{fmt(pontoEquilibrio)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Margem de contribuição</p>
+                <p className="text-xl font-bold text-foreground">{(margemContribuicaoPct * 100).toFixed(1)}%</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Folga sobre o break-even</p>
+                <p className={`text-xl font-bold ${folga >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {fmt(folga)} <span className="text-sm font-normal">({folgaPct}%)</span>
+                </p>
+              </div>
+            </div>
+            {folga < 0 && (
+              <p className="text-sm text-red-500 mt-3">⚠️ O faturamento atual está abaixo do ponto de equilíbrio. A empresa está operando no prejuízo.</p>
+            )}
+            {folga >= 0 && folga < pontoEquilibrio * 0.1 && (
+              <p className="text-sm text-orange-500 mt-3">⚠️ A folga é muito pequena. Qualquer queda de receita pode levar ao prejuízo.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="space-y-3">
         <ValueSlider label="Faturamento Mensal" value={state.faturamentoMensal} onChange={(v) => handleChange('faturamentoMensal', v)} min={0} max={2000000} step={5000} leftLabel="Sem receita" rightLabel="Alto faturamento" formatValue={fmt} naoSabe={naoSabe.faturamentoMensal} onNaoSabeChange={(v) => handleNaoSabe('faturamentoMensal', v)} />
