@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ValueSlider } from './ValueSlider';
 
-const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
 
 export function IndicadoresKPIsBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -13,7 +13,7 @@ export function IndicadoresKPIsBlock() {
 
   const [state, setState] = useState(initial);
   const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
-  const ltvCacRatio = state.cac > 0 ? (state.ltv / state.cac).toFixed(1) : '0';
+  const ltvCacRatio = state.cac > 0 ? Math.round(state.ltv / state.cac).toString() : '0';
 
   useEffect(() => {
     const fields = ['ebitda', 'cac', 'ltv'];
