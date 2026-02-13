@@ -54,7 +54,7 @@ export function GovernancaFinanceiraBlock() {
 
   const average = (() => {
     const values = dimensions.map(d => state[d.key as keyof GovernancaFinanceiraData] as number).filter(v => v > 0);
-    return values.length > 0 ? (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1) : '0';
+    return values.length > 0 ? Math.round(values.reduce((a, b) => a + b, 0) / values.length).toString() : '0';
   })();
 
   return (
@@ -67,7 +67,7 @@ export function GovernancaFinanceiraBlock() {
         <CardContent className="p-6 text-center">
           <p className="text-sm text-muted-foreground mb-1">Score de Governança</p>
           <p className="text-4xl font-bold text-primary">{average}</p>
-          <p className="text-sm text-muted-foreground mt-1">de 5.0</p>
+          <p className="text-sm text-muted-foreground mt-1">de 5</p>
         </CardContent>
       </Card>
 

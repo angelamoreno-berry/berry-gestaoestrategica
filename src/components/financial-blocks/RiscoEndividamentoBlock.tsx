@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { AlertTriangle, Shield } from 'lucide-react';
 import { ValueSlider } from './ValueSlider';
 
-const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
 
 export function RiscoEndividamentoBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();

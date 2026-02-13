@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle } from 'lucide-react';
 import { ValueSlider } from './ValueSlider';
 
-const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
 
 export function AnaliseFinanceiraFBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -16,7 +16,7 @@ export function AnaliseFinanceiraFBlock() {
   const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
 
   const lucro = state.faturamentoMensal - state.despesasFixas - state.despesasVariaveis;
-  const margem = state.faturamentoMensal > 0 ? ((lucro / state.faturamentoMensal) * 100).toFixed(1) : '0';
+  const margem = state.faturamentoMensal > 0 ? Math.round((lucro / state.faturamentoMensal) * 100).toString() : '0';
 
   // Ponto de Equilíbrio calculation
   const margemContribuicaoPct = state.faturamentoMensal > 0
@@ -26,7 +26,7 @@ export function AnaliseFinanceiraFBlock() {
     ? state.despesasFixas / margemContribuicaoPct
     : 0;
   const folga = state.faturamentoMensal - pontoEquilibrio;
-  const folgaPct = pontoEquilibrio > 0 ? ((folga / pontoEquilibrio) * 100).toFixed(1) : '0';
+  const folgaPct = pontoEquilibrio > 0 ? Math.round((folga / pontoEquilibrio) * 100).toString() : '0';
 
   useEffect(() => {
     const fields = ['faturamentoMensal', 'despesasFixas', 'quantidadeClientes', 'ticketMedio'];
@@ -96,7 +96,7 @@ export function AnaliseFinanceiraFBlock() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Margem de contribuição</p>
-                <p className="text-xl font-bold text-foreground">{(margemContribuicaoPct * 100).toFixed(1)}%</p>
+                <p className="text-xl font-bold text-foreground">{Math.round(margemContribuicaoPct * 100)}%</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Folga sobre o break-even</p>

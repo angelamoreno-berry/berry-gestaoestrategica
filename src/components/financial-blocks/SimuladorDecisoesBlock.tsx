@@ -13,8 +13,8 @@ interface DecisaoCard {
   detalhe?: string;
 }
 
-const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
-const pct = (v: number) => `${v.toFixed(1)}%`;
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
+const pct = (v: number) => `${Math.round(v)}%`;
 
 export function SimuladorDecisoesBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -191,7 +191,7 @@ export function SimuladorDecisoesBlock() {
         if (ratio < 3) {
           cards.push({
             titulo: 'LTV/CAC abaixo do ideal',
-            descricao: `Razão de ${ratio.toFixed(1)}x (ideal: acima de 3x). Reduza o custo de aquisição ou aumente o valor do ciclo de vida do cliente.`,
+            descricao: `Razão de ${Math.round(ratio)}x (ideal: acima de 3x). Reduza o custo de aquisição ou aumente o valor do ciclo de vida do cliente.`,
             impacto: ratio < 1 ? 'alto' : 'medio',
             tipo: ratio < 1 ? 'risco' : 'melhoria',
             modulo: 'KPIs'

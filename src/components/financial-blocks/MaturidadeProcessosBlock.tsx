@@ -127,8 +127,8 @@ export function MaturidadeProcessosBlock() {
         <Card className="col-span-2 md:col-span-1 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="p-4 text-center">
             <p className="text-[11px] text-muted-foreground mb-1">Score Geral</p>
-            <p className="text-3xl font-bold text-primary">{overallAverage.toFixed(1)}</p>
-            <p className="text-[11px] text-muted-foreground">de 5.0</p>
+            <p className="text-3xl font-bold text-primary">{Math.round(overallAverage)}</p>
+            <p className="text-[11px] text-muted-foreground">de 5</p>
           </CardContent>
         </Card>
         {categories.map(cat => {
@@ -137,7 +137,7 @@ export function MaturidadeProcessosBlock() {
             <Card key={cat.id} className="border-border/50">
               <CardContent className="p-4 text-center">
                 <p className="text-[11px] text-muted-foreground mb-1">{cat.icon} {cat.label}</p>
-                <p className="text-2xl font-bold">{score > 0 ? score.toFixed(1) : '—'}</p>
+                <p className="text-2xl font-bold">{score > 0 ? Math.round(score) : '—'}</p>
                 <p className="text-[11px] text-muted-foreground">{getCategoryCompletion(cat.dimensions)}</p>
               </CardContent>
             </Card>
