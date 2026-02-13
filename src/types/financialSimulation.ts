@@ -97,9 +97,6 @@ export interface RiscoEndividamentoData {
   comprometimentoReceita: number;
   reservaEmergencia: number;
   mesesReserva: number;
-  sensibilidadeQueda10: string; // o que acontece se receita cair 10%
-  sensibilidadeQueda20: string;
-  capacidadePagamento: string;
   notes: string;
 }
 
@@ -147,7 +144,7 @@ export const initialFinancialData: FinancialSimulationData = {
   capitalGiro: { prazoMedioRecebimento: 0, prazoMedioPagamento: 0, prazoMedioEstoque: 0, cicloOperacional: 0, cicloFinanceiro: 0, necessidadeCapitalGiro: 0, capitalGiroDisponivel: 0, notes: '' },
   margensRentabilidade: { margemBruta: 0, margemContribuicao: 0, margemLiquida: 0, roe: 0, roiMedio: 0, notes: '' },
   indicadoresKPIs: { ebitda: 0, ebitdaMargin: 0, geracaoCaixa: 0, eficienciaOperacional: 0, cac: 0, ltv: 0, ltvCacRatio: 0, notes: '' },
-  riscoEndividamento: { totalDividas: 0, parcelasMensais: 0, comprometimentoReceita: 0, reservaEmergencia: 0, mesesReserva: 0, sensibilidadeQueda10: '', sensibilidadeQueda20: '', capacidadePagamento: '', notes: '' },
+  riscoEndividamento: { totalDividas: 0, parcelasMensais: 0, comprometimentoReceita: 0, reservaEmergencia: 0, mesesReserva: 0, notes: '' },
   simuladorDecisoes: { cenarios: [], notes: '' },
   scoreGeral: { scoreProcessos: 0, scoreFinanceiro: 0, scoreGeral: 0, classificacao: '', recomendacoes: [], notes: '' },
 };
