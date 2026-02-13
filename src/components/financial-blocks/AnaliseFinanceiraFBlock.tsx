@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { TrendingUp, TrendingDown, DollarSign, Target } from 'lucide-react';
+import { ValueSlider } from './ValueSlider';
+
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
 export function AnaliseFinanceiraFBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -11,24 +13,32 @@ export function AnaliseFinanceiraFBlock() {
   const initial = financialData?.analiseFinanceira || { faturamentoMensal: 0, despesasFixas: 0, despesasVariaveis: 0, lucroLiquido: 0, margemLiquida: 0, ticketMedio: 0, quantidadeClientes: 0, notes: '' };
 
   const [state, setState] = useState(initial);
+  const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
 
   const lucro = state.faturamentoMensal - state.despesasFixas - state.despesasVariaveis;
   const margem = state.faturamentoMensal > 0 ? ((lucro / state.faturamentoMensal) * 100).toFixed(1) : '0';
 
   useEffect(() => {
-    const has = [state.faturamentoMensal > 0, state.despesasFixas > 0, state.quantidadeClientes > 0, state.ticketMedio > 0];
-    const progress = Math.round((has.filter(Boolean).length / has.length) * 100);
+    const fields = ['faturamentoMensal', 'despesasFixas', 'quantidadeClientes', 'ticketMedio'];
+    const filled = fields.filter(f => state[f] > 0 || naoSabe[f]).length;
+    const progress = Math.round((filled / fields.length) * 100);
     updateBlockProgress('analiseFinanceira', progress);
     if (progress === 100) markBlockComplete('analiseFinanceira');
-  }, [state, updateBlockProgress, markBlockComplete]);
+  }, [state, naoSabe, updateBlockProgress, markBlockComplete]);
 
-  const handleChange = (field: string, value: number | string) => {
+  const handleChange = (field: string, value: number) => {
     const newState = { ...state, [field]: value };
     setState(newState);
     updateData('financialSimulation' as any, { ...financialData, analiseFinanceira: newState });
   };
 
-  const formatCurrency = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+  const handleNaoSabe = (field: string, value: boolean) => {
+    const newNaoSabe = { ...naoSabe, [field]: value };
+    setNaoSabe(newNaoSabe);
+    const newState = { ...state, _naoSabe: newNaoSabe, [field]: value ? 0 : state[field] };
+    setState(newState);
+    updateData('financialSimulation' as any, { ...financialData, analiseFinanceira: newState });
+  };
 
   return (
     <div className="space-y-6">
@@ -38,19 +48,19 @@ export function AnaliseFinanceiraFBlock() {
         <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2"><TrendingUp className="w-4 h-4 text-green-500" /><span className="text-xs text-muted-foreground">Faturamento</span></div>
-            <p className="text-lg font-bold">{formatCurrency(state.faturamentoMensal)}</p>
+            <p className="text-lg font-bold">{fmt(state.faturamentoMensal)}</p>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2"><TrendingDown className="w-4 h-4 text-red-500" /><span className="text-xs text-muted-foreground">Despesas Totais</span></div>
-            <p className="text-lg font-bold">{formatCurrency(state.despesasFixas + state.despesasVariaveis)}</p>
+            <p className="text-lg font-bold">{fmt(state.despesasFixas + state.despesasVariaveis)}</p>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2"><DollarSign className="w-4 h-4 text-primary" /><span className="text-xs text-muted-foreground">Lucro Líquido</span></div>
-            <p className={`text-lg font-bold ${lucro >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatCurrency(lucro)}</p>
+            <p className={`text-lg font-bold ${lucro >= 0 ? 'text-green-600' : 'text-red-600'}`}>{fmt(lucro)}</p>
           </CardContent>
         </Card>
         <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
@@ -61,43 +71,17 @@ export function AnaliseFinanceiraFBlock() {
         </Card>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Receita</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Faturamento Mensal</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.faturamentoMensal || ''} onChange={(e) => handleChange('faturamentoMensal', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Ticket Médio</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.ticketMedio || ''} onChange={(e) => handleChange('ticketMedio', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Quantidade de Clientes</label>
-              <Input type="number" placeholder="0" value={state.quantidadeClientes || ''} onChange={(e) => handleChange('quantidadeClientes', Number(e.target.value))} />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Despesas</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Despesas Fixas (mensal)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.despesasFixas || ''} onChange={(e) => handleChange('despesasFixas', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Despesas Variáveis (mensal)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.despesasVariaveis || ''} onChange={(e) => handleChange('despesasVariaveis', Number(e.target.value))} />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="space-y-3">
+        <ValueSlider label="Faturamento Mensal" value={state.faturamentoMensal} onChange={(v) => handleChange('faturamentoMensal', v)} min={0} max={2000000} step={5000} leftLabel="Sem receita" rightLabel="Alto faturamento" formatValue={fmt} naoSabe={naoSabe.faturamentoMensal} onNaoSabeChange={(v) => handleNaoSabe('faturamentoMensal', v)} />
+        <ValueSlider label="Ticket Médio" value={state.ticketMedio} onChange={(v) => handleChange('ticketMedio', v)} min={0} max={50000} step={100} leftLabel="Baixo" rightLabel="Alto ticket" formatValue={fmt} naoSabe={naoSabe.ticketMedio} onNaoSabeChange={(v) => handleNaoSabe('ticketMedio', v)} />
+        <ValueSlider label="Quantidade de Clientes" value={state.quantidadeClientes} onChange={(v) => handleChange('quantidadeClientes', v)} min={0} max={5000} step={10} leftLabel="Poucos clientes" rightLabel="Muitos clientes" formatValue={(v) => `${v} clientes`} naoSabe={naoSabe.quantidadeClientes} onNaoSabeChange={(v) => handleNaoSabe('quantidadeClientes', v)} />
+        <ValueSlider label="Despesas Fixas (mensal)" value={state.despesasFixas} onChange={(v) => handleChange('despesasFixas', v)} min={0} max={1000000} step={5000} leftLabel="Despesas baixas" rightLabel="Despesas altas" invertColors formatValue={fmt} naoSabe={naoSabe.despesasFixas} onNaoSabeChange={(v) => handleNaoSabe('despesasFixas', v)} />
+        <ValueSlider label="Despesas Variáveis (mensal)" value={state.despesasVariaveis} onChange={(v) => handleChange('despesasVariaveis', v)} min={0} max={1000000} step={5000} leftLabel="Despesas baixas" rightLabel="Despesas altas" invertColors formatValue={fmt} naoSabe={naoSabe.despesasVariaveis} onNaoSabeChange={(v) => handleNaoSabe('despesasVariaveis', v)} />
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Observações</CardTitle></CardHeader>
-        <CardContent>
-          <Textarea placeholder="Observações sobre a análise financeira..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value)} rows={3} />
+        <CardContent className="pt-6">
+          <Textarea placeholder="Observações sobre a análise financeira..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value as any)} rows={3} />
         </CardContent>
       </Card>
     </div>

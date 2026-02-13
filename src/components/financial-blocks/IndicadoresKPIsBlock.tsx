@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { ValueSlider } from './ValueSlider';
+
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
 export function IndicadoresKPIsBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -10,22 +12,30 @@ export function IndicadoresKPIsBlock() {
   const initial = financialData?.indicadoresKPIs || { ebitda: 0, ebitdaMargin: 0, geracaoCaixa: 0, eficienciaOperacional: 0, cac: 0, ltv: 0, ltvCacRatio: 0, notes: '' };
 
   const [state, setState] = useState(initial);
+  const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
   const ltvCacRatio = state.cac > 0 ? (state.ltv / state.cac).toFixed(1) : '0';
 
   useEffect(() => {
-    const has = [state.ebitda > 0, state.cac > 0, state.ltv > 0];
-    const progress = Math.round((has.filter(Boolean).length / has.length) * 100);
+    const fields = ['ebitda', 'cac', 'ltv'];
+    const filled = fields.filter(f => state[f] > 0 || naoSabe[f]).length;
+    const progress = Math.round((filled / fields.length) * 100);
     updateBlockProgress('indicadoresKPIs', progress);
     if (progress === 100) markBlockComplete('indicadoresKPIs');
-  }, [state, updateBlockProgress, markBlockComplete]);
+  }, [state, naoSabe, updateBlockProgress, markBlockComplete]);
 
-  const handleChange = (field: string, value: number | string) => {
+  const handleChange = (field: string, value: number) => {
     const newState = { ...state, [field]: value };
     setState(newState);
     updateData('financialSimulation' as any, { ...financialData, indicadoresKPIs: newState });
   };
 
-  const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+  const handleNaoSabe = (field: string, value: boolean) => {
+    const newNaoSabe = { ...naoSabe, [field]: value };
+    setNaoSabe(newNaoSabe);
+    const newState = { ...state, _naoSabe: newNaoSabe, [field]: value ? 0 : state[field] };
+    setState(newState);
+    updateData('financialSimulation' as any, { ...financialData, indicadoresKPIs: newState });
+  };
 
   return (
     <div className="space-y-6">
@@ -58,53 +68,28 @@ export function IndicadoresKPIsBlock() {
         </Card>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-lg">EBITDA & Geração de Caixa</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">EBITDA (R$)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.ebitda || ''} onChange={(e) => handleChange('ebitda', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Margem EBITDA (%)</label>
-              <Input type="number" placeholder="0" value={state.ebitdaMargin || ''} onChange={(e) => handleChange('ebitdaMargin', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Geração de Caixa (R$/mês)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.geracaoCaixa || ''} onChange={(e) => handleChange('geracaoCaixa', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Eficiência Operacional (%)</label>
-              <Input type="number" placeholder="0" value={state.eficienciaOperacional || ''} onChange={(e) => handleChange('eficienciaOperacional', Number(e.target.value))} />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="text-lg">CAC & LTV</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">CAC - Custo de Aquisição (R$)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.cac || ''} onChange={(e) => handleChange('cac', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">LTV - Lifetime Value (R$)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.ltv || ''} onChange={(e) => handleChange('ltv', Number(e.target.value))} />
-            </div>
-            <div className="p-3 bg-muted rounded-lg text-center">
-              <span className="text-sm text-muted-foreground">LTV/CAC Ratio: </span>
-              <span className={`font-bold ${Number(ltvCacRatio) >= 3 ? 'text-green-600' : 'text-orange-600'}`}>{ltvCacRatio}x</span>
-              <span className="text-xs text-muted-foreground ml-2">(ideal: ≥ 3x)</span>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="space-y-3">
+        <ValueSlider label="EBITDA" description="Lucro antes de juros, impostos, depreciação e amortização" value={state.ebitda} onChange={(v) => handleChange('ebitda', v)} min={0} max={2000000} step={5000} leftLabel="EBITDA baixo" rightLabel="EBITDA alto" formatValue={fmt} naoSabe={naoSabe.ebitda} onNaoSabeChange={(v) => handleNaoSabe('ebitda', v)} />
+        <ValueSlider label="Margem EBITDA" description="Percentual do EBITDA sobre a receita" value={state.ebitdaMargin} onChange={(v) => handleChange('ebitdaMargin', v)} min={0} max={100} step={1} leftLabel="Margem baixa" rightLabel="Margem alta" formatValue={(v) => `${v}%`} naoSabe={naoSabe.ebitdaMargin} onNaoSabeChange={(v) => handleNaoSabe('ebitdaMargin', v)} />
+        <ValueSlider label="Geração de Caixa (mensal)" description="Caixa gerado pelas operações mensalmente" value={state.geracaoCaixa} onChange={(v) => handleChange('geracaoCaixa', v)} min={0} max={1000000} step={5000} leftLabel="Caixa baixo" rightLabel="Caixa alto" formatValue={fmt} naoSabe={naoSabe.geracaoCaixa} onNaoSabeChange={(v) => handleNaoSabe('geracaoCaixa', v)} />
+        <ValueSlider label="Eficiência Operacional" description="Percentual de eficiência nas operações" value={state.eficienciaOperacional} onChange={(v) => handleChange('eficienciaOperacional', v)} min={0} max={100} step={1} leftLabel="Ineficiente" rightLabel="Altamente eficiente" formatValue={(v) => `${v}%`} naoSabe={naoSabe.eficienciaOperacional} onNaoSabeChange={(v) => handleNaoSabe('eficienciaOperacional', v)} />
+        <ValueSlider label="CAC — Custo de Aquisição de Cliente" description="Quanto custa adquirir um novo cliente" value={state.cac} onChange={(v) => handleChange('cac', v)} min={0} max={50000} step={100} leftLabel="CAC baixo" rightLabel="CAC alto" invertColors formatValue={fmt} naoSabe={naoSabe.cac} onNaoSabeChange={(v) => handleNaoSabe('cac', v)} />
+        <ValueSlider label="LTV — Lifetime Value" description="Valor total que um cliente gera ao longo do tempo" value={state.ltv} onChange={(v) => handleChange('ltv', v)} min={0} max={200000} step={500} leftLabel="LTV baixo" rightLabel="LTV alto" formatValue={fmt} naoSabe={naoSabe.ltv} onNaoSabeChange={(v) => handleNaoSabe('ltv', v)} />
       </div>
 
+      {!naoSabe.cac && !naoSabe.ltv && state.cac > 0 && (
+        <Card className="bg-muted/50">
+          <CardContent className="p-4 text-center">
+            <span className="text-sm text-muted-foreground">LTV/CAC Ratio: </span>
+            <span className={`font-bold ${Number(ltvCacRatio) >= 3 ? 'text-green-600' : 'text-orange-600'}`}>{ltvCacRatio}x</span>
+            <span className="text-xs text-muted-foreground ml-2">(ideal: ≥ 3x)</span>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
-        <CardHeader><CardTitle className="text-base">Observações</CardTitle></CardHeader>
-        <CardContent>
-          <Textarea placeholder="Observações sobre KPIs financeiros..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value)} rows={3} />
+        <CardContent className="pt-6">
+          <Textarea placeholder="Observações sobre KPIs financeiros..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value as any)} rows={3} />
         </CardContent>
       </Card>
     </div>

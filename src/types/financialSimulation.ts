@@ -24,6 +24,8 @@ export interface MaturidadeProcessosData {
   projecaoFinanceira: number;
   notes: string;
   answers?: Record<string, number>;
+  _naoSabe?: Record<string, boolean>;
+  [key: string]: any;
 }
 
 export interface GovernancaFinanceiraData {
