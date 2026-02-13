@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { AlertTriangle, Shield } from 'lucide-react';
 import { ValueSlider } from './ValueSlider';
@@ -10,7 +10,7 @@ const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', c
 export function RiscoEndividamentoBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
   const financialData = (data as any).financialSimulation;
-  const initial = financialData?.riscoEndividamento || { totalDividas: 0, parcelasMensais: 0, comprometimentoReceita: 0, reservaEmergencia: 0, mesesReserva: 0, sensibilidadeQueda10: '', sensibilidadeQueda20: '', capacidadePagamento: '', notes: '' };
+  const initial = financialData?.riscoEndividamento || { totalDividas: 0, parcelasMensais: 0, comprometimentoReceita: 0, reservaEmergencia: 0, mesesReserva: 0, notes: '' };
 
   const [state, setState] = useState(initial);
   const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
@@ -74,24 +74,6 @@ export function RiscoEndividamentoBlock() {
         <ValueSlider label="Reserva de Emergência" description="Valor disponível para emergências" value={state.reservaEmergencia} onChange={(v) => handleChange('reservaEmergencia', v)} min={0} max={2000000} step={5000} leftLabel="Sem reserva" rightLabel="Reserva sólida" formatValue={fmt} naoSabe={naoSabe.reservaEmergencia} onNaoSabeChange={(v) => handleNaoSabe('reservaEmergencia', v)} />
         <ValueSlider label="Meses de Cobertura" description="Quantos meses a reserva cobre os custos fixos" value={state.mesesReserva} onChange={(v) => handleChange('mesesReserva', v)} min={0} max={24} step={1} leftLabel="0 meses" rightLabel="24+ meses" formatValue={(v) => `${v} meses`} naoSabe={naoSabe.mesesReserva} onNaoSabeChange={(v) => handleNaoSabe('mesesReserva', v)} />
       </div>
-
-      <Card>
-        <CardHeader><CardTitle className="text-lg">Análise de Sensibilidade</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm text-muted-foreground mb-1 block">Se a receita cair 10%, o que acontece?</label>
-            <Textarea placeholder="Descreva o impacto..." value={state.sensibilidadeQueda10} onChange={(e) => handleChange('sensibilidadeQueda10', e.target.value)} rows={2} />
-          </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-1 block">Se a receita cair 20%, o que acontece?</label>
-            <Textarea placeholder="Descreva o impacto..." value={state.sensibilidadeQueda20} onChange={(e) => handleChange('sensibilidadeQueda20', e.target.value)} rows={2} />
-          </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-1 block">Capacidade de Pagamento</label>
-            <Textarea placeholder="Avalie a capacidade de honrar compromissos..." value={state.capacidadePagamento} onChange={(e) => handleChange('capacidadePagamento', e.target.value)} rows={2} />
-          </div>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardContent className="pt-6">

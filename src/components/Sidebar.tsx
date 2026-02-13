@@ -4,6 +4,7 @@ import { ProgressRing } from './ProgressRing';
 import { cn } from '@/lib/utils';
 import { Check, ArrowLeft, Building2 } from 'lucide-react';
 import { openReportInNewTab } from '@/utils/reportGenerator';
+import { openFinancialReportInNewTab } from '@/utils/financialReportGenerator';
 import { toast } from '@/hooks/use-toast';
 
 export function Sidebar() {
@@ -15,7 +16,11 @@ export function Sidebar() {
       toast({ title: 'Erro', description: 'Nenhum projeto selecionado', variant: 'destructive' });
       return;
     }
-    openReportInNewTab(currentProject, data, blocks);
+    if (currentProject?.simulationType === 'financeira') {
+      openFinancialReportInNewTab(currentProject, data, blocks);
+    } else {
+      openReportInNewTab(currentProject, data, blocks);
+    }
     toast({ title: 'Relatório gerado!', description: 'O relatório foi aberto em uma nova aba.' });
   };
   const totalProgress = getTotalProgress();
