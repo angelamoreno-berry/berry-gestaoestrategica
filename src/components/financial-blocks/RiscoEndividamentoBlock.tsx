@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { AlertTriangle, Shield } from 'lucide-react';
+import { ValueSlider } from './ValueSlider';
+
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
 export function RiscoEndividamentoBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -11,13 +13,15 @@ export function RiscoEndividamentoBlock() {
   const initial = financialData?.riscoEndividamento || { totalDividas: 0, parcelasMensais: 0, comprometimentoReceita: 0, reservaEmergencia: 0, mesesReserva: 0, sensibilidadeQueda10: '', sensibilidadeQueda20: '', capacidadePagamento: '', notes: '' };
 
   const [state, setState] = useState(initial);
+  const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
 
   useEffect(() => {
-    const has = [state.totalDividas > 0 || state.comprometimentoReceita > 0, state.reservaEmergencia > 0, state.sensibilidadeQueda10.length > 0];
-    const progress = Math.round((has.filter(Boolean).length / has.length) * 100);
+    const fields = ['totalDividas', 'reservaEmergencia', 'comprometimentoReceita'];
+    const filled = fields.filter(f => state[f] > 0 || naoSabe[f]).length;
+    const progress = Math.round((filled / fields.length) * 100);
     updateBlockProgress('riscoEndividamento', progress);
     if (progress === 100) markBlockComplete('riscoEndividamento');
-  }, [state, updateBlockProgress, markBlockComplete]);
+  }, [state, naoSabe, updateBlockProgress, markBlockComplete]);
 
   const handleChange = (field: string, value: number | string) => {
     const newState = { ...state, [field]: value };
@@ -25,7 +29,13 @@ export function RiscoEndividamentoBlock() {
     updateData('financialSimulation' as any, { ...financialData, riscoEndividamento: newState });
   };
 
-  const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+  const handleNaoSabe = (field: string, value: boolean) => {
+    const newNaoSabe = { ...naoSabe, [field]: value };
+    setNaoSabe(newNaoSabe);
+    const newState = { ...state, _naoSabe: newNaoSabe, [field]: value ? 0 : state[field] };
+    setState(newState);
+    updateData('financialSimulation' as any, { ...financialData, riscoEndividamento: newState });
+  };
 
   const riskLevel = state.comprometimentoReceita > 30 ? 'Alto' : state.comprometimentoReceita > 15 ? 'Moderado' : 'Baixo';
   const riskColor = riskLevel === 'Alto' ? 'text-red-600' : riskLevel === 'Moderado' ? 'text-orange-600' : 'text-green-600';
@@ -57,38 +67,12 @@ export function RiscoEndividamentoBlock() {
         </Card>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Endividamento</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Total de Dívidas (R$)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.totalDividas || ''} onChange={(e) => handleChange('totalDividas', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Parcelas Mensais (R$)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.parcelasMensais || ''} onChange={(e) => handleChange('parcelasMensais', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">% da Receita Comprometida</label>
-              <Input type="number" placeholder="0" value={state.comprometimentoReceita || ''} onChange={(e) => handleChange('comprometimentoReceita', Number(e.target.value))} />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Reserva de Emergência</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Reserva Disponível (R$)</label>
-              <Input type="number" placeholder="R$ 0,00" value={state.reservaEmergencia || ''} onChange={(e) => handleChange('reservaEmergencia', Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Meses de Cobertura</label>
-              <Input type="number" placeholder="0" value={state.mesesReserva || ''} onChange={(e) => handleChange('mesesReserva', Number(e.target.value))} />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="space-y-3">
+        <ValueSlider label="Total de Dívidas" description="Soma de todas as dívidas da empresa" value={state.totalDividas} onChange={(v) => handleChange('totalDividas', v)} min={0} max={5000000} step={10000} leftLabel="Sem dívidas" rightLabel="Altamente endividada" invertColors formatValue={fmt} naoSabe={naoSabe.totalDividas} onNaoSabeChange={(v) => handleNaoSabe('totalDividas', v)} />
+        <ValueSlider label="Parcelas Mensais" description="Total de parcelas mensais a pagar" value={state.parcelasMensais} onChange={(v) => handleChange('parcelasMensais', v)} min={0} max={500000} step={1000} leftLabel="Parcelas baixas" rightLabel="Parcelas altas" invertColors formatValue={fmt} naoSabe={naoSabe.parcelasMensais} onNaoSabeChange={(v) => handleNaoSabe('parcelasMensais', v)} />
+        <ValueSlider label="% da Receita Comprometida" description="Percentual da receita comprometido com dívidas" value={state.comprometimentoReceita} onChange={(v) => handleChange('comprometimentoReceita', v)} min={0} max={100} step={1} leftLabel="Livre" rightLabel="Totalmente comprometida" invertColors formatValue={(v) => `${v}%`} naoSabe={naoSabe.comprometimentoReceita} onNaoSabeChange={(v) => handleNaoSabe('comprometimentoReceita', v)} />
+        <ValueSlider label="Reserva de Emergência" description="Valor disponível para emergências" value={state.reservaEmergencia} onChange={(v) => handleChange('reservaEmergencia', v)} min={0} max={2000000} step={5000} leftLabel="Sem reserva" rightLabel="Reserva sólida" formatValue={fmt} naoSabe={naoSabe.reservaEmergencia} onNaoSabeChange={(v) => handleNaoSabe('reservaEmergencia', v)} />
+        <ValueSlider label="Meses de Cobertura" description="Quantos meses a reserva cobre os custos fixos" value={state.mesesReserva} onChange={(v) => handleChange('mesesReserva', v)} min={0} max={24} step={1} leftLabel="0 meses" rightLabel="24+ meses" formatValue={(v) => `${v} meses`} naoSabe={naoSabe.mesesReserva} onNaoSabeChange={(v) => handleNaoSabe('mesesReserva', v)} />
       </div>
 
       <Card>
@@ -110,8 +94,7 @@ export function RiscoEndividamentoBlock() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Observações</CardTitle></CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Textarea placeholder="Observações sobre risco e endividamento..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value)} rows={3} />
         </CardContent>
       </Card>

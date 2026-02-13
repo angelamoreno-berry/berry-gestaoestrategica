@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Wallet } from 'lucide-react';
+import { ValueSlider } from './ValueSlider';
+
+const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
 export function FluxoCaixaBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -11,31 +12,38 @@ export function FluxoCaixaBlock() {
   const initial = financialData?.fluxoCaixa || { saldoAtual: 0, entradasPrevistas30d: 0, saidasPrevistas30d: 0, entradasPrevistas60d: 0, saidasPrevistas60d: 0, entradasPrevistas90d: 0, saidasPrevistas90d: 0, notes: '' };
 
   const [state, setState] = useState(initial);
+  const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(initial._naoSabe || {});
 
   const saldo30 = state.saldoAtual + state.entradasPrevistas30d - state.saidasPrevistas30d;
   const saldo60 = saldo30 + state.entradasPrevistas60d - state.saidasPrevistas60d;
   const saldo90 = saldo60 + state.entradasPrevistas90d - state.saidasPrevistas90d;
 
   useEffect(() => {
-    const has = [state.saldoAtual !== 0, state.entradasPrevistas30d > 0, state.saidasPrevistas30d > 0];
-    const progress = Math.round((has.filter(Boolean).length / has.length) * 100);
+    const fields = ['saldoAtual', 'entradasPrevistas30d', 'saidasPrevistas30d'];
+    const filled = fields.filter(f => state[f] !== 0 || naoSabe[f]).length;
+    const progress = Math.round((filled / fields.length) * 100);
     updateBlockProgress('fluxoCaixa', progress);
     if (progress === 100) markBlockComplete('fluxoCaixa');
-  }, [state, updateBlockProgress, markBlockComplete]);
+  }, [state, naoSabe, updateBlockProgress, markBlockComplete]);
 
-  const handleChange = (field: string, value: number | string) => {
+  const handleChange = (field: string, value: number) => {
     const newState = { ...state, [field]: value };
     setState(newState);
     updateData('financialSimulation' as any, { ...financialData, fluxoCaixa: newState });
   };
 
-  const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+  const handleNaoSabe = (field: string, value: boolean) => {
+    const newNaoSabe = { ...naoSabe, [field]: value };
+    setNaoSabe(newNaoSabe);
+    const newState = { ...state, _naoSabe: newNaoSabe, [field]: value ? 0 : state[field] };
+    setState(newState);
+    updateData('financialSimulation' as any, { ...financialData, fluxoCaixa: newState });
+  };
 
   return (
     <div className="space-y-6">
       <p className="text-muted-foreground">Visualize o caixa atual e projete os próximos 30, 60 e 90 dias.</p>
 
-      {/* Projection Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Saldo Atual', value: state.saldoAtual },
@@ -52,37 +60,25 @@ export function FluxoCaixaBlock() {
         ))}
       </div>
 
-      <Card>
-        <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Wallet className="w-5 h-5" /> Saldo Atual</CardTitle></CardHeader>
-        <CardContent>
-          <Input type="number" placeholder="R$ 0,00" value={state.saldoAtual || ''} onChange={(e) => handleChange('saldoAtual', Number(e.target.value))} />
-        </CardContent>
-      </Card>
+      <div className="space-y-3">
+        <ValueSlider label="Saldo Atual em Caixa" value={state.saldoAtual} onChange={(v) => handleChange('saldoAtual', v)} min={0} max={2000000} step={5000} leftLabel="Caixa zerado" rightLabel="Caixa confortável" formatValue={fmt} naoSabe={naoSabe.saldoAtual} onNaoSabeChange={(v) => handleNaoSabe('saldoAtual', v)} />
 
-      {[
-        { period: '30 dias', entKey: 'entradasPrevistas30d', saiKey: 'saidasPrevistas30d' },
-        { period: '60 dias', entKey: 'entradasPrevistas60d', saiKey: 'saidasPrevistas60d' },
-        { period: '90 dias', entKey: 'entradasPrevistas90d', saiKey: 'saidasPrevistas90d' },
-      ].map(({ period, entKey, saiKey }) => (
-        <Card key={period}>
-          <CardHeader><CardTitle className="text-lg">Projeção — {period}</CardTitle></CardHeader>
-          <CardContent className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Entradas previstas</label>
-              <Input type="number" placeholder="R$ 0,00" value={state[entKey] || ''} onChange={(e) => handleChange(entKey, Number(e.target.value))} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Saídas previstas</label>
-              <Input type="number" placeholder="R$ 0,00" value={state[saiKey] || ''} onChange={(e) => handleChange(saiKey, Number(e.target.value))} />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+        {[
+          { period: '30 dias', entKey: 'entradasPrevistas30d', saiKey: 'saidasPrevistas30d' },
+          { period: '60 dias', entKey: 'entradasPrevistas60d', saiKey: 'saidasPrevistas60d' },
+          { period: '90 dias', entKey: 'entradasPrevistas90d', saiKey: 'saidasPrevistas90d' },
+        ].map(({ period, entKey, saiKey }) => (
+          <div key={period} className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground pt-2">Projeção — {period}</p>
+            <ValueSlider label={`Entradas previstas (${period})`} value={state[entKey]} onChange={(v) => handleChange(entKey, v)} min={0} max={2000000} step={5000} leftLabel="Sem entradas" rightLabel="Entradas altas" formatValue={fmt} naoSabe={naoSabe[entKey]} onNaoSabeChange={(v) => handleNaoSabe(entKey, v)} />
+            <ValueSlider label={`Saídas previstas (${period})`} value={state[saiKey]} onChange={(v) => handleChange(saiKey, v)} min={0} max={2000000} step={5000} leftLabel="Saídas baixas" rightLabel="Saídas altas" invertColors formatValue={fmt} naoSabe={naoSabe[saiKey]} onNaoSabeChange={(v) => handleNaoSabe(saiKey, v)} />
+          </div>
+        ))}
+      </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Observações</CardTitle></CardHeader>
-        <CardContent>
-          <Textarea placeholder="Observações sobre fluxo de caixa..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value)} rows={3} />
+        <CardContent className="pt-6">
+          <Textarea placeholder="Observações sobre fluxo de caixa..." value={state.notes} onChange={(e) => handleChange('notes', e.target.value as any)} rows={3} />
         </CardContent>
       </Card>
     </div>

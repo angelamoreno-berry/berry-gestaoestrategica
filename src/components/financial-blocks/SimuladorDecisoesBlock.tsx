@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useConsulting } from '@/contexts/ConsultingContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, X, FlaskConical, TrendingUp, TrendingDown } from 'lucide-react';
 import { CenarioSimulacao } from '@/types/financialSimulation';
+import { ValueSlider } from './ValueSlider';
 
 export function SimuladorDecisoesBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -49,7 +50,6 @@ export function SimuladorDecisoesBlock() {
     <div className="space-y-6">
       <p className="text-muted-foreground">Simule decisões estratégicas: "e se" para preço, custos, equipe e investimentos.</p>
 
-      {/* Existing Scenarios */}
       {state.cenarios.length > 0 && (
         <div className="space-y-4">
           {state.cenarios.map((c: CenarioSimulacao, i: number) => (
@@ -89,7 +89,6 @@ export function SimuladorDecisoesBlock() {
         </div>
       )}
 
-      {/* New Scenario Form */}
       <Card>
         <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Plus className="w-5 h-5" /> Novo Cenário</CardTitle></CardHeader>
         <CardContent className="space-y-4">
@@ -115,15 +114,30 @@ export function SimuladorDecisoesBlock() {
             <label className="text-sm text-muted-foreground mb-1 block">Descrição</label>
             <Textarea placeholder="Descreva o cenário..." value={newCenario.descricao} onChange={(e) => setNewCenario({ ...newCenario, descricao: e.target.value })} rows={2} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Impacto na Receita (R$/mês)</label>
-              <Input type="number" placeholder="0" value={newCenario.impactoReceita || ''} onChange={(e) => setNewCenario({ ...newCenario, impactoReceita: Number(e.target.value) })} />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground mb-1 block">Impacto no Custo (R$/mês)</label>
-              <Input type="number" placeholder="0" value={newCenario.impactoCusto || ''} onChange={(e) => setNewCenario({ ...newCenario, impactoCusto: Number(e.target.value) })} />
-            </div>
+          <div className="space-y-3">
+            <ValueSlider
+              label="Impacto na Receita (R$/mês)"
+              value={newCenario.impactoReceita || 0}
+              onChange={(v) => setNewCenario({ ...newCenario, impactoReceita: v })}
+              min={-500000}
+              max={500000}
+              step={5000}
+              leftLabel="Redução de receita"
+              rightLabel="Aumento de receita"
+              formatValue={fmt}
+            />
+            <ValueSlider
+              label="Impacto no Custo (R$/mês)"
+              value={newCenario.impactoCusto || 0}
+              onChange={(v) => setNewCenario({ ...newCenario, impactoCusto: v })}
+              min={-500000}
+              max={500000}
+              step={5000}
+              leftLabel="Redução de custo"
+              rightLabel="Aumento de custo"
+              invertColors
+              formatValue={fmt}
+            />
           </div>
           <Button onClick={addCenario} disabled={!newCenario.nome || !newCenario.descricao} className="w-full">
             <Plus className="w-4 h-4 mr-2" /> Adicionar Cenário
@@ -132,8 +146,7 @@ export function SimuladorDecisoesBlock() {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Observações</CardTitle></CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Textarea placeholder="Observações sobre os cenários simulados..." value={state.notes} onChange={(e) => save({ ...state, notes: e.target.value })} rows={3} />
         </CardContent>
       </Card>

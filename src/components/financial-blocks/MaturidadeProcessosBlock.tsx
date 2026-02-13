@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MaturidadeProcessosData } from '@/types/financialSimulation';
+import { ValueSlider } from './ValueSlider';
 
 interface Dimension {
   key: string;
@@ -61,8 +62,7 @@ const categories = [
 
 const allDimensions = categories.flatMap(c => c.dimensions);
 
-const levelLabels = ['', 'Inexistente', 'Inicial', 'Definido', 'Gerenciado', 'Otimizado'];
-const levelColors = ['', 'bg-destructive/80', 'bg-orange-500/80', 'bg-yellow-500/80', 'bg-blue-500/80', 'bg-green-500/80'];
+const levelLabels: Record<number, string> = { 1: 'Inexistente', 2: 'Inicial', 3: 'Definido', 4: 'Gerenciado', 5: 'Otimizado' };
 
 export function MaturidadeProcessosBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();
@@ -70,17 +70,27 @@ export function MaturidadeProcessosBlock() {
   const localData: MaturidadeProcessosData = financialData?.maturidadeProcessos || {};
 
   const [state, setState] = useState<Record<string, any>>(localData);
+  const [naoSabe, setNaoSabe] = useState<Record<string, boolean>>(localData._naoSabe || {});
 
   useEffect(() => {
     const values = allDimensions.map(d => (state[d.key] as number) || 0);
-    const filled = values.filter(v => v > 0).length;
+    const naoSabeCount = allDimensions.filter(d => naoSabe[d.key]).length;
+    const filled = values.filter(v => v > 0).length + naoSabeCount;
     const progress = Math.round((filled / allDimensions.length) * 100);
     updateBlockProgress('maturidadeProcessos', progress);
     if (progress === 100) markBlockComplete('maturidadeProcessos');
-  }, [state, updateBlockProgress, markBlockComplete]);
+  }, [state, naoSabe, updateBlockProgress, markBlockComplete]);
 
   const handleChange = (key: string, value: number) => {
     const newState = { ...state, [key]: value };
+    setState(newState);
+    updateData('financialSimulation' as any, { ...financialData, maturidadeProcessos: newState });
+  };
+
+  const handleNaoSabe = (key: string, value: boolean) => {
+    const newNaoSabe = { ...naoSabe, [key]: value };
+    setNaoSabe(newNaoSabe);
+    const newState = { ...state, _naoSabe: newNaoSabe, [key]: value ? 0 : state[key] };
     setState(newState);
     updateData('financialSimulation' as any, { ...financialData, maturidadeProcessos: newState });
   };
@@ -102,7 +112,7 @@ export function MaturidadeProcessosBlock() {
   })();
 
   const getCategoryCompletion = (dims: Dimension[]) => {
-    const filled = dims.filter(d => (state[d.key] as number) > 0).length;
+    const filled = dims.filter(d => (state[d.key] as number) > 0 || naoSabe[d.key]).length;
     return `${filled}/${dims.length}`;
   };
 
@@ -147,40 +157,27 @@ export function MaturidadeProcessosBlock() {
 
         {categories.map(cat => (
           <TabsContent key={cat.id} value={cat.id} className="space-y-3 mt-4">
-            {cat.dimensions.map((dim) => {
-              const value = (state[dim.key] as number) || 0;
-              return (
-                <Card key={dim.key}>
-                  <CardHeader className="pb-2 pt-4 px-4">
-                    <CardTitle className="text-sm font-semibold">{dim.label}</CardTitle>
-                    <p className="text-xs text-muted-foreground">{dim.desc}</p>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-4">
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4, 5].map((level) => (
-                        <button
-                          key={level}
-                          onClick={() => handleChange(dim.key, level)}
-                          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                            value === level
-                              ? `${levelColors[level]} text-white shadow-md scale-105`
-                              : 'bg-muted hover:bg-muted-foreground/10 text-muted-foreground'
-                          }`}
-                        >
-                          <div className="text-base font-bold">{level}</div>
-                          <div className="text-[9px] mt-0.5 leading-tight">{levelLabels[level]}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {cat.dimensions.map((dim) => (
+              <ValueSlider
+                key={dim.key}
+                label={dim.label}
+                description={dim.desc}
+                value={(state[dim.key] as number) || 1}
+                onChange={(v) => handleChange(dim.key, v)}
+                min={1}
+                max={5}
+                step={1}
+                leftLabel="Inexistente"
+                rightLabel="Otimizado"
+                formatValue={(v) => `${v} — ${levelLabels[v] || ''}`}
+                naoSabe={naoSabe[dim.key] || false}
+                onNaoSabeChange={(v) => handleNaoSabe(dim.key, v)}
+              />
+            ))}
           </TabsContent>
         ))}
       </Tabs>
 
-      {/* Notes */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Observações</CardTitle>
