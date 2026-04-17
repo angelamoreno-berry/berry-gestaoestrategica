@@ -1,4 +1,4 @@
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { DiagnosticoBlock } from './blocks/DiagnosticoBlock';
 import { IdentidadeBlock } from './blocks/IdentidadeBlock';
 import { ConcorrentesBlock } from './blocks/ConcorrentesBlock';
@@ -24,7 +24,7 @@ import { RiscoEndividamentoBlock } from './financial-blocks/RiscoEndividamentoBl
 import { SimuladorDecisoesBlock } from './financial-blocks/SimuladorDecisoesBlock';
 import { ScoreGeralBlock } from './financial-blocks/ScoreGeralBlock';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 
 const blockComponents: Record<string, React.ComponentType> = {
   diagnostico: DiagnosticoBlock,

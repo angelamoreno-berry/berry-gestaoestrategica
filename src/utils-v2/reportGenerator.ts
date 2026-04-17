@@ -1,4 +1,4 @@
-import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting';
+import { ConsultingData, BlockStatus, Project, Cargo } from '@/types-v2/consulting';
 
 // Helper function to generate activity checklist suggestions for a position
 const generateCargoChecklist = (cargo: Cargo): string[] => {

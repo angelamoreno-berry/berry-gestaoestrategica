@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Project } from '@/types/consulting';
+import { Project } from '@/types-v2/consulting';
 
 interface AISuggestionsState {
   data: Record<string, unknown> | null;

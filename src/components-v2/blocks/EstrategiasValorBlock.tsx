@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, RefreshCw } from 'lucide-react';
-import { HelpTooltip } from '@/components/HelpTooltip';
-import { AISuggestionLoader } from '@/components/AISuggestionLoader';
-import { useAISuggestions } from '@/hooks/useAISuggestions';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
+import { AISuggestionLoader } from '@/components-v2/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks-v2/useAISuggestions';
 
 interface EstrategiasValorSuggestions {
   novasOfertas: string[];

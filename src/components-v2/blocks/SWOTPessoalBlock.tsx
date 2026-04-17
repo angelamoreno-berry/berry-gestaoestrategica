@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, User, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { HelpTooltip } from '@/components/HelpTooltip';
-import { AISuggestionLoader } from '@/components/AISuggestionLoader';
-import { useAISuggestions } from '@/hooks/useAISuggestions';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
+import { AISuggestionLoader } from '@/components-v2/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks-v2/useAISuggestions';
 
 const swotConfig = [
   { key: 'forcas', label: 'Forças Pessoais', icon: '💪', color: 'bg-green-500', description: 'Suas habilidades naturais, conhecimentos e talentos.', examples: 'Ex: Visão estratégica, Networking, Comunicação, Resiliência, Conhecimento técnico' },

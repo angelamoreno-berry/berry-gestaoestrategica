@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft, BarChart3, LayoutGrid } from 'lucide-react';
-import { openSalesPresentationInNewTab } from '@/utils/salesPresentationGenerator';
-import { Project, ProjectType, SimulationType } from '@/types/consulting';
+import { openSalesPresentationInNewTab } from '@/utils-v2/salesPresentationGenerator';
+import { Project, ProjectType, SimulationType } from '@/types-v2/consulting';
 
 interface ProjectSelectorProps {
   projectType: ProjectType;

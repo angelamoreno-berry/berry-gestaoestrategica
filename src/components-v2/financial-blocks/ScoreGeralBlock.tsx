@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ProgressRing } from '@/components/ProgressRing';
+import { ProgressRing } from '@/components-v2/ProgressRing';
 
 function getClassificacao(score: number): { label: string; color: string } {
   if (score >= 80) return { label: 'Excelência', color: 'text-green-600' };

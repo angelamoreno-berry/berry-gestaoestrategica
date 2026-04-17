@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, Trash2, RefreshCw } from 'lucide-react';
-import { HelpTooltip } from '@/components/HelpTooltip';
-import { AISuggestionLoader } from '@/components/AISuggestionLoader';
-import { useAISuggestions } from '@/hooks/useAISuggestions';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
+import { AISuggestionLoader } from '@/components-v2/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks-v2/useAISuggestions';
 
 interface ConcorrentesSuggestions {
   concorrentes: Array<{ nome: string; pontoForte: string; pontoFraco: string }>;

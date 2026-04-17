@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { GovernancaFinanceiraData } from '@/types/financialSimulation';
+import { GovernancaFinanceiraData } from '@/types-v2/financialSimulation';
 import { ValueSlider } from './ValueSlider';
 
 const dimensions = [

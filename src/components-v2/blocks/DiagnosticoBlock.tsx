@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { HelpTooltip } from '@/components/HelpTooltip';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
 interface Question {
   id: string;
   question: string;

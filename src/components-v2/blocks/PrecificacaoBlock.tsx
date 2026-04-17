@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, TrendingUp, Package, Crown, RefreshCw, Target, Anchor, Pencil, Check, X } from 'lucide-react';
-import { ProdutoServico } from '@/types/consulting';
+import { ProdutoServico } from '@/types-v2/consulting';
 
 interface SugestaoPreco {
   tipo: string;

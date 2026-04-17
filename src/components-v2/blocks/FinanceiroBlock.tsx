@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { X, Plus, TrendingUp, TrendingDown, DollarSign, AlertTriangle, Target, Users, Wallet, CreditCard, Lightbulb, ShieldAlert } from 'lucide-react';
-import { HelpTooltip } from '@/components/HelpTooltip';
-import { Divida } from '@/types/consulting';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
+import { Divida } from '@/types-v2/consulting';
 
 export function FinanceiroBlock() {
   const { data, updateData, updateBlockProgress, markBlockComplete } = useConsulting();

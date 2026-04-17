@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Plus, Trash2, Calendar, Clock, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { HelpTooltip } from '@/components/HelpTooltip';
-import { AISuggestionLoader } from '@/components/AISuggestionLoader';
-import { useAISuggestions } from '@/hooks/useAISuggestions';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
+import { AISuggestionLoader } from '@/components-v2/AISuggestionLoader';
+import { useAISuggestions } from '@/hooks-v2/useAISuggestions';
 
 const importanciaLabels = {
   alta: { label: 'Alta', color: 'bg-red-500' },

@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { ConsultingData, BlockStatus, Project, SimulationType } from '@/types/consulting';
-import { generateDemoData } from '@/utils/demoDataGenerator';
+import { ConsultingData, BlockStatus, Project, SimulationType } from '@/types-v2/consulting';
+import { generateDemoData } from '@/utils-v2/demoDataGenerator';
 import { supabase } from '@/integrations/supabase/client';
-import { initialFinancialData, financialBlocks } from '@/types/financialSimulation';
+import { initialFinancialData, financialBlocks } from '@/types-v2/financialSimulation';
 import { toast } from 'sonner';
 
 const initialData: ConsultingData = {

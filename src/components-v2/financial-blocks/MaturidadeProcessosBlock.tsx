@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MaturidadeProcessosData } from '@/types/financialSimulation';
+import { MaturidadeProcessosData } from '@/types-v2/financialSimulation';
 import { ValueSlider } from './ValueSlider';
 
 interface Dimension {

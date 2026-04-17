@@ -1,4 +1,4 @@
-import { Project } from '@/types/consulting';
+import { Project } from '@/types-v2/consulting';
 
 interface BlockSuggestions {
   goldenCircle: {

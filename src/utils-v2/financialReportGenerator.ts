@@ -1,4 +1,4 @@
-import { Project, BlockStatus, ConsultingData } from '@/types/consulting';
+import { Project, BlockStatus, ConsultingData } from '@/types-v2/consulting';
 
 const fmtCurrency = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
 const fmtPct = (v: number) => `${Math.round(v)}%`;

@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { ProgressRing } from './ProgressRing';
 import { cn } from '@/lib/utils';
 import { Check, ArrowLeft, Building2 } from 'lucide-react';
-import { openReportInNewTab } from '@/utils/reportGenerator';
-import { openFinancialReportInNewTab } from '@/utils/financialReportGenerator';
+import { openReportInNewTab } from '@/utils-v2/reportGenerator';
+import { openFinancialReportInNewTab } from '@/utils-v2/financialReportGenerator';
 import { toast } from '@/hooks/use-toast';
 
 export function Sidebar() {

@@ -1,4 +1,4 @@
-import { ConsultingData, Project } from '@/types/consulting';
+import { ConsultingData, Project } from '@/types-v2/consulting';
 
 interface DemoParams {
   segmento: string;

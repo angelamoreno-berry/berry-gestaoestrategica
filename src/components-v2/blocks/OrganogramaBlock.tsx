@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useConsulting } from '@/contexts/ConsultingContext';
+import { useConsulting } from '@/contexts-v2/ConsultingContextV2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2, X, Users, Crown, User, UserCircle } from 'lucide-react';
-import { HelpTooltip } from '@/components/HelpTooltip';
+import { HelpTooltip } from '@/components-v2/HelpTooltip';
 
 const nivelConfig = {
   1: { label: 'Nível 1 - Estratégico', icon: Crown, color: 'bg-yellow-500', description: 'CEO, Diretores, Sócios' },
