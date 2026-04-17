@@ -20,15 +20,19 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ConsultingProvider>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/projetos" element={<Index projectType="real" />} />
-            <Route path="/simulacao" element={<Index projectType="simulation" />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </ConsultingProvider>
         <Routes>
+          {/* Original routes */}
+          <Route path="/" element={
+            <ConsultingProvider><HomePage /></ConsultingProvider>
+          } />
+          <Route path="/projetos" element={
+            <ConsultingProvider><Index projectType="real" /></ConsultingProvider>
+          } />
+          <Route path="/simulacao" element={
+            <ConsultingProvider><Index projectType="simulation" /></ConsultingProvider>
+          } />
+
+          {/* V2 isolated copy */}
           <Route path="/versaorecomendacao" element={
             <ConsultingProviderV2><HomePageV2 /></ConsultingProviderV2>
           } />
@@ -38,6 +42,8 @@ const App = () => (
           <Route path="/versaorecomendacao/simulacao" element={
             <ConsultingProviderV2><IndexV2 projectType="simulation" /></ConsultingProviderV2>
           } />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
