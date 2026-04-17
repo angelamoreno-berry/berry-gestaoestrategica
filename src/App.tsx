@@ -4,8 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConsultingProvider } from "./contexts/ConsultingContext";
+import { ConsultingProviderV2 } from "./contexts-v2/ConsultingContextV2";
 import Index from "./pages/Index";
+import IndexV2 from "./pages/IndexV2";
 import HomePage from "./pages/HomePage";
+import HomePageV2 from "./pages/HomePageV2";
 import NotFound from "./pages/NotFound";
 
 
