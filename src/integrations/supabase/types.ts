@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      consulting_projects_v2: {
+        Row: {
+          blocks: Json
+          company: string | null
+          created_at: string
+          data: Json
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          blocks?: Json
+          company?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          blocks?: Json
+          company?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
