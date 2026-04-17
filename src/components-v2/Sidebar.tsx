@@ -31,7 +31,7 @@ export function Sidebar() {
       <div className="p-4 border-b border-border">
         <button 
           onClick={() => {
-            const route = currentProject?.projectType === 'simulation' ? '/simulacao' : '/projetos';
+            const route = currentProject?.projectType === 'simulation' ? '/versaorecomendacao/simulacao' : '/versaorecomendacao/projetos';
             goToProjectList();
             navigate(route);
           }}

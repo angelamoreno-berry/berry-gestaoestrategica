@@ -20,7 +20,7 @@ const HomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Card
             className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.03] group"
-            onClick={() => navigate('/projetos')}
+            onClick={() => navigate('/versaorecomendacao/projetos')}
           >
             <CardHeader className="pb-4">
               <div className="p-3 rounded-xl bg-primary/10 w-fit mb-3">
@@ -41,7 +41,7 @@ const HomePage = () => {
 
           <Card
             className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.03] group"
-            onClick={() => navigate('/simulacao')}
+            onClick={() => navigate('/versaorecomendacao/simulacao')}
           >
             <CardHeader className="pb-4">
               <div className="p-3 rounded-xl bg-accent/50 w-fit mb-3">

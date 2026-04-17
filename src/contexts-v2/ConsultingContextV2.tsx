@@ -193,7 +193,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     try {
       setIsLoading(true);
       const { data: dbProjects, error } = await supabase
-        .from('consulting_projects')
+        .from('consulting_projects_v2')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -261,7 +261,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
       };
 
       const { error } = await supabase
-        .from('consulting_projects')
+        .from('consulting_projects_v2')
         .upsert([{
           id: projectData.project.id,
           name: projectData.project.nomeEmpresa,
@@ -439,7 +439,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
   const deleteProject = useCallback(async (id: string) => {
     try {
       const { error } = await supabase
-        .from('consulting_projects')
+        .from('consulting_projects_v2')
         .delete()
         .eq('id', id);
 
