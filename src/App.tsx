@@ -28,6 +28,17 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ConsultingProvider>
+        <Routes>
+          <Route path="/versaorecomendacao" element={
+            <ConsultingProviderV2><HomePageV2 /></ConsultingProviderV2>
+          } />
+          <Route path="/versaorecomendacao/projetos" element={
+            <ConsultingProviderV2><IndexV2 projectType="real" /></ConsultingProviderV2>
+          } />
+          <Route path="/versaorecomendacao/simulacao" element={
+            <ConsultingProviderV2><IndexV2 projectType="simulation" /></ConsultingProviderV2>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
