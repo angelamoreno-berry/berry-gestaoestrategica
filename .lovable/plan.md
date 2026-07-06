@@ -1,58 +1,24 @@
+## Limpeza da versão v2 (frontend)
 
+A migração de autenticação já foi aplicada e a tabela `consulting_projects_v2` foi removida. Agora o build quebra porque `src/contexts-v2/ConsultingContextV2.tsx` ainda referencia essa tabela. Vou remover tudo que pertence à v2 — era exatamente a limpeza que já havia sido planejada após o Remix.
 
-## Plano: Cópia 100% isolada em `/versaorecomendacao`
+### Arquivos e pastas a excluir
+- `src/components-v2/` (pasta inteira, incluindo `blocks/` e `financial-blocks/`)
+- `src/contexts-v2/`
+- `src/hooks-v2/`
+- `src/types-v2/`
+- `src/utils-v2/`
+- `src/pages/HomePageV2.tsx`
+- `src/pages/IndexV2.tsx`
 
-### Garantia de não-alteração do original
-Compromisso explícito: **nenhum arquivo dentro de `src/components/`, `src/contexts/`, `src/hooks/`, `src/types/`, `src/utils/`, `src/pages/HomePage.tsx`, `src/pages/Index.tsx` será tocado**. A única modificação fora da v2 será adicionar 3 linhas de `<Route>` em `src/App.tsx` (rotas novas, nenhuma existente alterada).
+### Ajustes em `src/App.tsx`
+- Remover imports de `HomePageV2` e `IndexV2`.
+- Remover as rotas `/versaorecomendacao` e `/versaorecomendacao/projeto/:id` (ou equivalentes).
 
-### O que será criado (tudo novo, zero edição)
+### Verificação
+- Rodar checagem de tipos para confirmar que nenhum outro arquivo importa de `-v2/`.
+- Não altero nenhum outro código de frontend (nada em `src/components/`, `src/contexts/`, páginas originais, etc.).
 
-**1. Migration — tabela isolada**
-```sql
-CREATE TABLE public.consulting_projects_v2 (...mesma estrutura...);
--- RLS policies públicas idênticas + trigger updated_at
-```
-
-**2. Estrutura paralela de arquivos (~40 novos)**
-```text
-src/
-├── components-v2/         (cópia de todos os componentes)
-│   ├── blocks/            (14 blocos)
-│   └── financial-blocks/  (10 blocos + ValueSlider)
-├── contexts-v2/ConsultingContextV2.tsx   (usa consulting_projects_v2)
-├── hooks-v2/useAISuggestions.ts
-├── types-v2/              (consulting.ts + financialSimulation.ts)
-├── utils-v2/              (5 geradores)
-└── pages/
-    ├── HomePageV2.tsx     (botões → /versaorecomendacao/*)
-    └── IndexV2.tsx
-```
-
-Todos os imports internos da v2 apontam **somente** para arquivos `-v2`. Nenhum import cruzado com o original.
-
-**3. Única alteração externa: `src/App.tsx`** — adicionar 3 rotas, sem remover nada:
-```tsx
-<Route path="/versaorecomendacao" element={
-  <ConsultingProviderV2><HomePageV2 /></ConsultingProviderV2>
-} />
-<Route path="/versaorecomendacao/projetos" element={
-  <ConsultingProviderV2><IndexV2 projectType="real" /></ConsultingProviderV2>
-} />
-<Route path="/versaorecomendacao/simulacao" element={
-  <ConsultingProviderV2><IndexV2 projectType="simulation" /></ConsultingProviderV2>
-} />
-```
-
-### Isolamento garantido
-| Camada | Original | Cópia v2 |
-|---|---|---|
-| Tabela DB | `consulting_projects` | `consulting_projects_v2` |
-| Contexto React | `ConsultingProvider` | `ConsultingProviderV2` |
-| Componentes | `src/components/` | `src/components-v2/` |
-| Rotas | `/`, `/projetos`, `/simulacao` | `/versaorecomendacao/*` |
-
-Editar qualquer arquivo da v2 no futuro **não afeta** o original. Editar o original **não afeta** a v2. Projetos criados em uma versão são invisíveis para a outra.
-
-### Observação técnica
-O arquivo `src/integrations/supabase/types.ts` é regenerado automaticamente pela migration (inclui a nova tabela) — isso é gerenciado pelo Supabase, não é edição manual.
-
+### Fora do escopo
+- Não recriar a tabela v2.
+- Não mexer no projeto remixado (aquela limpeza acontece no chat do outro projeto).
