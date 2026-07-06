@@ -44,45 +44,74 @@ export type Database = {
         }
         Relationships: []
       }
-      consulting_projects_v2: {
+      profiles: {
         Row: {
-          blocks: Json
-          company: string | null
           created_at: string
-          data: Json
+          email: string
           id: string
-          name: string
-          updated_at: string
+          is_admin: boolean
+          name: string | null
         }
         Insert: {
-          blocks?: Json
-          company?: string | null
           created_at?: string
-          data?: Json
-          id?: string
-          name: string
-          updated_at?: string
+          email: string
+          id: string
+          is_admin?: boolean
+          name?: string | null
         }
         Update: {
-          blocks?: Json
-          company?: string | null
           created_at?: string
-          data?: Json
+          email?: string
           id?: string
-          name?: string
-          updated_at?: string
+          is_admin?: boolean
+          name?: string | null
         }
         Relationships: []
+      }
+      project_members: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: string
+          role: Database["public"]["Enums"]["project_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: string
+          role: Database["public"]["Enums"]["project_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: string
+          role?: Database["public"]["Enums"]["project_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "consulting_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
+      is_berry: { Args: never; Returns: boolean }
+      is_project_editor: { Args: { _project: string }; Returns: boolean }
+      is_project_member: { Args: { _project: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      project_role: "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -209,6 +238,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      project_role: ["editor", "viewer"],
+    },
   },
 } as const
