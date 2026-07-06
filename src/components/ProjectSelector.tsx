@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useConsulting } from '@/contexts/ConsultingContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -73,7 +74,10 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
     setIsDemoDialogOpen(false);
   };
 
+  const { isAdmin, isBerry } = useAuth();
   const isSimulation = projectType === 'simulation';
+  const canCreate = isSimulation ? isBerry : isAdmin;
+  const canDelete = isSimulation ? isBerry : isAdmin;
   const filteredProjects = projects.filter(p => (p.projectType || 'real') === projectType);
 
   const formatCurrency = (value: number) => {
@@ -133,17 +137,19 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
                       <CardDescription>{project.segmento}</CardDescription>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteProject(project.id);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {canDelete && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteProject(project.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -172,7 +178,7 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
             </Card>
           ))}
 
-          {!isSimulation && (
+          {!isSimulation && canCreate && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
@@ -278,7 +284,7 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
            </Dialog>
           )}
 
-          {isSimulation && (
+          {isSimulation && canCreate && (
             <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
               <DialogTrigger asChild>
                 <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
