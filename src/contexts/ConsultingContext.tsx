@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { ConsultingData, BlockStatus, Project, SimulationType } from '@/types/consulting';
 import { generateDemoData } from '@/utils/demoDataGenerator';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { initialFinancialData, financialBlocks } from '@/types/financialSimulation';
 import { toast } from 'sonner';
 
@@ -280,16 +281,22 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // Auto-save when project data changes
+  // Auto-save when project data changes.
+  // Leitores (viewers) nunca disparam gravação — evita "Erro ao salvar" para
+  // quem só tem acesso de consulta (o RLS já bloqueia no banco; aqui evitamos
+  // a tentativa e o toast de erro desnecessário).
   useEffect(() => {
     if (currentProjectData && !isLoading) {
+      const isSimulation = (currentProjectData.project.projectType || 'real') === 'simulation';
+      if (!canEdit(currentProjectData.project.id, isSimulation)) return;
+
       const timeoutId = setTimeout(() => {
         saveProject(currentProjectData);
       }, 1000); // Debounce saves by 1 second
 
       return () => clearTimeout(timeoutId);
     }
-  }, [currentProjectData, isLoading]);
+  }, [currentProjectData, isLoading, canEdit]);
 
   const updateData = useCallback(<K extends keyof ConsultingData>(key: K, value: ConsultingData[K]) => {
     if (!currentProjectId) return;
