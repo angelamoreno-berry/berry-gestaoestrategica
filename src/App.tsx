@@ -9,6 +9,7 @@ import { RequireAuth } from "./components/RequireAuth";
 import Index from "./pages/Index";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/" element={
               <RequireAuth><HomePage /></RequireAuth>
             } />
