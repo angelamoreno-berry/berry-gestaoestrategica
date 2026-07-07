@@ -120,7 +120,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #18181B; --accent: #0D9488; --accent-light: #CCFBF1;
+      --primary: #18181B; --accent: #22C55E; --accent-light: #DCFCE7;
       --gold: #A16207; --gold-light: #FEF9C3;
       --bg: #FFFFFF; --fg: #18181B; --muted: #71717A; --border: #E4E4E7;
       --green: #16a34a; --red: #dc2626; --orange: #d97706; --blue: #2563eb;
@@ -131,14 +131,14 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     .editable-content { outline: none; }
     
     /* Cover */
-    .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 40px; background: linear-gradient(180deg, #18181B, #27272A); color: white; page-break-after: always; }
+    .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 40px; background: linear-gradient(180deg, #080808, #141414); color: white; page-break-after: always; }
     .cover-badge { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 12px 28px; border-radius: 100px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 48px; }
     .cover h1 { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 600; margin-bottom: 16px; line-height: 1.15; }
     .cover .subtitle { font-size: 18px; opacity: 0.7; margin-bottom: 64px; }
     .cover .company { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
     .cover .segment { font-size: 15px; opacity: 0.6; margin-bottom: 48px; }
     .cover .score-ring { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--accent) ${scoreGeral * 3.6}deg, rgba(255,255,255,0.1) 0deg); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-    .cover .score-inner { width: 96px; height: 96px; border-radius: 50%; background: #18181B; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .cover .score-inner { width: 96px; height: 96px; border-radius: 50%; background: #080808; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .cover .score-value { font-size: 32px; font-weight: 700; }
     .cover .score-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; }
 

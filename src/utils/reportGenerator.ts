@@ -461,8 +461,8 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       --primary: #18181B;
       --primary-light: #3F3F46;
       --primary-lighter: #F4F4F5;
-      --accent: #0D9488;
-      --accent-light: #CCFBF1;
+      --accent: #22C55E;
+      --accent-light: #DCFCE7;
       --gold: #A16207;
       --gold-light: #FEF9C3;
       --background: #FFFFFF;
@@ -478,7 +478,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       --shadow-strong: 0 8px 32px rgba(0,0,0,0.08);
       /* Gradientes simplificados para compatibilidade */
       --gradient-primary: #18181B;
-      --gradient-accent: #0D9488;
+      --gradient-accent: linear-gradient(135deg, #3B82F6 0%, #22C55E 100%);
       --gradient-gold: #A16207;
     }
     
@@ -510,7 +510,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       align-items: center;
       text-align: center;
       padding: 100px 80px;
-      background: linear-gradient(180deg, #18181B 0%, #27272A 100%);
+      background: linear-gradient(180deg, #080808 0%, #141414 100%);
       color: white;
       page-break-after: always;
       position: relative;
@@ -616,7 +616,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       width: 96px;
       height: 96px;
       border-radius: 50%;
-      background: #18181B;
+      background: #080808;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1216,8 +1216,8 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     }
     
     .tag-accent {
-      background: #CCFBF1;
-      color: #0F766E;
+      background: #DCFCE7;
+      color: #15803D;
     }
     
     .tag-gold {
@@ -1637,7 +1637,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     
     .org-kpi {
       background: var(--accent-light);
-      color: #0F766E;
+      color: #15803D;
       padding: 8px 14px;
       border-radius: 100px;
       font-size: 12px;

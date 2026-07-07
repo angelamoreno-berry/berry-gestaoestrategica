@@ -10,17 +10,17 @@ export function generateSalesPresentation() {
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     :root {
-      --primary: #2563eb;
-      --primary-light: #3b82f6;
-      --primary-dark: #1d4ed8;
-      --secondary: #0ea5e9;
+      --primary: #3B82F6;
+      --primary-light: #60A5FA;
+      --primary-dark: #2563EB;
+      --secondary: #22C55E;
       --accent: #f59e0b;
-      --success: #10b981;
+      --success: #22C55E;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --gradient-primary: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
-      --gradient-secondary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
-      --gradient-success: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #22C55E 100%);
+      --gradient-secondary: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+      --gradient-success: linear-gradient(135deg, #22C55E 0%, #4ADE80 100%);
       --text-primary: #1e293b;
       --text-secondary: #475569;
       --text-muted: #94a3b8;
