@@ -2266,6 +2266,35 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       </div>
     </div>
     
+    <!-- ===== TABLE OF CONTENTS ===== -->
+    <div class="toc">
+      <div class="toc-header">
+        <div class="toc-badge">Navegação</div>
+        <h2 class="toc-title">Sumário do Documento</h2>
+        <p class="toc-description">Este documento contém a análise completa da sua empresa com planos de ação específicos para cada área.</p>
+      </div>
+      
+      <div class="toc-grid">
+        ${blocks.map((block, index) => `
+          <div class="toc-item">
+            <div class="toc-item-left">
+              <div class="toc-item-number">${String(index + 1).padStart(2, '0')}</div>
+              <span class="toc-item-icon">${block.icon}</span>
+              <span class="toc-item-name">${block.name}</span>
+            </div>
+            <div class="toc-item-right">
+              <div class="toc-item-progress">
+                <div class="toc-item-progress-fill" style="width: ${block.progress}%"></div>
+              </div>
+              <span class="toc-item-percent">${block.progress}%</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    
+    <!-- ===== CONTENT ===== -->
+    <div class="content">
     <!-- ===== RESUMO EXECUTIVO ===== -->
     <div class="section">
       <div class="section-header">
@@ -2331,35 +2360,6 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     <!-- ===== ROADMAP DE IMPLEMENTAÇÃO (placeholder, preenchido no pós-processamento) ===== -->
     <div id="__ROADMAP_PLACEHOLDER__"></div>
 
-    <!-- ===== TABLE OF CONTENTS ===== -->
-    <div class="toc">
-      <div class="toc-header">
-        <div class="toc-badge">Navegação</div>
-        <h2 class="toc-title">Sumário do Documento</h2>
-        <p class="toc-description">Este documento contém a análise completa da sua empresa com planos de ação específicos para cada área.</p>
-      </div>
-      
-      <div class="toc-grid">
-        ${blocks.map((block, index) => `
-          <div class="toc-item">
-            <div class="toc-item-left">
-              <div class="toc-item-number">${String(index + 1).padStart(2, '0')}</div>
-              <span class="toc-item-icon">${block.icon}</span>
-              <span class="toc-item-name">${block.name}</span>
-            </div>
-            <div class="toc-item-right">
-              <div class="toc-item-progress">
-                <div class="toc-item-progress-fill" style="width: ${block.progress}%"></div>
-              </div>
-              <span class="toc-item-percent">${block.progress}%</span>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-    
-    <!-- ===== CONTENT ===== -->
-    <div class="content">
       <!-- ===== COMPANY INFO ===== -->
       <div class="section">
         <div class="section-header">
