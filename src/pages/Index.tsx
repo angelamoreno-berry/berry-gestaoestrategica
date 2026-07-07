@@ -31,13 +31,7 @@ const Index = ({ projectType }: IndexProps) => {
             Modo consulta — você pode visualizar este projeto, mas não editá-lo.
           </div>
         )}
-        {readOnly ? (
-          <fieldset disabled className="contents [&_input]:opacity-70 [&_textarea]:opacity-70 [&_button]:pointer-events-none">
-            <MainContent />
-          </fieldset>
-        ) : (
-          <MainContent />
-        )}
+        <MainContent readOnly={readOnly} />
       </div>
     </div>
   );
