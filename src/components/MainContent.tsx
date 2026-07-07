@@ -54,7 +54,11 @@ const blockComponents: Record<string, React.ComponentType> = {
   scoreGeral: ScoreGeralBlock,
 };
 
-export function MainContent() {
+interface MainContentProps {
+  readOnly?: boolean;
+}
+
+export function MainContent({ readOnly = false }: MainContentProps) {
   const { blocks, currentBlock, setCurrentBlock } = useConsulting();
   
   const currentBlockData = blocks.find(b => b.id === currentBlock);
@@ -92,7 +96,7 @@ export function MainContent() {
         </header>
 
         {/* Block Content */}
-        <div className="animate-slide-up">
+        <div className={`animate-slide-up ${readOnly ? 'pointer-events-none opacity-80' : ''}`}>
           {BlockComponent && <BlockComponent />}
         </div>
 
