@@ -4,14 +4,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, resetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({ name: '', email: '', password: '' });
 
@@ -20,10 +21,23 @@ const Login = () => {
     setLoading(true);
     const { error } = await signIn(loginData.email.trim(), loginData.password);
     setLoading(false);
-    if (error) {
-      toast({ title: 'Erro ao entrar', description: error, variant: 'destructive' });
-    } else {
-      navigate('/');
+    if (error) toast({ title: 'Erro ao entrar', description: error, variant: 'destructive' });
+    else navigate('/');
+  };
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginData.email.trim()) {
+      toast({ title: 'Informe seu e-mail', description: 'Digite o e-mail no campo acima para receber o link.', variant: 'destructive' });
+      return;
+    }
+    setLoading(true);
+    const { error } = await resetPassword(loginData.email.trim());
+    setLoading(false);
+    if (error) toast({ title: 'Erro', description: error, variant: 'destructive' });
+    else {
+      toast({ title: 'E-mail enviado!', description: 'Verifique sua caixa de entrada para redefinir a senha.' });
+      setForgotMode(false);
     }
   };
 
@@ -32,9 +46,8 @@ const Login = () => {
     setLoading(true);
     const { error } = await signUp(signupData.email.trim(), signupData.password, signupData.name.trim());
     setLoading(false);
-    if (error) {
-      toast({ title: 'Erro no cadastro', description: error, variant: 'destructive' });
-    } else {
+    if (error) toast({ title: 'Erro no cadastro', description: error, variant: 'destructive' });
+    else {
       toast({ title: 'Cadastro realizado!', description: 'Você já pode entrar. Peça a um administrador para vincular você aos projetos.' });
       setLoginData({ email: signupData.email, password: '' });
     }
@@ -63,21 +76,47 @@ const Login = () => {
             </CardHeader>
             <CardContent className="pt-4">
               <TabsContent value="login">
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">E-mail</Label>
-                    <Input id="login-email" type="email" required value={loginData.email}
-                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Senha</Label>
-                    <Input id="login-password" type="password" required value={loginData.password}
-                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Entrando...' : 'Entrar'}
-                  </Button>
-                </form>
+                {!forgotMode ? (
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="login-email">E-mail</Label>
+                      <Input id="login-email" type="email" required value={loginData.email}
+                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="login-password">Senha</Label>
+                      <Input id="login-password" type="password" required value={loginData.password}
+                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
+                    </div>
+                    <div className="flex justify-end">
+                      <button type="button" onClick={() => setForgotMode(true)}
+                        className="text-sm text-accent hover:underline">
+                        Esqueci minha senha
+                      </button>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Entrando...' : 'Entrar'}
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleForgot} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="forgot-email">E-mail cadastrado</Label>
+                      <Input id="forgot-email" type="email" required value={loginData.email}
+                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })} />
+                      <p className="text-xs text-muted-foreground">
+                        Enviaremos um link para você definir uma nova senha.
+                      </p>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Enviando...' : 'Enviar link de redefinição'}
+                    </Button>
+                    <button type="button" onClick={() => setForgotMode(false)}
+                      className="text-sm text-muted-foreground hover:text-foreground w-full text-center">
+                      Voltar para o login
+                    </button>
+                  </form>
+                )}
               </TabsContent>
 
               <TabsContent value="signup">

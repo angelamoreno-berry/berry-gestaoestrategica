@@ -1,20 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import { Building2, FlaskConical, ArrowRight, ShieldCheck, LogOut } from 'lucide-react';
+import { Building2, FlaskConical, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { UserMenu } from '@/components/UserMenu';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { profile, isAdmin, isBerry, memberships, signOut } = useAuth();
-  const isEditorSomewhere = Object.values(memberships).includes('editor');
-  const showAdmin = isAdmin || isEditorSomewhere;
+  const { isBerry } = useAuth();
   const showSimulation = isBerry;
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/login');
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col p-6">
@@ -25,19 +18,7 @@ const HomePage = () => {
           <span className="w-3 h-3 rounded-full border-2 border-primary inline-block" />
           <span className="ml-2 font-semibold text-foreground">Berry</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-muted-foreground hidden sm:inline">
-            {profile?.name || profile?.email}
-          </span>
-          {showAdmin && (
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="gap-2">
-              <ShieldCheck className="w-4 h-4" /> Administração
-            </Button>
-          )}
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-2 text-muted-foreground">
-            <LogOut className="w-4 h-4" /> Sair
-          </Button>
-        </div>
+        <UserMenu />
       </header>
 
       <div className="flex-1 flex items-center justify-center">
