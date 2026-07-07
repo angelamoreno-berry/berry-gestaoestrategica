@@ -448,7 +448,51 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
      data.diagnostico.financas.level + data.diagnostico.mercado.level) / 4 * 10
   ) / 10;
 
-  const html = `
+  // Nome de arquivo seguro para download (usado no botão "Salvar HTML" do relatório)
+  const safeFileName = project.nomeEmpresa
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '') || 'Empresa';
+
+  // Proxy de Nota Geral (0-100) baseado na maturidade média.
+  // Observação: este gerador não calcula um Berry Score oficial (isso existe
+  // apenas no relatório financeiro). Se um Berry Score real ficar disponível
+  // aqui no futuro, troque esta linha por ele.
+  const notaGeral = Math.min(100, Math.round(avgMaturity * 20));
+
+  // Dimensão de maturidade mais fraca -> vira a Prioridade Estratégica
+  const dimensoes = [
+    { nome: 'Pessoas', chave: 'pessoas', level: data.diagnostico.pessoas.level },
+    { nome: 'Processos', chave: 'processos', level: data.diagnostico.processos.level },
+    { nome: 'Finanças', chave: 'financas', level: data.diagnostico.financas.level },
+    { nome: 'Mercado', chave: 'mercado', level: data.diagnostico.mercado.level },
+  ];
+  const dimensaoPrioritaria = dimensoes.reduce((a, b) => (b.level < a.level ? b : a));
+  const textoPrioridade: Record<string, string> = {
+    pessoas: 'Profissionalizar a gestão de pessoas',
+    processos: 'Padronizar e documentar processos',
+    financas: 'Estruturar a gestão financeira',
+    mercado: 'Fortalecer o posicionamento de mercado',
+  };
+  const prioridadeEstrategica = textoPrioridade[dimensaoPrioritaria.chave];
+
+  // Combinações Fraqueza x Ameaça (riscos) e Força x Oportunidade (oportunidades) -
+  // pareamento posicional (1º com 1º, 2º com 2º...), até 3 combinações de cada.
+  const riscosCombinados = Array.from({ length: 3 }).map((_, i) => ({
+    a: data.swot.fraquezas[i],
+    b: data.swot.ameacas[i],
+  })).filter(c => c.a && c.b);
+
+  const oportunidadesCombinadas = Array.from({ length: 3 }).map((_, i) => ({
+    a: data.swot.forcas[i],
+    b: data.swot.oportunidades[i],
+  })).filter(c => c.a && c.b);
+
+  const objetivo12Meses = data.swot.horizontes?.longo
+    || data.swot.horizontes?.medio
+    || 'A definir com base na estratégia de longo prazo da empresa.';
+
+  let html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2101,6 +2145,48 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
         display: none !important;
       }
     }
+
+    /* === Resumo Executivo & Roadmap (Berry) === */
+    .exec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
+    .exec-card { background: var(--background); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+    .exec-card.full { grid-column: 1 / -1; }
+    .exec-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+    .exec-score { font-size: 40px; font-weight: 900; color: var(--accent); }
+    .exec-score-max { color: var(--muted); font-size: 16px; }
+    .exec-bar { height: 8px; background: var(--primary-lighter); border-radius: 99px; margin-top: 12px; overflow: hidden; }
+    .exec-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #3B82F6, #22C55E); }
+    .exec-combo { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; line-height: 1.5; }
+    .exec-combo:last-child { border-bottom: none; }
+    .exec-priority { font-size: 19px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+
+    .roadmap-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted);
+      background: var(--primary-lighter); border-radius: 10px; padding: 12px 18px; margin: 20px 0; }
+    .roadmap-tier { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 18px; }
+    .roadmap-tier-head { display: flex; align-items: center; gap: 10px; padding: 12px 20px; font-weight: 700; font-family: inherit; }
+    .roadmap-tier-head .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .roadmap-tier-head small { margin-left: auto; font-weight: 400; color: var(--muted); font-size: 11px; }
+    .roadmap-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-top: 1px solid var(--border); font-size: 13px; }
+    .roadmap-item .origem { margin-left: auto; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); background: var(--primary-lighter); border-radius: 99px; padding: 3px 10px; white-space: nowrap; }
+
+    .tier-critica .dot { background: #EF4444; } .tier-critica .roadmap-tier-head { background: #FEF2F2; color: #B91C1C; }
+    .tier-alta .dot { background: #F97316; } .tier-alta .roadmap-tier-head { background: #FFF7ED; color: #C2410C; }
+    .tier-media .dot { background: #EAB308; } .tier-media .roadmap-tier-head { background: #FEFCE8; color: #A16207; }
+    .tier-evolucao .dot { background: #22C55E; } .tier-evolucao .roadmap-tier-head { background: #F0FDF4; color: #15803D; }
+    .tier-estrategica .dot { background: #3B82F6; } .tier-estrategica .roadmap-tier-head { background: #EFF6FF; color: #1D4ED8; }
+
+    /* === Impressão / PDF: fundo branco garantido === */
+    @media print {
+      body { background: #FFFFFF !important; }
+      .cover-page { background: #080808 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .content, .section { background: #FFFFFF !important; }
+      .section { page-break-before: always; break-before: page; }
+      .cover-page { page-break-after: always; break-after: page; }
+      .action-plan-item, .card, .swot-box, .exec-card, .roadmap-tier, li, table
+        { page-break-inside: avoid; break-inside: avoid; }
+      h1, h2, h3 { page-break-after: avoid; }
+      .edit-toolbar { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -2133,7 +2219,7 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'relatorio-editado.html';
+      a.download = 'Plano_Estruturacao_${safeFileName}.html';
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -2180,6 +2266,71 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       </div>
     </div>
     
+    <!-- ===== RESUMO EXECUTIVO ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-icon">⚡</span>
+          Resumo Executivo
+        </div>
+        <h2 class="section-title">A situação da ${project.nomeEmpresa} em 2 minutos</h2>
+        <p class="section-description">Síntese do diagnóstico completo. Cada ponto é detalhado nos capítulos seguintes.</p>
+      </div>
+
+      <div class="exec-grid">
+        <div class="exec-card">
+          <h4>Nota Geral</h4>
+          <div><span class="exec-score">${notaGeral}</span><span class="exec-score-max"> / 100</span></div>
+          <div class="exec-bar"><div class="exec-bar-fill" style="width: ${notaGeral}%;"></div></div>
+        </div>
+        <div class="exec-card">
+          <h4>Maturidade Média</h4>
+          <div><span class="exec-score">${avgMaturity}</span><span class="exec-score-max"> / 5</span></div>
+          <div class="exec-bar"><div class="exec-bar-fill" style="width: ${avgMaturity * 20}%;"></div></div>
+        </div>
+
+        <div class="exec-card">
+          <h4>3 Maiores Riscos · fraqueza × ameaça</h4>
+          ${riscosCombinados.length > 0 ? riscosCombinados.map((c, i) => `
+            <div class="exec-combo"><strong>${i + 1}.</strong> <strong>${c.a}</strong> combinada com <strong>${c.b}</strong>.</div>
+          `).join('') : '<div class="exec-combo">Preencha a matriz SWOT (fraquezas e ameaças) para gerar esta análise.</div>'}
+        </div>
+        <div class="exec-card">
+          <h4>3 Maiores Oportunidades · força × oportunidade</h4>
+          ${oportunidadesCombinadas.length > 0 ? oportunidadesCombinadas.map((c, i) => `
+            <div class="exec-combo"><strong>${i + 1}.</strong> Use <strong>${c.a}</strong> para capturar <strong>${c.b}</strong>.</div>
+          `).join('') : '<div class="exec-combo">Preencha a matriz SWOT (forças e oportunidades) para gerar esta análise.</div>'}
+        </div>
+
+        <div class="exec-card">
+          <h4>Prioridade Estratégica</h4>
+          <div class="exec-priority">${prioridadeEstrategica}</div>
+          <p style="font-size: 13px; color: var(--muted);">Dimensão de maior gap no diagnóstico de maturidade (${dimensaoPrioritaria.nome}, nível ${dimensaoPrioritaria.level}/5).</p>
+        </div>
+        <div class="exec-card">
+          <h4>Objetivo · Próximos 12 meses</h4>
+          <p style="font-size: 14px; font-weight: 600;">${objetivo12Meses}</p>
+        </div>
+
+        <div class="exec-card full">
+          <h4>Progresso do Projeto</h4>
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 8px; font-size: 13px;">
+            <span style="width: 120px; color: var(--muted);">Diagnóstico</span>
+            <div class="exec-bar" style="flex: 1; margin-top: 0;"><div class="exec-bar-fill" style="width: ${overallProgress}%;"></div></div>
+            <span style="width: 40px; text-align: right;">${overallProgress}%</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px; font-size: 13px;">
+            <span style="width: 120px; color: var(--muted);">Implementação</span>
+            <div class="exec-bar" style="flex: 1; margin-top: 0;"><div class="exec-bar-fill" style="width: 0%;"></div></div>
+            <span style="width: 40px; text-align: right;">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ROADMAP DE IMPLEMENTAÇÃO (placeholder, preenchido no pós-processamento) ===== -->
+    <div id="__ROADMAP_PLACEHOLDER__"></div>
+
     <!-- ===== TABLE OF CONTENTS ===== -->
     <div class="toc">
       <div class="toc-header">
@@ -4440,15 +4591,22 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
       </div>
       ` : ''}
       
-      <!-- ===== SUMÁRIO EXECUTIVO ===== -->
+      <!-- ===== PRÓXIMOS PASSOS ===== -->
       <div class="section page-break">
         <div class="section-header">
           <div class="section-badge">
             <span class="section-icon">📋</span>
-            Conclusão
+            Encerramento
           </div>
-          <h2 class="section-title">Sumário Executivo e Próximos Passos</h2>
-          <p class="section-description">Visão consolidada das principais descobertas e ações prioritárias para os próximos 90 dias.</p>
+          <h2 class="section-title">Próximos Passos</h2>
+        </div>
+
+        <div class="insight-box">
+          <div class="insight-box-text">
+            O diagnóstico identifica oportunidades e define uma direção estratégica para a empresa.<br><br>
+            Os melhores resultados são obtidos quando as ações são implementadas de forma disciplinada, acompanhadas periodicamente e ajustadas conforme os indicadores evoluem.<br><br>
+            Este relatório deve ser utilizado como referência para orientar as decisões dos próximos 12 meses.
+          </div>
         </div>
         
         <div class="visual-example">
@@ -4476,34 +4634,6 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
               <div style="padding: 20px; background: var(--background); border-radius: 12px;">
                 <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${blocks.length}</div>
                 <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Total de Blocos</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="card" style="background: var(--foreground); color: white; border: none; margin-top: 40px;">
-          <div style="text-align: center; padding: 32px 0;">
-            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; margin-bottom: 16px;">Top 5 Ações Prioritárias</div>
-            <div style="font-size: 15px; text-align: left; max-width: 600px; margin: 0 auto; line-height: 1.8;">
-              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
-                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">1</span>
-                <span>Validar e comunicar Golden Circle + Identidade para toda equipe</span>
-              </div>
-              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
-                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">2</span>
-                <span>Implementar uma estratégia de precificação em pelo menos 1 produto</span>
-              </div>
-              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
-                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">3</span>
-                <span>Criar material comercial baseado no ICP e diferenciais competitivos</span>
-              </div>
-              <div style="display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px;">
-                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">4</span>
-                <span>Documentar os 5 processos mais críticos do negócio</span>
-              </div>
-              <div style="display: flex; align-items: flex-start; gap: 16px;">
-                <span style="background: rgba(255,255,255,0.15); padding: 8px 14px; border-radius: 8px; font-weight: 600;">5</span>
-                <span>Implementar dashboard de métricas e reunião semanal de acompanhamento</span>
               </div>
             </div>
           </div>
@@ -4881,6 +5011,93 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
 </body>
 </html>
 `;
+
+  // ============================================================
+  // PÓS-PROCESSAMENTO: Roadmap de Implementação consolidado
+  // Extrai todas as ações já escritas nos 14 capítulos, remove duplicatas
+  // e classifica por urgência (regras por palavra-chave — sem dependência
+  // automática entre ações, por decisão de escopo do MVP).
+  // ============================================================
+  type Urgencia = 'critica' | 'alta' | 'media' | 'evolucao' | 'estrategica';
+  const URGENCIA_INFO: Record<Urgencia, { label: string; prazo: string }> = {
+    critica: { label: 'Crítica', prazo: 'até 30 dias' },
+    alta: { label: 'Alta', prazo: 'até 3 meses' },
+    media: { label: 'Média', prazo: 'até 6 meses' },
+    evolucao: { label: 'Evolução', prazo: 'até 9 meses' },
+    estrategica: { label: 'Estratégica', prazo: 'até 12 meses' },
+  };
+  const URGENCIA_ORDEM: Urgencia[] = ['critica', 'alta', 'media', 'evolucao', 'estrategica'];
+  const KEYWORDS: [Urgencia, string[]][] = [
+    ['critica', ['dre', 'fluxo de caixa', 'precific', 'capital de giro', 'ruptura', 'regulariza']],
+    ['alta', ['processo', 'compra', 'estoque', 'comercial', 'crm', 'agenda']],
+    ['media', ['kpi', 'indicador', 'marketing', 'icp', 'funil', 'automa']],
+    ['evolucao', ['cultura', 'liderança', 'lideranca', 'avaliação', 'avaliacao', 'treinamento', 'pessoa', 'equipe']],
+    ['estrategica', ['nova unidade', 'novo produto', 'franquia', 'filial', 'novo mercado', 'expans', 'segunda unidade']],
+  ];
+  const classificarUrgencia = (texto: string): Urgencia => {
+    const t = texto.toLowerCase();
+    for (const [tier, palavras] of KEYWORDS) {
+      if (palavras.some(p => t.includes(p))) return tier;
+    }
+    return 'media';
+  };
+  const normalizarTitulo = (texto: string) =>
+    texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+
+  const roadmapItens: { titulo: string; origem: string; urgencia: Urgencia }[] = [];
+  const vistos = new Set<string>();
+
+  const blocoRegex = /<div class="action-plan-title">📋 Plano de Ação - ([^<]+)<\/div>[\s\S]*?<ul class="action-plan-list">([\s\S]*?)<\/ul>/g;
+  let blocoMatch: RegExpExecArray | null;
+  while ((blocoMatch = blocoRegex.exec(html)) !== null) {
+    const origem = blocoMatch[1].trim();
+    const itensHtml = blocoMatch[2];
+    const itemRegex = /<div class="action-plan-text">([^<]+)<\/div>/g;
+    let itemMatch: RegExpExecArray | null;
+    while ((itemMatch = itemRegex.exec(itensHtml)) !== null) {
+      const titulo = itemMatch[1].trim();
+      const chave = normalizarTitulo(titulo);
+      if (vistos.has(chave)) continue;
+      vistos.add(chave);
+      roadmapItens.push({ titulo, origem, urgencia: classificarUrgencia(titulo) });
+    }
+  }
+
+  const roadmapHtml = `
+    <!-- ===== ROADMAP DE IMPLEMENTAÇÃO ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-icon">🗺️</span>
+          Roadmap de Implementação
+        </div>
+        <h2 class="section-title">12 meses em 5 horizontes</h2>
+        <p class="section-description">Ações consolidadas de todo o diagnóstico — cada uma aparece uma única vez. A origem indica o capítulo onde ela é detalhada.</p>
+      </div>
+
+      <div class="roadmap-legend">
+        <span>🔴 Crítica · 30 dias</span>
+        <span>🟠 Alta · 3 meses</span>
+        <span>🟡 Média · 6 meses</span>
+        <span>🟢 Evolução · 9 meses</span>
+        <span>🔵 Estratégica · 12 meses</span>
+      </div>
+
+      ${URGENCIA_ORDEM.map(tier => {
+        const itens = roadmapItens.filter(i => i.urgencia === tier);
+        if (itens.length === 0) return '';
+        return `
+        <div class="roadmap-tier tier-${tier}">
+          <div class="roadmap-tier-head"><span class="dot"></span>${URGENCIA_INFO[tier].label}<small>${URGENCIA_INFO[tier].prazo}</small></div>
+          ${itens.map(i => `
+            <div class="roadmap-item"><span>${i.titulo}</span><span class="origem">${i.origem}</span></div>
+          `).join('')}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  html = html.replace('<div id="__ROADMAP_PLACEHOLDER__"></div>', roadmapHtml);
 
   return html;
 }
