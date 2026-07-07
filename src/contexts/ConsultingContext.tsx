@@ -174,6 +174,7 @@ interface ConsultingContextType {
 const ConsultingContext = createContext<ConsultingContextType | undefined>(undefined);
 
 export function ConsultingProvider({ children }: { children: React.ReactNode }) {
+  const { canEdit } = useAuth();
   const [projectsData, setProjectsData] = useState<ProjectData[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [currentBlock, setCurrentBlock] = useState('goldenCircle');
