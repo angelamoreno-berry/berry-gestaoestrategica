@@ -492,9 +492,9 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     b: data.swot.oportunidades[i],
   })).filter(c => c.a && c.b);
 
-  const objetivo12Meses = data.swot.horizontes?.longo
-    || data.swot.horizontes?.medio
-    || 'A definir com base na estratégia de longo prazo da empresa.';
+  const objetivo12Meses =
+  executiveMetrics.objective12Months ||
+  "A definir com base na estratégia de longo prazo da empresa.";
 
   let html = `
 <!DOCTYPE html>
