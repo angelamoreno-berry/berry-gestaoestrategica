@@ -11,11 +11,11 @@ export interface ExecutiveMetrics {
 
 export function getExecutiveMetrics(data: ConsultingData): ExecutiveMetrics {
   return {
-    berryScore: 0,
-    avgMaturity: 0,
-    strategicPriority: "",
-    objective12Months: "",
-    risks: [],
-    opportunities: [],
-  };
+  berryScore: 0,
+  avgMaturity: 0,
+  strategicPriority: "",
+  objective12Months: "",
+  risks: [],
+  opportunities: [],
+};
 }
