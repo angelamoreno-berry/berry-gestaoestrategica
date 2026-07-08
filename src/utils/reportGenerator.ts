@@ -478,8 +478,8 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     financas: 'Estruturar a gestão financeira',
     mercado: 'Fortalecer o posicionamento de mercado',
   };
-  const prioridadeEstrategica = textoPrioridade[dimensaoPrioritaria.chave];
-
+  //const prioridadeEstrategica = textoPrioridade[dimensaoPrioritaria.chave];
+    const prioridadeEstrategica = executiveMetrics.strategicPriority;
   // Combinações Fraqueza x Ameaça (riscos) e Força x Oportunidade (oportunidades) -
   // pareamento posicional (1º com 1º, 2º com 2º...), até 3 combinações de cada.
   const riscosCombinados = Array.from({ length: 3 }).map((_, i) => ({
