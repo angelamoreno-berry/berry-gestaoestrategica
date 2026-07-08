@@ -1,4 +1,5 @@
 import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting';
+import { getExecutiveMetrics } from "@/report/executiveMetrics";
 import * as ReportSections from "@/report/reportSections";
 
 // Helper function to generate activity checklist suggestions for a position
@@ -455,11 +456,13 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     .replace(/[^a-zA-Z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '') || 'Empresa';
 
+  const executiveMetrics = getExecutiveMetrics(data);
   // Proxy de Nota Geral (0-100) baseado na maturidade média.
   // Observação: este gerador não calcula um Berry Score oficial (isso existe
   // apenas no relatório financeiro). Se um Berry Score real ficar disponível
   // aqui no futuro, troque esta linha por ele.
-  const notaGeral = Math.min(100, Math.round(avgMaturity * 20));
+  //const notaGeral = Math.min(100, Math.round(avgMaturity * 20));
+  const notaGeral = executiveMetrics.berryScore;
 
   // Dimensão de maturidade mais fraca -> vira a Prioridade Estratégica
   const dimensoes = [
