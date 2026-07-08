@@ -1,4 +1,8 @@
 import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting';
+import * as ReportArchitecture from "@/report/reportArchitecture";
+import * as ReportNarrative from "@/report/reportNarrative";
+import * as ReportRoadmap from "@/report/reportRoadmap";
+import * as ReportSections from "@/report/reportSections";
 
 // Helper function to generate activity checklist suggestions for a position
 const generateCargoChecklist = (cargo: Cargo): string[] => {
