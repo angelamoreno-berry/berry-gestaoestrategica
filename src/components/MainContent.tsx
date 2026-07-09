@@ -141,4 +141,5 @@ export function MainContent({ readOnly = false }: MainContentProps) {
       </div>
     </main>
   );
+              <V2ReportButton />
 }
