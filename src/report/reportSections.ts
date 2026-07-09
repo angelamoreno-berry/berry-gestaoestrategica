@@ -21,27 +21,16 @@ const CSS_V2 = `
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important; 
     color: var(--txt-claro) !important; 
-    background-color: transparent !important;
   }
   body { background: #FFFFFF !important; color: #111111 !important; }
   
-  /* Capa e Seções em Branco sem desperdício de tinta */
-  .cover { 
-    background: #FFFFFF !important; 
-    min-height: 100vh !important;
-    display: flex !important;
-    page-break-after: always !important; 
-  }
+  .cover { background: #FFFFFF !important; min-height: 100vh !important; display: flex !important; page-break-after: always !important; }
   .cover *, .cover-badge { color: #111111 !important; border-color: #CCCCCC !important; }
   .cover-meta div { background: #F9F9FB !important; border-color: #DDDDDD !important; }
   .cover-meta label { color: #666666 !important; }
   
   .section { page-break-before: always !important; page-break-inside: avoid !important; }
-  .exec-card, .faixa, .acao, .ind-item { 
-    page-break-inside: avoid !important; 
-    background: #F9F9FB !important;
-    border: 1px solid #CCCCCC !important; 
-  }
+  .exec-card, .faixa, .acao, .ind-item { page-break-inside: avoid !important; background: #F9F9FB !important; border: 1px solid #CCCCCC !important; }
   .checkbox-v2 { border: 2px solid #555 !important; background: #FFF !important; }
   .score-fill, .pfill { background: #15803D !important; }
   .score-big { color: #15803D !important; }
@@ -49,45 +38,48 @@ const CSS_V2 = `
   .ind-negative { color: #DC2626 !important; }
   .no-print { display: none !important; }
   .kicker { color: #15803D !important; }
+  
+  /* Forçar preservação de cores do logo na impressão */
+  .berry-dots span { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .berry-dots .dot-1 { background-color: #60A5FA !important; }
+  .berry-dots .dot-2 { background-color: #47C97E !important; }
+  .berry-dots .dot-3 { border-color: #47C97E !important; background-color: transparent !important; }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-claro); line-height: 1.65; -webkit-font-smoothing: antialiased; }
 .wrap { max-width: 880px; margin: 0 auto; padding: 0 28px; }
 
-/* Cabeçalho Oficial Berry */
-.berry-header { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; }
+.berry-header { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; justify-content: center; }
 .berry-dots { display: flex; gap: 6px; }
-.berry-dots span { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.berry-dots span { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
 .berry-dots .dot-1 { background-color: #60A5FA; }
 .berry-dots .dot-2 { background-color: #47C97E; }
-.berry-dots .dot-3 { border: 2px solid #47C97E; }
-.berry-text { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: #FFF; letter-spacing: -0.01em; }
+.berry-dots .dot-3 { border: 2px solid #47C97E; background-color: transparent; }
+.berry-text { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--txt-claro); letter-spacing: -0.01em; }
 
-/* Capa */
 .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 24px; background: radial-gradient(120% 90% at 50% 130%, rgba(13,48,164,.15), transparent 70%); }
-.cover h1 { font-size: clamp(28px, 4.5vw, 44px); margin-bottom: 12px; font-family: var(--font-display); font-weight: 700; color: #FFF; letter-spacing: -0.02em; }
+.cover h1 { font-size: clamp(28px, 4.5vw, 44px); margin-bottom: 12px; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
 .cover .sub { color: var(--cinza); margin-bottom: 56px; font-size: 16px; }
-.cover .empresa { font-size: 28px; font-weight: 600; color: #FFF; margin-bottom: 40px; }
+.cover .empresa { font-size: 28px; font-weight: 600; margin-bottom: 40px; }
 .cover-meta { display: grid; grid-template-columns: repeat(2, minmax(180px, 220px)); gap: 12px; }
 .cover-meta div { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; text-align: left; }
 .cover-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 6px; }
 .cover-badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--cinza); border: 1px solid var(--border); border-radius: 999px; padding: 10px 24px; margin-bottom: 44px; }
 
-/* Seções */
 .section { padding: 80px 0 40px; }
 .kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--verde); margin-bottom: 12px; font-weight: 500; }
-.section h2 { font-size: 26px; color: #FFF; margin-bottom: 12px; font-family: var(--font-display); font-weight: 600; }
+.section h2 { font-size: 26px; margin-bottom: 12px; font-family: var(--font-display); font-weight: 600; }
 .section > .wrap > p.lead { color: #AAA; font-size: 15px; max-width: 600px; margin-bottom: 40px; }
 
-/* Grid Executivo */
 .exec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px; }
 .exec-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 26px; }
 .exec-card.full { grid-column: 1 / -1; }
 .exec-card h3 { font-size: 12px; font-family: var(--font-mono); letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza); margin-bottom: 16px; font-weight: 500; }
+
 .score-row { display: flex; align-items: baseline; gap: 4px; }
 .score-big { font-size: 52px; font-weight: 700; color: var(--verde); font-family: var(--font-display); line-height: 1; }
-.score-max { font-size: 18px; color: var(--cinza); font-family: var(--font-mono); }
+.score-max { font-size: 18px; color: var(--cinza); font-weight: 500; font-family: var(--font-display); }
 .score-bar { height: 6px; background: var(--surface-3); border-radius: 999px; margin-top: 16px; overflow: hidden; }
 .score-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0D30A4, var(--verde)); }
 .combo { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.5; }
@@ -96,39 +88,30 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 .prioridade { font-size: 20px; font-weight: 600; color: var(--verde); line-height: 1.4; }
 .exec-card p.exp { color: #999; font-size: 14px; margin-top: 12px; }
 
-/* Progresso */
 .progress-line { display: flex; align-items: center; gap: 16px; margin-top: 12px; font-size: 14px; }
 .progress-line .plabel { width: 140px; color: #AAA; }
 .pbar { flex: 1; height: 8px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
 .pfill { height: 100%; background: linear-gradient(90deg, #0D30A4, var(--verde)); border-radius: 999px; }
-.pval { font-family: var(--font-mono); width: 48px; text-align: right; color: #FFF; }
+.pval { font-family: var(--font-mono); width: 48px; text-align: right; color: var(--txt-claro); }
 
-/* Roadmap e Checkbox */
 .faixa { margin-bottom: 24px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface-1); }
-.faixa-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: rgba(255,255,255,0.02); font-weight: 600; color: #FFF; font-size: 15px; border-bottom: 1px solid var(--border); }
+.faixa-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: rgba(255,255,255,0.02); font-weight: 600; font-size: 15px; border-bottom: 1px solid var(--border); }
 .faixa-head small { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--cinza); font-weight: 400; letter-spacing: 0.5px; }
 .rmap-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 14px; }
 .rmap-item:first-of-type { border-top: none; }
-.rmap-item .titulo { flex: 1; font-weight: 500; color: #EEE; }
-
-.checkbox-v2 {
-  width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0;
-  cursor: pointer; position: relative; transition: all 0.2s;
-}
-.checkbox-v2:hover { border-color: var(--verde); background: rgba(71, 201, 126, 0.1); }
-
+.rmap-item .titulo { flex: 1; font-weight: 500; }
+.checkbox-v2 { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; background: var(--surface-1); }
 .origem { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--cinza); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; white-space: nowrap; }
 
-/* Cards de Ação */
 .acao { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
-.acao h4 { font-size: 17px; margin-bottom: 8px; color: #FFF; }
+.acao h4 { font-size: 17px; margin-bottom: 8px; }
 .acao .desc { color: #AAA; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
 .acao-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 14px; }
 .acao-meta > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
 .acao-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 6px; }
 .acao-meta .resultado { grid-column: 1 / -1; }
 
-.interp { border-left: 3px solid #0D30A4; background: var(--surface-2); border-radius: 0 12px 12px 0; padding: 16px 20px; font-size: 14px; color: #BBB; margin: 24px 0; line-height: 1.6; }
+.interp { border-left: 3px solid var(--azul); background: var(--surface-2); border-radius: 0 12px 12px 0; padding: 16px 20px; font-size: 14px; color: #BBB; margin: 24px 0; line-height: 1.6; }
 .ind-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
 .ind-item { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
 .ind-item label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 8px; }
@@ -141,7 +124,6 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 .fim p { max-width: 600px; margin: 0 auto 16px; color: #999; font-size: 15px; }
 footer { padding: 40px 0; text-align: center; color: #666; font-size: 12px; font-family: var(--font-mono); border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 8px; }
 
-/* Barra de Ferramentas */
 .fab-container { position: fixed; top: 24px; right: 24px; display: flex; gap: 12px; z-index: 100; }
 .fab-btn { padding: 10px 18px; background: #FFF; color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: 0.2s; }
 .fab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
@@ -188,13 +170,13 @@ function renderCover(data: ConsultingData, project: Project): string {
     </div>
     <div class="cover-badge">Documento Estratégico Confidencial</div>
     <h1>Plano de Estruturação<br>em Gestão</h1>
-    <p class="sub">Guia estratégico e roadmap executivo para os próximos 12 meses</p>
+    <p class="sub">Guia estratégico e roadmap executivo consolidando os 14 blocos de diagnóstico</p>
     <div class="empresa">${esc(nome)}</div>
     <div class="cover-meta">
-      <div><label>Responsável</label><span style="color:#FFF;font-weight:500">${esc(project.responsavel || data.consultorNome || "-")}</span></div>
-      <div><label>Emissão</label><span style="color:#FFF;font-weight:500">${fmtDate()}</span></div>
-      ${fat > 0 ? `<div><label>Faturamento</label><span style="color:#FFF;font-weight:500">${fmtCurrency(fat)}/mês</span></div>` : ""}
-      ${project.quantidadeColaboradores > 0 ? `<div><label>Colaboradores</label><span style="color:#FFF;font-weight:500">${project.quantidadeColaboradores} pessoas</span></div>` : ""}
+      <div><label>Responsável</label><span style="font-weight:500">${esc(project.responsavel || data.consultorNome || "-")}</span></div>
+      <div><label>Emissão</label><span style="font-weight:500">${fmtDate()}</span></div>
+      ${fat > 0 ? `<div><label>Faturamento</label><span style="font-weight:500">${fmtCurrency(fat)}/mês</span></div>` : ""}
+      ${project.quantidadeColaboradores > 0 ? `<div><label>Colaboradores</label><span style="font-weight:500">${project.quantidadeColaboradores} pessoas</span></div>` : ""}
     </div>
   </div>`;
 }
@@ -213,7 +195,7 @@ function renderResumo(m: any, blocks: BlockStatus[]): string {
     <div class="wrap">
       <div class="kicker">Resumo Executivo</div>
       <h2>O cenário estratégico atual</h2>
-      <p class="lead">Síntese do diagnóstico para a tomada de decisão rápida pela diretoria.</p>
+      <p class="lead">Síntese do diagnóstico para a tomada de decisão rápida pela diretoria. Baseado na análise transversal dos 14 blocos estratégicos da empresa.</p>
       <div class="exec-grid">
         <div class="exec-card">
           <h3>Nota Geral · Berry Score</h3>
@@ -224,7 +206,7 @@ function renderResumo(m: any, blocks: BlockStatus[]): string {
         <div class="exec-card">
           <h3>Maturidade Média</h3>
           <div class="score-row"><span class="score-big">${Math.round(m.avgMaturity*10)/10}</span><span class="score-max">/5</span></div>
-          <p class="exp" style="color:#FFF;font-weight:500;margin-bottom:4px;">Estágio: ${esc(m.maturityLabel)}</p>
+          <p class="exp" style="font-weight:500;margin-bottom:4px;">Estágio: ${esc(m.maturityLabel)}</p>
           <p class="exp" style="margin-top:0">${esc(m.maturityBreakdown)}</p>
         </div>
         <div class="exec-card">
@@ -238,16 +220,16 @@ function renderResumo(m: any, blocks: BlockStatus[]): string {
         <div class="exec-card">
           <h3>Prioridade Estratégica</h3>
           <div class="prioridade">${esc(m.strategicPriority)}</div>
-          <p class="exp">Derivada da dimensão de menor maturidade operacional.</p>
+          <p class="exp">Derivada da dimensão de menor maturidade operacional nos blocos analisados.</p>
         </div>
         <div class="exec-card">
           <h3>Objetivo · Próximos 12 meses</h3>
-          <p style="font-weight:500;font-size:15px;color:#FFF;line-height:1.5">${esc(m.objective12Months) || "Estruturar as bases da gestão para permitir crescimento estável."}</p>
+          <p style="font-weight:500;font-size:15px;line-height:1.5">${esc(m.objective12Months) || "Estruturar as bases da gestão para permitir crescimento estável."}</p>
         </div>
         <div class="exec-card full">
           <h3>Avanço do Projeto</h3>
-          <div class="progress-line"><span class="plabel">Diagnóstico</span><div class="pbar"><div class="pfill" style="width:${pct}%"></div></div><span class="pval">${pct}%</span></div>
-          <div class="progress-line"><span class="plabel">Implementação</span><div class="pbar"><div class="pfill" style="width:0%"></div></div><span class="pval">0%</span></div>
+          <div class="progress-line"><span class="plabel">Diagnóstico Coletado</span><div class="pbar"><div class="pfill" style="width:${pct}%"></div></div><span class="pval">${pct}%</span></div>
+          <div class="progress-line"><span class="plabel">Plano Implementado</span><div class="pbar"><div class="pfill" style="width:0%"></div></div><span class="pval">0%</span></div>
         </div>
       </div>
     </div>
@@ -261,35 +243,59 @@ function renderRoadmap(data: ConsultingData): string {
     <div class="wrap">
       <div class="kicker">Plano de Voo</div>
       <h2>Roadmap de Execução</h2>
-      <p class="lead">Iniciativas táticas com checkboxes para acompanhamento manual de progresso.</p>`;
+      <p class="lead">Iniciativas táticas prioritárias. Utilize os checkboxes para acompanhamento manual de progresso nas reuniões de diretoria.</p>`;
       
   if ((d.financas.level||0) <= 3) {
     h += `
       <div class="faixa">
-        <div class="faixa-head" style="border-left:4px solid #EF4444">CRÍTICA — até 30 dias<small>visibilidade financeira e caixa</small></div>
-        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implantar DRE gerencial mensal para apuração real de lucro</span><span class="origem">FINANÇAS</span></div>
-        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Estruturar fluxo de caixa semanal de 8 semanas</span><span class="origem">FINANÇAS</span></div>
+        <div class="faixa-head" style="border-left:4px solid #EF4444">CRÍTICA — até 30 dias<small>visibilidade e controle</small></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implantar painel de indicadores (DRE gerencial) para apuração real de lucro</span><span class="origem">FINANÇAS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Mapear e documentar gargalos na jornada atual do cliente</span><span class="origem">OPERAÇÃO</span></div>
+      </div>`;
+  } else {
+    h += `
+      <div class="faixa">
+        <div class="faixa-head" style="border-left:4px solid #EF4444">CRÍTICA — até 30 dias<small>otimização</small></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Otimizar indicadores financeiros e buscar eficiência de custos (Margem)</span><span class="origem">FINANÇAS</span></div>
       </div>`;
   }
-  if ((d.mercado.level||0) <= 3 || (d.processos.level||0) <= 2) {
+  
+  if ((d.mercado.level||0) <= 3) {
     h += `
       <div class="faixa">
         <div class="faixa-head" style="border-left:4px solid #F97316">ALTA — até 3 meses<small>vendas e operações</small></div>
-        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Mapear e documentar os 3 processos operacionais críticos</span><span class="origem">PROCESSOS</span></div>
-        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Revisar precificação com base em valor percebido</span><span class="origem">MERCADO</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Mapear e documentar os 3 processos operacionais mais críticos</span><span class="origem">PROCESSOS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Revisar precificação com foco em Valor Percebido e Ticket Médio</span><span class="origem">MERCADO</span></div>
+      </div>`;
+  } else {
+    h += `
+      <div class="faixa">
+        <div class="faixa-head" style="border-left:4px solid #F97316">ALTA — até 3 meses<small>tração comercial</small></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Testar novos canais de aquisição ou novas estratégias de valor (Upsell/Crossell)</span><span class="origem">MERCADO</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implementar automações em processos já consolidados</span><span class="origem">PROCESSOS</span></div>
       </div>`;
   }
-  h += `
+  
+  if ((d.pessoas.level||0) <= 3) {
+    h += `
       <div class="faixa">
         <div class="faixa-head" style="border-left:4px solid #EAB308">MÉDIA — até 6 meses<small>gestão e pessoas</small></div>
-        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implementar rotina semanal de acompanhamento de KPIs</span><span class="origem">GESTÃO</span></div>
-        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Definição formal de organograma e metas por cargo</span><span class="origem">PESSOAS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implementar rotina semanal de acompanhamento de KPIs da equipe</span><span class="origem">GESTÃO</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Definição formal de organograma, cultura e metas por cargo</span><span class="origem">PESSOAS</span></div>
       </div>`;
+  } else {
+    h += `
+      <div class="faixa">
+        <div class="faixa-head" style="border-left:4px solid #EAB308">MÉDIA — até 6 meses<small>cultura de alta performance</small></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implementar sistema robusto de bônus e avaliação de performance</span><span class="origem">PESSOAS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Preparar plano de formação de novas lideranças (Plano de Sucessão)</span><span class="origem">LIDERANÇA</span></div>
+      </div>`;
+  }
       
   if (swot?.horizontes?.medio || swot?.horizontes?.longo) {
     h += `
       <div class="faixa">
-        <div class="faixa-head" style="border-left:4px solid #3B82F6">ESTRATÉGICA — até 12 meses<small>expansão estruturada</small></div>
+        <div class="faixa-head" style="border-left:4px solid #3B82F6">ESTRATÉGICA — até 12 meses<small>expansão e perpetuidade</small></div>
         <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">${esc(swot.horizontes.medio || swot.horizontes.longo)}</span><span class="origem">ESTRATÉGIA</span></div>
       </div>`;
   }
@@ -297,93 +303,126 @@ function renderRoadmap(data: ConsultingData): string {
 }
 
 function renderCapitulos(data: ConsultingData): string {
-  const f = data.financeiro; 
-  const fat = f.faturamentoAtual || f.faturamentoMensal || 0;
-  const desp = (f.despesasFixas||0)+(f.despesasVariaveis||0); const lucro=fat-desp;
-  const motores = data.motoresCrescimento.motoresPrincipais.slice(0,2).join(" e ") || "canais orgânicos";
-  const publico = data.icp.descricao || "não definido claramente";
-
   let h = "";
+  let capCount = 1;
   
-  // CAPÍTULO 1: FINANÇAS
+  // Helpers para ações dinâmicas
+  const renderAcao = (titulo: string, desc: string, urgencia: string, prazo: string, resultado: string, color: string) => `
+    <div class="acao">
+      <h4>${titulo}</h4>
+      <p class="desc">${desc}</p>
+      <div class="acao-meta">
+        <div><label>Urgência</label><span style="color:${color};font-weight:600">${urgencia}</span></div>
+        <div><label>Prazo</label>${prazo}</div>
+        <div class="resultado"><label>Resultado esperado</label>${resultado}</div>
+      </div>
+    </div>`;
+
+  // CAPÍTULO 1: IDENTIDADE E POSICIONAMENTO
+  const hasPurpose = data.goldenCircle?.why?.length > 10;
+  const hasIcp = data.icp?.descricao?.length > 10;
+  
   h += `
   <section class="section">
     <div class="wrap">
-      <div class="kicker">Capítulo 1</div>
-      <h2>Finanças & Rentabilidade</h2>
-      <p class="lead">Análise da saúde financeira e da capacidade de geração de caixa operacional.</p>
+      <div class="kicker">Pilar Estratégico ${capCount++}</div>
+      <h2>Posicionamento & Identidade</h2>
+      <p class="lead">Análise da fundação do negócio: Propósito (Golden Circle), Perfil de Cliente (ICP) e Diferenciais Competitivos. Baseado em ${hasPurpose ? 'dados completos coletados no diagnóstico' : 'dados parciais do diagnóstico'}.</p>
       
       <div class="interp">
-        <b>Leitura Executiva:</b> A maturidade financeira de nível ${data.diagnostico.financas.level}/5 indica que ${data.diagnostico.financas.level <= 2 ? "o negócio opera sem visibilidade exata do lucro líquido, tomando decisões de caixa baseadas no saldo bancário." : "a gestão já possui indicadores estruturados, mas precisa otimizar margens."}
+        <b>Leitura Executiva:</b> ${hasPurpose && hasIcp ? 
+          "A empresa possui clareza do seu Propósito e Público-Alvo. O desafio atual não é definir a identidade, mas garantir que essa identidade se traduza em diferenciação real na ponta da linha para justificar preço e escalar." : 
+          "A base estratégica do negócio apresenta lacunas de documentação. Sem clareza de Perfil Ideal de Cliente (ICP) ou diferenciais bem definidos, a empresa corre o risco de competir apenas por preço e perder margem."}
+      </div>`;
+      
+  if (hasPurpose && hasIcp) {
+    h += renderAcao("Plano de Escalada: Aculturamento e Posicionamento Premium", "Garantir que 100% da equipe viva e comunique o Golden Circle e os diferenciais mapeados em cada interação diária com o cliente.", "Média", "60 dias", "Aumento da percepção de valor e drástica redução da sensibilidade a preço por parte do cliente fiel.", "var(--verde)");
+  } else {
+    h += renderAcao("Estruturação Básica: Definição de ICP e Proposta de Valor", "Documentar o Perfil de Cliente Ideal e estabelecer indicadores básicos de satisfação e atração correta no mercado.", "Alta", "30 dias", "Direcionamento claro para o time de marketing e vendas, interrompendo o ciclo de 'atirar para todos os lados'.", "#F97316");
+  }
+  h += `</div></section>`;
+
+  // CAPÍTULO 2: ENGENHARIA DE RECEITA
+  const isMercadoMature = data.diagnostico.mercado.level >= 3;
+  const motores = data.motoresCrescimento.motoresPrincipais.slice(0,2).join(" e ") || "canais orgânicos";
+  
+  h += `
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">Pilar Estratégico ${capCount++}</div>
+      <h2>Engenharia de Receita</h2>
+      <p class="lead">Tração comercial, canais de crescimento (Motores), precificação inteligente e estratégias de valor (Upsell/Crossell).</p>
+      
+      <div class="interp">
+        <b>Leitura Executiva:</b> Com maturidade comercial de nível ${data.diagnostico.mercado.level}/5 focada em ${esc(motores)}, ${isMercadoMature ? 
+          "a máquina de vendas já possui fundamentos sólidos. A estratégia agora é alavancar os canais mais rentáveis, implementar LTV agressivo e testar novos pacotes premium." : 
+          "a estrutura de aquisição de clientes é majoritariamente reativa. É imprescindível criar previsibilidade comercial estabelecendo processos ativos de atração e revisando a precificação para evitar erosão de caixa."}
+      </div>`;
+      
+  if (isMercadoMature) {
+    h += renderAcao("Otimização de LTV e Esteira de Produtos", "Criar estratégias de Cross-sell e Upsell na base atual de clientes satisfeitos, implementando ofertas complementares e programas de indicação.", "Média", "90 dias", "Maximização da receita por cliente atual, reduzindo a dependência absoluta de novos canais de aquisição (Custo de Aquisição Menor).", "var(--verde)");
+  } else {
+    h += renderAcao("Modelagem e Teste de Precificação Baseada em Valor", "Auditar a margem de todos os produtos/serviços ativos e iniciar pequenos testes de ancoragem de preços focados nos diferenciais da empresa.", "Alta", "60 dias", "Aumento imediato de margem líquida sem necessidade primária de aumentar volume agressivo de vendas.", "#F97316");
+  }
+  h += `</div></section>`;
+
+  // CAPÍTULO 3: MÁQUINA OPERACIONAL
+  const isOpsMature = data.diagnostico.processos.level >= 3;
+  
+  h += `
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">Pilar Estratégico ${capCount++}</div>
+      <h2>Máquina Operacional & Equipe</h2>
+      <p class="lead">Eficiência dos processos core, arquitetura do organograma corporativo e alavancagem de produtividade humana.</p>
+      
+      <div class="interp">
+        <b>Leitura Executiva:</b> A área de processos está no nível ${data.diagnostico.processos.level}/5 e pessoas em ${data.diagnostico.pessoas.level}/5. ${isOpsMature ? 
+          "A empresa já opera com fluxos definidos. O próximo passo é integrar tecnologia pesada para automação, reduzindo gargalos manuais e preparando o terreno real para escala ou filiais." : 
+          "A operação ainda reside na cabeça de poucas pessoas. O negócio depende excessivamente do envolvimento diário do fundador na resolução de problemas táticos (Gargalo de Liderança Central)."}
+      </div>`;
+      
+  if (isOpsMature) {
+    h += renderAcao("Plano de Escalada: Automação e Dashboard de Qualidade", "Mapear tarefas repetitivas já consolidadas e introduzir softwares de automação, atrelado a um sistema rígido de avaliação de performance do time.", "Estratégica", "120 dias", "Aumento exponencial da capacidade produtiva sem a necessidade proporcional de contratações.", "var(--azul)");
+  } else {
+    h += renderAcao("Fundamentação: Playbook de Operações Críticas", "Isolar e documentar o passo a passo das 3 atividades que mais geram gargalos, dúvidas ou devoluções na operação diária, criando um SOP (Standard Operating Procedure) simplificado.", "Alta", "45 dias", "Descentralização do conhecimento, redução de micro-falhas e liberação urgente do tempo do proprietário para o tático-estratégico.", "#F97316");
+  }
+  h += `</div></section>`;
+  
+  // CAPÍTULO 4: FINANÇAS
+  const f = data.financeiro; 
+  const fat = f.faturamentoAtual || f.faturamentoMensal || 0;
+  const desp = (f.despesasFixas||0)+(f.despesasVariaveis||0); const lucro=fat-desp;
+  const isFinMature = data.diagnostico.financas.level >= 3;
+  
+  h += `
+  <section class="section">
+    <div class="wrap">
+      <div class="kicker">Pilar Estratégico ${capCount++}</div>
+      <h2>Saúde Financeira</h2>
+      <p class="lead">Visibilidade de lucro líquido, ciclo financeiro, margem de contribuição e proteção de caixa.</p>
+      
+      <div class="interp">
+        <b>Leitura Executiva:</b> Com maturidade nível ${data.diagnostico.financas.level}/5, ${isFinMature ? 
+          "o financeiro atua como um parceiro estratégico. Os controles básicos já funcionam e a gestão olha para rentabilidade, ROI e proteção de capital." : 
+          "o negócio sofre de 'cegueira financeira'. Decisões de caixa são tomadas pelo saldo da conta corrente e a verdadeira rentabilidade operacional não é medida de forma estruturada."}
       </div>
       
       ${fat > 0 ? `
       <div class="ind-grid">
-        <div class="ind-item"><label>Receita Mensal</label><div class="valor">${fmtCurrency(fat)}</div></div>
-        <div class="ind-item"><label>Custo Operacional Estimado</label><div class="valor ${desp > fat ? 'ind-negative' : ''}">${fmtCurrency(desp)}</div></div>
-        <div class="ind-item"><label>Margem Líquida</label><div class="valor ${lucro > 0 ? 'ind-positive' : 'ind-negative'}">${fat > 0 ? Math.round((lucro/fat)*100) : 0}%</div></div>
-        ${f.metaFaturamento > 0 ? `<div class="ind-item"><label>Meta de Receita</label><div class="valor ind-neutral">${fmtCurrency(f.metaFaturamento)}</div></div>` : ""}
+        <div class="ind-item"><label>Receita Mensal Avaliada</label><div class="valor">${fmtCurrency(fat)}</div></div>
+        <div class="ind-item"><label>Custo Operacional Total</label><div class="valor ${desp > fat ? 'ind-negative' : ''}">${fmtCurrency(desp)}</div></div>
+        <div class="ind-item"><label>Margem Líquida Estimada</label><div class="valor ${lucro > 0 ? 'ind-positive' : 'ind-negative'}">${fat > 0 ? Math.round((lucro/fat)*100) : 0}%</div></div>
+        ${f.metaFaturamento > 0 ? `<div class="ind-item"><label>Meta Declarada (Expansão)</label><div class="valor ind-neutral">${fmtCurrency(f.metaFaturamento)}</div></div>` : ""}
       </div>` : ""}
+      `;
       
-      <div class="acao">
-        <h4>Implantar DRE Gerencial</h4>
-        <p class="desc">Adoção imediata de um Demonstrativo de Resultados do Exercício para separar custos fixos, variáveis e apurar a margem de contribuição real de cada venda.</p>
-        <div class="acao-meta">
-          <div><label>Urgência</label><span style="color:#EF4444;font-weight:600">Crítica</span></div>
-          <div><label>Prazo</label>30 dias</div>
-          <div class="resultado"><label>Resultado esperado</label>Fim das decisões financeiras "no escuro" e previsibilidade para investimentos.</div>
-        </div>
-      </div>
-    </div>
-  </section>`;
-
-  // CAPÍTULO 2: MERCADO E COMERCIAL
-  h += `
-  <section class="section">
-    <div class="wrap">
-      <div class="kicker">Capítulo 2</div>
-      <h2>Mercado & Crescimento</h2>
-      <p class="lead">Estratégia de aquisição de clientes, precificação e posicionamento competitivo.</p>
-      
-      <div class="interp">
-        <b>Leitura Executiva:</b> A empresa foca atualmente em ${esc(motores)}, atingindo um público que é ${esc(publico)}. O foco tático deve ser no aumento de LTV (Life Time Value) e ticket médio na base atual.
-      </div>
-      
-      <div class="acao">
-        <h4>Revisão Estratégica de Precificação</h4>
-        <p class="desc">Auditar a margem de todos os produtos/serviços ativos e ancorar preços no "Valor Percebido" em vez de apenas "Custo + Markup".</p>
-        <div class="acao-meta">
-          <div><label>Urgência</label><span style="color:#F97316;font-weight:600">Alta</span></div>
-          <div><label>Prazo</label>60 dias</div>
-          <div class="resultado"><label>Resultado esperado</label>Aumento imediato de margem líquida sem necessidade de aumentar volume de vendas.</div>
-        </div>
-      </div>
-    </div>
-  </section>`;
-  
-  // CAPÍTULO 3: OPERAÇÕES E PESSOAS
-  h += `
-  <section class="section">
-    <div class="wrap">
-      <div class="kicker">Capítulo 3</div>
-      <h2>Operações & Equipe</h2>
-      <p class="lead">Eficiência dos processos internos, estrutura de pessoal e produtividade.</p>
-      
-      <div class="interp">
-        <b>Leitura Executiva:</b> Com ${data.diagnostico.processos.level}/5 em processos e ${data.diagnostico.pessoas.level}/5 em pessoas, o negócio depende excessivamente do envolvimento diário do fundador (Gargalo de Liderança).
-      </div>
-      
-      <div class="acao">
-        <h4>Mapeamento de Processos Core</h4>
-        <p class="desc">Documentar o passo a passo das 3 atividades que mais consomem tempo ou geram retrabalho na operação diária.</p>
-        <div class="acao-meta">
-          <div><label>Urgência</label><span style="color:#F97316;font-weight:600">Alta</span></div>
-          <div><label>Prazo</label>90 dias</div>
-          <div class="resultado"><label>Resultado esperado</label>Descentralização da operação, redução de falhas e liberação de tempo do proprietário para estratégia.</div>
-        </div>
-      </div>
-    </div>
-  </section>`;
+  if (isFinMature) {
+    h += renderAcao("Otimização: Gestão de Investimentos e Retenção", "Estabelecer política rígida de formação de reservas corporativas e reavaliação de contratos com fornecedores para ganho fracionário de margem bruta.", "Média", "90 dias", "Robusteza de balanço e preparo de caixa líquido para movimentos de expansão ou M&A futuro.", "var(--verde)");
+  } else {
+    h += renderAcao("Resgate Tático: Apuração de DRE e Fluxo Base", "Adoção imediata de um painel de Resultados (DRE) simplificado para separar custos fixos, variáveis e apurar a margem de contribuição real, associado a um controle de fluxo de caixa de 8 semanas.", "Crítica", "30 dias", "Sobrevivência do negócio: fim das decisões no escuro e blindagem contra surpresas de falta de caixa.", "#EF4444");
+  }
+  h += `</div></section>`;
 
   return h;
 }
@@ -393,9 +432,9 @@ function renderFinal(): string {
   <section class="fim no-print" id="proximos-passos">
     <div class="wrap">
       <div class="kicker">Próximos Passos</div>
-      <h2>Execução Estratégica</h2>
-      <p>O diagnóstico revela oportunidades profundas, mas apenas a implementação disciplinada transformará estes insights em resultados financeiros reais na sua conta.</p>
-      <p>Utilize o Roadmap da página 2 como seu guia principal para os próximos meses.</p>
+      <h2>A Execução Faz o Estrategista</h2>
+      <p>Este diagnóstico agrupou inteligentemente 14 áreas da sua empresa em pilares executivos. Os dados revelam as oportunidades, mas apenas a implementação implacável transformará estes insights em caixa na conta e eficiência no piso de fábrica.</p>
+      <p>Utilize o Roadmap da página 3 e seus checkboxes físicos para cobrar avanço real nas próximas reuniões de diretoria.</p>
     </div>
   </section>
   <footer>
@@ -404,7 +443,7 @@ function renderFinal(): string {
       <span class="dot-2" style="width:10px;height:10px"></span>
       <span class="dot-3" style="width:10px;height:10px;border-width:1.5px"></span>
     </div>
-    <span class="berry-text" style="font-size:14px;color:#888">Berry</span>
+    <span class="berry-text" style="font-size:14px;color:#888;font-weight:600;margin-left:4px">Berry</span>
     <span style="color:#555">· Plano de Estruturação · Gerado em ${fmtDate()}</span>
   </footer>`;
 }
