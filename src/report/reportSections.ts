@@ -3,7 +3,7 @@ import { getExecutiveMetrics } from "./executiveMetrics";
 
 const CSS_V2 = `
 :root {
-  --cinza: #7A7A7A; --cinza-claro: #F0F0F0; --azul: #0D30A4; --verde: #47C97E;
+  --cinza: #7A7A7A; --cinza-claro: #F0F0F0; --azul: #60A5FA; --verde: #47C97E;
   --surface-1: rgba(122,122,122,.045); --surface-2: rgba(122,122,122,.08); --surface-3: rgba(122,122,122,.13);
   --border: rgba(122,122,122,.26); --bg: #0A0A0B;
   --font-display: "IBM Plex Sans", -apple-system, sans-serif;
@@ -13,26 +13,38 @@ const CSS_V2 = `
 
 @media print {
   :root {
-    --bg: #FFFFFF; --txt: #111111; --txt-2: #444444;
-    --surface-1: #F8F8F8; --surface-2: #F0F0F0; --surface-3: #E5E5E5;
-    --border: #DDDDDD;
+    --bg: #FFFFFF; --txt-claro: #111111; --cinza: #555555;
+    --surface-1: #F9F9FB; --surface-2: #F0F0F2; --surface-3: #E2E2E5;
+    --border: #CCCCCC; --azul: #1E3A8A; --verde: #15803D;
   }
   * { 
     -webkit-print-color-adjust: exact !important; 
     print-color-adjust: exact !important; 
-    color: var(--txt) !important; 
+    color: var(--txt-claro) !important; 
+    background-color: transparent !important;
   }
-  body { background: #FFFFFF !important; }
+  body { background: #FFFFFF !important; color: #111111 !important; }
   
-  /* Capa no print */
-  .cover { background: #050505 !important; page-break-after: always; }
-  .cover *, .cover-badge { color: #FFFFFF !important; border-color: rgba(255,255,255,0.2) !important; }
-  .cover-meta div { background: #111 !important; border-color: #333 !important; }
-  .cover-meta label { color: #999 !important; }
+  /* Capa e Seções em Branco sem desperdício de tinta */
+  .cover { 
+    background: #FFFFFF !important; 
+    min-height: 100vh !important;
+    display: flex !important;
+    page-break-after: always !important; 
+  }
+  .cover *, .cover-badge { color: #111111 !important; border-color: #CCCCCC !important; }
+  .cover-meta div { background: #F9F9FB !important; border-color: #DDDDDD !important; }
+  .cover-meta label { color: #666666 !important; }
   
-  .section { page-break-after: always; }
-  .exec-card, .faixa, .acao, .ind-item { page-break-inside: avoid; border: 1px solid #CCC !important; }
-  .score-fill, .pfill { background: #47C97E !important; }
+  .section { page-break-before: always !important; page-break-inside: avoid !important; }
+  .exec-card, .faixa, .acao, .ind-item { 
+    page-break-inside: avoid !important; 
+    background: #F9F9FB !important;
+    border: 1px solid #CCCCCC !important; 
+  }
+  .checkbox-v2 { border: 2px solid #555 !important; background: #FFF !important; }
+  .score-fill, .pfill { background: #15803D !important; }
+  .score-big { color: #15803D !important; }
   .ind-positive { color: #15803D !important; }
   .ind-negative { color: #DC2626 !important; }
   .no-print { display: none !important; }
@@ -40,20 +52,29 @@ const CSS_V2 = `
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-body); background: var(--bg); color: var(--txt-claro, #F0F0F0); line-height: 1.65; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-claro); line-height: 1.65; -webkit-font-smoothing: antialiased; }
 .wrap { max-width: 880px; margin: 0 auto; padding: 0 28px; }
+
+/* Cabeçalho Oficial Berry */
+.berry-header { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; }
+.berry-dots { display: flex; gap: 6px; }
+.berry-dots span { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+.berry-dots .dot-1 { background-color: #60A5FA; }
+.berry-dots .dot-2 { background-color: #47C97E; }
+.berry-dots .dot-3 { border: 2px solid #47C97E; }
+.berry-text { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: #FFF; letter-spacing: -0.01em; }
 
 /* Capa */
 .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 24px; background: radial-gradient(120% 90% at 50% 130%, rgba(13,48,164,.15), transparent 70%); }
-.cover h1 { font-size: clamp(28px, 4vw, 42px); margin-bottom: 12px; font-family: var(--font-display); font-weight: 700; color: #FFF; }
-.cover .sub { color: #999; margin-bottom: 56px; font-size: 16px; }
+.cover h1 { font-size: clamp(28px, 4.5vw, 44px); margin-bottom: 12px; font-family: var(--font-display); font-weight: 700; color: #FFF; letter-spacing: -0.02em; }
+.cover .sub { color: var(--cinza); margin-bottom: 56px; font-size: 16px; }
 .cover .empresa { font-size: 28px; font-weight: 600; color: #FFF; margin-bottom: 40px; }
 .cover-meta { display: grid; grid-template-columns: repeat(2, minmax(180px, 220px)); gap: 12px; }
 .cover-meta div { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; text-align: left; }
-.cover-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #888; display: block; margin-bottom: 6px; }
-.cover-badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #AAA; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 10px 24px; margin-bottom: 44px; }
+.cover-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 6px; }
+.cover-badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--cinza); border: 1px solid var(--border); border-radius: 999px; padding: 10px 24px; margin-bottom: 44px; }
 
-/* Typo & Layout */
+/* Seções */
 .section { padding: 80px 0 40px; }
 .kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--verde); margin-bottom: 12px; font-weight: 500; }
 .section h2 { font-size: 26px; color: #FFF; margin-bottom: 12px; font-family: var(--font-display); font-weight: 600; }
@@ -63,45 +84,54 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--txt-cl
 .exec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px; }
 .exec-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 26px; }
 .exec-card.full { grid-column: 1 / -1; }
-.exec-card h3 { font-size: 12px; font-family: var(--font-mono); letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-bottom: 16px; font-weight: 500; }
+.exec-card h3 { font-size: 12px; font-family: var(--font-mono); letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza); margin-bottom: 16px; font-weight: 500; }
+.score-row { display: flex; align-items: baseline; gap: 4px; }
 .score-big { font-size: 52px; font-weight: 700; color: var(--verde); font-family: var(--font-display); line-height: 1; }
+.score-max { font-size: 18px; color: var(--cinza); font-family: var(--font-mono); }
 .score-bar { height: 6px; background: var(--surface-3); border-radius: 999px; margin-top: 16px; overflow: hidden; }
-.score-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--azul), var(--verde)); }
+.score-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #0D30A4, var(--verde)); }
 .combo { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.5; }
 .combo:last-child { border-bottom: 0; padding-bottom: 0; }
 .combo .n { font-family: var(--font-mono); color: #666; font-size: 12px; padding-top: 2px; }
 .prioridade { font-size: 20px; font-weight: 600; color: var(--verde); line-height: 1.4; }
 .exec-card p.exp { color: #999; font-size: 14px; margin-top: 12px; }
 
-/* Progress */
+/* Progresso */
 .progress-line { display: flex; align-items: center; gap: 16px; margin-top: 12px; font-size: 14px; }
 .progress-line .plabel { width: 140px; color: #AAA; }
 .pbar { flex: 1; height: 8px; background: var(--surface-3); border-radius: 999px; overflow: hidden; }
-.pfill { height: 100%; background: linear-gradient(90deg, var(--azul), var(--verde)); border-radius: 999px; }
+.pfill { height: 100%; background: linear-gradient(90deg, #0D30A4, var(--verde)); border-radius: 999px; }
 .pval { font-family: var(--font-mono); width: 48px; text-align: right; color: #FFF; }
 
-/* Roadmap */
+/* Roadmap e Checkbox */
 .faixa { margin-bottom: 24px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface-1); }
-.faixa-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: rgba(255,255,255,0.03); font-weight: 600; color: #FFF; font-size: 15px; border-bottom: 1px solid var(--border); }
-.faixa-head small { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: #888; font-weight: 400; letter-spacing: 0.5px; }
+.faixa-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: rgba(255,255,255,0.02); font-weight: 600; color: #FFF; font-size: 15px; border-bottom: 1px solid var(--border); }
+.faixa-head small { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--cinza); font-weight: 400; letter-spacing: 0.5px; }
 .rmap-item { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 14px; }
 .rmap-item:first-of-type { border-top: none; }
 .rmap-item .titulo { flex: 1; font-weight: 500; color: #EEE; }
-.origem { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #999; background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; white-space: nowrap; }
 
-/* Ações e Cards */
+.checkbox-v2 {
+  width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0;
+  cursor: pointer; position: relative; transition: all 0.2s;
+}
+.checkbox-v2:hover { border-color: var(--verde); background: rgba(71, 201, 126, 0.1); }
+
+.origem { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--cinza); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; white-space: nowrap; }
+
+/* Cards de Ação */
 .acao { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
 .acao h4 { font-size: 17px; margin-bottom: 8px; color: #FFF; }
 .acao .desc { color: #AAA; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
 .acao-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 14px; }
 .acao-meta > div { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
-.acao-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #888; display: block; margin-bottom: 6px; }
+.acao-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 6px; }
 .acao-meta .resultado { grid-column: 1 / -1; }
 
-.interp { border-left: 3px solid var(--azul); background: var(--surface-2); border-radius: 0 12px 12px 0; padding: 16px 20px; font-size: 14px; color: #BBB; margin: 24px 0; line-height: 1.6; }
+.interp { border-left: 3px solid #0D30A4; background: var(--surface-2); border-radius: 0 12px 12px 0; padding: 16px 20px; font-size: 14px; color: #BBB; margin: 24px 0; line-height: 1.6; }
 .ind-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 24px 0; }
 .ind-item { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
-.ind-item label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #888; display: block; margin-bottom: 8px; }
+.ind-item label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 8px; }
 .ind-item .valor { font-size: 24px; font-weight: 700; font-family: var(--font-display); }
 .ind-positive { color: var(--verde); }
 .ind-negative { color: #EF4444; }
@@ -109,9 +139,9 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--txt-cl
 
 .fim { border-top: 1px solid var(--border); margin-top: 60px; padding: 60px 0 80px; text-align: center; }
 .fim p { max-width: 600px; margin: 0 auto 16px; color: #999; font-size: 15px; }
-footer { padding: 40px 0; text-align: center; color: #666; font-size: 12px; font-family: var(--font-mono); border-top: 1px solid var(--border); }
+footer { padding: 40px 0; text-align: center; color: #666; font-size: 12px; font-family: var(--font-mono); border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; gap: 8px; }
 
-/* Floating Action Bar */
+/* Barra de Ferramentas */
 .fab-container { position: fixed; top: 24px; right: 24px; display: flex; gap: 12px; z-index: 100; }
 .fab-btn { padding: 10px 18px; background: #FFF; color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: 0.2s; }
 .fab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
@@ -138,7 +168,7 @@ function renderToolbar(): string {
   <div class="no-print fab-container">
     <button onclick="window.print()" class="fab-btn">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-      Salvar PDF
+      Salvar PDF / Imprimir
     </button>
   </div>`;
 }
@@ -148,6 +178,14 @@ function renderCover(data: ConsultingData, project: Project): string {
   const fat = data.financeiro.faturamentoAtual || data.financeiro.faturamentoMensal || 0;
   return `
   <div class="cover">
+    <div class="berry-header">
+      <div class="berry-dots">
+        <span class="dot-1"></span>
+        <span class="dot-2"></span>
+        <span class="dot-3"></span>
+      </div>
+      <span class="berry-text">Berry</span>
+    </div>
     <div class="cover-badge">Documento Estratégico Confidencial</div>
     <h1>Plano de Estruturação<br>em Gestão</h1>
     <p class="sub">Guia estratégico e roadmap executivo para os próximos 12 meses</p>
@@ -171,22 +209,22 @@ function renderResumo(m: any, blocks: BlockStatus[]): string {
     : `<div class="combo"><span class="n">-</span><span>Nenhuma oportunidade mapeada.</span></div>`;
     
   return `
-  <section class="section">
+  <section class="section" id="resumo">
     <div class="wrap">
       <div class="kicker">Resumo Executivo</div>
-      <h2>O cenário atual em 2 minutos</h2>
-      <p class="lead">Síntese do diagnóstico para a tomada de decisão rápida.</p>
+      <h2>O cenário estratégico atual</h2>
+      <p class="lead">Síntese do diagnóstico para a tomada de decisão rápida pela diretoria.</p>
       <div class="exec-grid">
         <div class="exec-card">
           <h3>Nota Geral · Berry Score</h3>
-          <div class="score-big">${m.berryScore}</div>
+          <div class="score-row"><span class="score-big">${m.berryScore}</span><span class="score-max">/100</span></div>
           <div class="score-bar"><div class="score-fill" style="width:${m.berryScore}%"></div></div>
           <p class="exp">${esc(m.berryScoreInterpretation)}</p>
         </div>
         <div class="exec-card">
           <h3>Maturidade Média</h3>
-          <div class="score-big">${Math.round(m.avgMaturity*10)/10}</div>
-          <p class="exp" style="color:#FFF;font-weight:500;margin-bottom:4px;">${esc(m.maturityLabel)}</p>
+          <div class="score-row"><span class="score-big">${Math.round(m.avgMaturity*10)/10}</span><span class="score-max">/5</span></div>
+          <p class="exp" style="color:#FFF;font-weight:500;margin-bottom:4px;">Estágio: ${esc(m.maturityLabel)}</p>
           <p class="exp" style="margin-top:0">${esc(m.maturityBreakdown)}</p>
         </div>
         <div class="exec-card">
@@ -204,7 +242,7 @@ function renderResumo(m: any, blocks: BlockStatus[]): string {
         </div>
         <div class="exec-card">
           <h3>Objetivo · Próximos 12 meses</h3>
-          <p style="font-weight:500;font-size:16px;color:#FFF;line-height:1.5">${esc(m.objective12Months) || "Estruturar as bases da gestão para permitir crescimento sustentável."}</p>
+          <p style="font-weight:500;font-size:15px;color:#FFF;line-height:1.5">${esc(m.objective12Months) || "Estruturar as bases da gestão para permitir crescimento estável."}</p>
         </div>
         <div class="exec-card full">
           <h3>Avanço do Projeto</h3>
@@ -219,52 +257,49 @@ function renderResumo(m: any, blocks: BlockStatus[]): string {
 function renderRoadmap(data: ConsultingData): string {
   const d = data.diagnostico; const swot = data.swot;
   let h = `
-  <section class="section">
+  <section class="section" id="roadmap">
     <div class="wrap">
       <div class="kicker">Plano de Voo</div>
       <h2>Roadmap de Execução</h2>
-      <p class="lead">Iniciativas estratégicas priorizadas por urgência. O foco dos próximos 30 dias é estancar sangramentos e garantir previsibilidade.</p>`;
+      <p class="lead">Iniciativas táticas com checkboxes para acompanhamento manual de progresso.</p>`;
       
   if ((d.financas.level||0) <= 3) {
     h += `
       <div class="faixa">
         <div class="faixa-head" style="border-left:4px solid #EF4444">CRÍTICA — até 30 dias<small>visibilidade financeira e caixa</small></div>
-        <div class="rmap-item"><span class="titulo">Implantar DRE gerencial mensal para apuração real de lucro</span><span class="origem">FINANÇAS</span></div>
-        <div class="rmap-item"><span class="titulo">Estruturar fluxo de caixa semanal de 8 semanas</span><span class="origem">FINANÇAS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implantar DRE gerencial mensal para apuração real de lucro</span><span class="origem">FINANÇAS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Estruturar fluxo de caixa semanal de 8 semanas</span><span class="origem">FINANÇAS</span></div>
       </div>`;
   }
   if ((d.mercado.level||0) <= 3 || (d.processos.level||0) <= 2) {
     h += `
       <div class="faixa">
         <div class="faixa-head" style="border-left:4px solid #F97316">ALTA — até 3 meses<small>vendas e operações</small></div>
-        <div class="rmap-item"><span class="titulo">Mapear e documentar os 3 processos mais críticos</span><span class="origem">PROCESSOS</span></div>
-        <div class="rmap-item"><span class="titulo">Revisar precificação com base em valor percebido</span><span class="origem">MERCADO</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Mapear e documentar os 3 processos operacionais críticos</span><span class="origem">PROCESSOS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Revisar precificação com base em valor percebido</span><span class="origem">MERCADO</span></div>
       </div>`;
   }
   h += `
       <div class="faixa">
         <div class="faixa-head" style="border-left:4px solid #EAB308">MÉDIA — até 6 meses<small>gestão e pessoas</small></div>
-        <div class="rmap-item"><span class="titulo">Implementar rotina semanal de acompanhamento de KPIs</span><span class="origem">GESTÃO</span></div>
-        <div class="rmap-item"><span class="titulo">Definição formal de organograma e metas por cargo</span><span class="origem">PESSOAS</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Implementar rotina semanal de acompanhamento de KPIs</span><span class="origem">GESTÃO</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">Definição formal de organograma e metas por cargo</span><span class="origem">PESSOAS</span></div>
       </div>`;
       
   if (swot?.horizontes?.medio || swot?.horizontes?.longo) {
     h += `
       <div class="faixa">
         <div class="faixa-head" style="border-left:4px solid #3B82F6">ESTRATÉGICA — até 12 meses<small>expansão estruturada</small></div>
-        <div class="rmap-item"><span class="titulo">${esc(swot.horizontes.medio || swot.horizontes.longo)}</span><span class="origem">ESTRATÉGIA</span></div>
+        <div class="rmap-item"><div class="checkbox-v2"></div><span class="titulo">${esc(swot.horizontes.medio || swot.horizontes.longo)}</span><span class="origem">ESTRATÉGIA</span></div>
       </div>`;
   }
   h += `</div></section>`; return h;
 }
 
 function renderCapitulos(data: ConsultingData): string {
-  // Finanças
   const f = data.financeiro; 
   const fat = f.faturamentoAtual || f.faturamentoMensal || 0;
   const desp = (f.despesasFixas||0)+(f.despesasVariaveis||0); const lucro=fat-desp;
-  
-  // Mercado
   const motores = data.motoresCrescimento.motoresPrincipais.slice(0,2).join(" e ") || "canais orgânicos";
   const publico = data.icp.descricao || "não definido claramente";
 
@@ -294,7 +329,7 @@ function renderCapitulos(data: ConsultingData): string {
         <h4>Implantar DRE Gerencial</h4>
         <p class="desc">Adoção imediata de um Demonstrativo de Resultados do Exercício para separar custos fixos, variáveis e apurar a margem de contribuição real de cada venda.</p>
         <div class="acao-meta">
-          <div><label>Urgência</label><span style="color:var(--u-critica);font-weight:600">Crítica</span></div>
+          <div><label>Urgência</label><span style="color:#EF4444;font-weight:600">Crítica</span></div>
           <div><label>Prazo</label>30 dias</div>
           <div class="resultado"><label>Resultado esperado</label>Fim das decisões financeiras "no escuro" e previsibilidade para investimentos.</div>
         </div>
@@ -318,7 +353,7 @@ function renderCapitulos(data: ConsultingData): string {
         <h4>Revisão Estratégica de Precificação</h4>
         <p class="desc">Auditar a margem de todos os produtos/serviços ativos e ancorar preços no "Valor Percebido" em vez de apenas "Custo + Markup".</p>
         <div class="acao-meta">
-          <div><label>Urgência</label><span style="color:var(--u-alta);font-weight:600">Alta</span></div>
+          <div><label>Urgência</label><span style="color:#F97316;font-weight:600">Alta</span></div>
           <div><label>Prazo</label>60 dias</div>
           <div class="resultado"><label>Resultado esperado</label>Aumento imediato de margem líquida sem necessidade de aumentar volume de vendas.</div>
         </div>
@@ -342,7 +377,7 @@ function renderCapitulos(data: ConsultingData): string {
         <h4>Mapeamento de Processos Core</h4>
         <p class="desc">Documentar o passo a passo das 3 atividades que mais consomem tempo ou geram retrabalho na operação diária.</p>
         <div class="acao-meta">
-          <div><label>Urgência</label><span style="color:var(--u-alta);font-weight:600">Alta</span></div>
+          <div><label>Urgência</label><span style="color:#F97316;font-weight:600">Alta</span></div>
           <div><label>Prazo</label>90 dias</div>
           <div class="resultado"><label>Resultado esperado</label>Descentralização da operação, redução de falhas e liberação de tempo do proprietário para estratégia.</div>
         </div>
@@ -363,7 +398,15 @@ function renderFinal(): string {
       <p>Utilize o Roadmap da página 2 como seu guia principal para os próximos meses.</p>
     </div>
   </section>
-  <footer>Documento Confidencial · Berry Gestão Estratégica · ${fmtDate()}</footer>`;
+  <footer>
+    <div class="berry-dots">
+      <span class="dot-1" style="width:10px;height:10px"></span>
+      <span class="dot-2" style="width:10px;height:10px"></span>
+      <span class="dot-3" style="width:10px;height:10px;border-width:1.5px"></span>
+    </div>
+    <span class="berry-text" style="font-size:14px;color:#888">Berry</span>
+    <span style="color:#555">· Plano de Estruturação · Gerado em ${fmtDate()}</span>
+  </footer>`;
 }
 
 export function render(html: string): string {
