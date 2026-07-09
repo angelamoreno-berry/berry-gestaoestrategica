@@ -1,36 +1,46 @@
 import { ExecutiveSummaryData } from "../types";
 
-export default function ExecutiveSummary(
-  data: ExecutiveSummaryData
-): string {
+export default function ExecutiveSummary(data: ExecutiveSummaryData): string {
   return `
-    <section id="executive-summary">
+    <section class="executive-summary">
 
-      <h2>Resumo Executivo</h2>
+      <h1>Resumo Executivo</h1>
 
       <div class="summary-grid">
 
-        <div class="card">
-          <span>Berry Score</span>
-          <strong>${data.berryScore}</strong>
+        <div class="metric-card">
+          <h3>Berry Score</h3>
+          <p>${data.berryScore}</p>
         </div>
 
-        <div class="card">
-          <span>Maturidade</span>
-          <strong>${data.maturity.toFixed(1)}</strong>
+        <div class="metric-card">
+          <h3>Maturidade</h3>
+          <p>${data.maturity.toFixed(1)}</p>
         </div>
 
-        <div class="card">
-          <span>Prioridade Estratégica</span>
-          <strong>${data.strategicPriority}</strong>
+        <div class="metric-card">
+          <h3>Prioridade Estratégica</h3>
+          <p>${data.strategicPriority}</p>
         </div>
 
-        <div class="card">
-          <span>Objetivo 12 meses</span>
-          <strong>${data.objective12Months}</strong>
+        <div class="metric-card">
+          <h3>Objetivo 12 meses</h3>
+          <p>${data.objective12Months}</p>
         </div>
 
       </div>
+
+      <h2>Principais Riscos</h2>
+
+      <ul>
+        ${data.risks.map(risk => `<li>${risk}</li>`).join("")}
+      </ul>
+
+      <h2>Principais Oportunidades</h2>
+
+      <ul>
+        ${data.opportunities.map(item => `<li>${item}</li>`).join("")}
+      </ul>
 
     </section>
   `;
