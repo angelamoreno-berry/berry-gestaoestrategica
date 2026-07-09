@@ -25,7 +25,6 @@ import { SimuladorDecisoesBlock } from './financial-blocks/SimuladorDecisoesBloc
 import { ScoreGeralBlock } from './financial-blocks/ScoreGeralBlock';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
-import { V2ReportButton } from "@/report/V2ReportButton";
 
 const blockComponents: Record<string, React.ComponentType> = {
   diagnostico: DiagnosticoBlock,
@@ -141,5 +140,4 @@ export function MainContent({ readOnly = false }: MainContentProps) {
       </div>
     </main>
   );
-              <V2ReportButton />
 }
