@@ -3,15 +3,14 @@ import { ReportV2Data } from "./types";
 import Cover from "./sections/01Cover";
 import ExecutiveSummary from "./sections/02ExecutiveSummary";
 
-export function generateReportV2(
-  data: ReportV2Data
-): string {
+export function generateReportV2(data: ReportV2Data): string {
   return `
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plano Estratégico</title>
 </head>
 
