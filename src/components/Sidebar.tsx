@@ -6,6 +6,7 @@ import { Check, ArrowLeft, Building2 } from 'lucide-react';
 import { openReportInNewTab } from '@/utils/reportGenerator';
 import { openFinancialReportInNewTab } from '@/utils/financialReportGenerator';
 import { toast } from '@/hooks/use-toast';
+import { V2ReportButton } from "@/report/V2ReportButton";
 
 export function Sidebar() {
   const navigate = useNavigate();
@@ -113,6 +114,7 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-border">
+          <V2ReportButton />
         <button 
           onClick={handleGenerateReport}
           className="w-full gradient-primary text-primary-foreground font-medium py-2.5 px-4 rounded-lg transition-all hover:opacity-90"
