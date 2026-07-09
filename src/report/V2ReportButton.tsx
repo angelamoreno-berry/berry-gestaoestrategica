@@ -18,9 +18,9 @@ export function V2ReportButton() {
   return (
     <button
       onClick={handleOpenV2}
-      className="w-full mb-3 px-4 py-3 bg-[#1e293b] border border-[#334155] text-white rounded-lg hover:bg-[#334155] transition-colors text-sm font-semibold shadow-md flex items-center justify-center gap-2"
+      className="w-full mb-2 bg-[#18181B] text-white border border-[#27272A] hover:bg-[#27272A] transition-all text-sm font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 shadow-sm"
     >
-      <span>&#128196;</span> Versão Executiva V2
+      <span>📊</span> Relatório Executivo V2
     </button>
   );
 }
