@@ -19,7 +19,7 @@ html[data-theme="light"] {
   --btn-fg: #111111; --btn-bg-inv: #111111; --btn-fg-inv: #FFFFFF;
 }
 
-.theme-toggle { position: fixed; top: 18px; right: 18px; z-index: 999; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface-2); color: var(--txt-claro); cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.theme-toggle { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface-2); color: var(--txt-claro); cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 .theme-toggle:hover { background: var(--surface-3); }
 
 @media print {
@@ -186,6 +186,7 @@ function fmtDate(): string {
 function renderToolbar(): string {
   return `
   <div class="no-print fab-container">
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
     <button onclick="window.print()" class="fab-btn">
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 002-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
       Salvar PDF / Imprimir
@@ -574,7 +575,7 @@ export function render(html: string): string {
 
 export function generateReportV2(data: ConsultingData, project: Project, blocks: BlockStatus[]): string {
   const m = getExecutiveMetrics(data);
-  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Plano Executivo · ${esc(project.nomeEmpresa||data.clienteNome)}</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>${CSS_V2}</style></head><body><button class="theme-toggle no-print" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>${renderToolbar()}<div class="wrap">${renderCover(data,project)}${renderResumo(m,data,blocks)}${renderPlaybook(data)}${renderTransformacao(data)}${renderDashboard(data)}${renderFinal()}</div><script>
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Plano Executivo · ${esc(project.nomeEmpresa||data.clienteNome)}</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>${CSS_V2}</style></head><body>${renderToolbar()}<div class="wrap">${renderCover(data,project)}${renderResumo(m,data,blocks)}${renderPlaybook(data)}${renderTransformacao(data)}${renderDashboard(data)}${renderFinal()}</div><script>
 document.title = "Plano Executivo - ${esc(project.nomeEmpresa||data.clienteNome)}";
 (function(){
   var KEY = 'berry-report-theme';
