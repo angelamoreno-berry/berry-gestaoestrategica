@@ -55,7 +55,7 @@ export function GoldenCircleBlock() {
   };
 
   const showSuggestion = (field: string, value: string) => {
-    return !value.trim() && !dismissedSuggestions[field];
+    return !String(value ?? '').trim() && !dismissedSuggestions[field];
   };
 
   return (
