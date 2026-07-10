@@ -412,12 +412,12 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
           .single();
         if (error) {
           console.error('Error updating creator:', error);
-          toast.error('Erro ao alterar o criador do projeto');
-        } else {
-          updatedProject.createdById = (updatedRow as any)?.created_by ?? null;
-          updatedProject.createdByName = (updatedRow as any)?.creator?.name ?? null;
-          updatedProject.createdByEmail = (updatedRow as any)?.creator?.email ?? null;
+          toast.error('Erro ao alterar o criador do projeto. Verifique se a migração created_by foi aplicada no banco.');
+          return;
         }
+        updatedProject.createdById = (updatedRow as any)?.created_by ?? null;
+        updatedProject.createdByName = (updatedRow as any)?.creator?.name ?? null;
+        updatedProject.createdByEmail = (updatedRow as any)?.creator?.email ?? null;
       }
 
       setProjectsData(prev => prev.map(pd => pd.project.id === id
