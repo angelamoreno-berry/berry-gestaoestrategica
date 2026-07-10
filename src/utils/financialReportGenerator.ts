@@ -124,7 +124,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
       --gold: #A16207; --gold-light: #FEF9C3;
       --bg: #FFFFFF; --fg: #18181B; --muted: #71717A; --border: #E4E4E7;
       --green: #16a34a; --red: #dc2626; --orange: #d97706; --blue: #2563eb;
-      --page-bg: #f8f8f8; --card-bg: #FFFFFF; --surface: var(--surface);
+      --page-bg: #f8f8f8; --card-bg: #FFFFFF; --surface: #f4f4f5; --inverse-bg: #18181B;
       --tint-green: #f0fdf4; --tint-green-border: #bbf7d0; --tint-green-strong: #dcfce7; --green-dark: #166534;
       --tint-amber: #fffbeb; --tint-amber-border: #fde68a; --tint-amber-strong: #fef3c7;
       --tint-red: #fef2f2; --tint-red-border: #fecaca; --tint-red-strong: #fee2e2;
@@ -135,7 +135,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
       --gold: #EAB308; --gold-light: rgba(234,179,8,0.15);
       --bg: #141414; --fg: #F0F0F0; --muted: #9CA3AF; --border: #2A2A2A;
       --green: #4ADE80; --red: #F87171; --orange: #FBBF24; --blue: #60A5FA;
-      --page-bg: #080808; --card-bg: #141414; --surface: #1E1E1E;
+      --page-bg: #080808; --card-bg: #141414; --surface: #1E1E1E; --inverse-bg: #1E1E1E;
       --tint-green: rgba(74,222,128,0.08); --tint-green-border: rgba(74,222,128,0.3); --tint-green-strong: rgba(74,222,128,0.15); --green-dark: #4ADE80;
       --tint-amber: rgba(251,191,36,0.08); --tint-amber-border: rgba(251,191,36,0.3); --tint-amber-strong: rgba(251,191,36,0.15);
       --tint-red: rgba(248,113,113,0.08); --tint-red-border: rgba(248,113,113,0.3); --tint-red-strong: rgba(248,113,113,0.15);
@@ -161,7 +161,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     /* Toolbar */
     .edit-toolbar { position: fixed; top: 20px; right: 20px; background: var(--card-bg); border-radius: 16px; padding: 12px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); display: flex; gap: 8px; align-items: center; z-index: 1000; border: 1px solid var(--border); }
     .edit-toolbar button { padding: 10px 16px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .edit-toolbar .primary { background: var(--fg); color: white; }
+    .edit-toolbar .primary { background: var(--inverse-bg); color: white; }
     .edit-toolbar .secondary { background: var(--card-bg); color: var(--fg); border: 1px solid var(--border); }
     .edit-toolbar span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; }
 
@@ -206,7 +206,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     /* Table */
     .table-wrap { border-radius: 10px; border: 1px solid var(--border); overflow-x: auto; margin-bottom: 32px; }
     table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    th { background: var(--fg); color: white; padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+    th { background: var(--inverse-bg); color: white; padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
     td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
     tr:last-child td { border-bottom: none; }
     tr:nth-child(even) { background: var(--surface); }
@@ -230,7 +230,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
 
     /* Checklist */
     .checklist-cat { margin-bottom: 32px; }
-    .checklist-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--fg); color: white; border-radius: 10px 10px 0 0; font-weight: 600; font-size: 14px; }
+    .checklist-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; background: var(--inverse-bg); color: white; border-radius: 10px 10px 0 0; font-weight: 600; font-size: 14px; }
     .checklist-items { border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; }
     .checklist-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
     .checklist-item:last-child { border-bottom: none; }
@@ -240,7 +240,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     .checklist-text { font-size: 14px; font-weight: 500; }
 
     /* Footer */
-    .footer { text-align: center; padding: 64px; background: var(--fg); color: white; }
+    .footer { text-align: center; padding: 64px; background: var(--inverse-bg); color: white; }
     .footer .f-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
     .footer .f-text { opacity: 0.7; font-size: 14px; margin-bottom: 16px; }
     .footer .f-date { font-size: 12px; opacity: 0.5; }
@@ -256,7 +256,6 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
 <body>
   <div class="edit-toolbar">
     <button class="secondary" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
-    <span>📝 Modo Edição</span>
     <button class="primary" onclick="window.print()">🖨️ Imprimir</button>
     <button class="secondary" onclick="saveHTML()">💾 Salvar HTML</button>
   </div>
