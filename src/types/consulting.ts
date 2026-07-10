@@ -12,6 +12,9 @@ export interface Project {
   dataCriacao: string;
   projectType: ProjectType;
   simulationType?: SimulationType;
+  createdById?: string | null;
+  createdByName?: string | null;
+  createdByEmail?: string | null;
 }
 
 export interface MaturityLevel {

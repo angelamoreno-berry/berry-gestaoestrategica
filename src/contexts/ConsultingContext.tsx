@@ -165,6 +165,7 @@ interface ConsultingContextType {
   getTotalProgress: () => number;
   resetAll: () => void;
   createProject: (projectData: Omit<Project, 'id' | 'dataCriacao'>) => void;
+  updateProjectInfo: (id: string, info: Partial<Pick<Project, 'nomeEmpresa' | 'responsavel' | 'segmento' | 'faturamentoMedio' | 'quantidadeColaboradores' | 'emailResponsavel'>>, newCreatorId?: string | null) => Promise<void>;
   createDemoProject: (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number; simulationType?: SimulationType }) => void;
   selectProject: (id: string) => void;
   deleteProject: (id: string) => void;
@@ -174,7 +175,7 @@ interface ConsultingContextType {
 const ConsultingContext = createContext<ConsultingContextType | undefined>(undefined);
 
 export function ConsultingProvider({ children }: { children: React.ReactNode }) {
-  const { canEdit } = useAuth();
+  const { canEdit, profile } = useAuth();
   const [projectsData, setProjectsData] = useState<ProjectData[]>([]);
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [currentBlock, setCurrentBlock] = useState('goldenCircle');
@@ -194,10 +195,23 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
   const loadProjects = async () => {
     try {
       setIsLoading(true);
-      const { data: dbProjects, error } = await supabase
+      // Tenta carregar com o join do criador (profiles). Se falhar (ex.: migração
+      // created_by ainda não aplicada), refaz sem o join — os projetos nunca
+      // devem sumir da tela por causa desse campo.
+      let { data: dbProjects, error } = await supabase
         .from('consulting_projects')
-        .select('*')
+        .select('*, creator:profiles!consulting_projects_created_by_fkey(id, name, email)')
         .order('created_at', { ascending: false });
+
+      if (error) {
+        console.warn('Join com profiles indisponível, carregando sem "Criado por":', error.message);
+        const fallback = await supabase
+          .from('consulting_projects')
+          .select('*')
+          .order('created_at', { ascending: false });
+        dbProjects = fallback.data as typeof dbProjects;
+        error = fallback.error;
+      }
 
       if (error) {
         console.error('Error loading projects:', error);
@@ -234,6 +248,9 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
                 dataCriacao: dbProject.created_at,
                 projectType,
                 simulationType,
+                createdById: (dbProject as any).created_by ?? null,
+                createdByName: (dbProject as any).creator?.name ?? null,
+                createdByEmail: (dbProject as any).creator?.email ?? null,
               },
               data: projectData as ConsultingData,
               blocks: (dbProject.blocks as unknown as BlockStatus[]) || (isFinancial ? financialBlocks.map(b => ({ ...b })) : initialBlocks.map(b => ({ ...b }))),
@@ -351,7 +368,10 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     const newProject: Project = {
       ...projectData,
       id: crypto.randomUUID(),
-      dataCriacao: new Date().toISOString()
+      dataCriacao: new Date().toISOString(),
+      createdById: profile?.id ?? null,
+      createdByName: profile?.name ?? null,
+      createdByEmail: profile?.email ?? null,
     };
     const newProjectData: ProjectData = {
       project: newProject,
@@ -361,10 +381,55 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
     
     setProjectsData(prev => [...prev, newProjectData]);
     
-    // Save to database immediately
+    // Save to database immediately (created_by é preenchido pelo banco via DEFAULT auth.uid())
     await saveProject(newProjectData);
     toast.success('Projeto criado com sucesso!');
-  }, []);
+  }, [profile]);
+
+  const updateProjectInfo = useCallback(async (
+    id: string,
+    info: Partial<Pick<Project, 'nomeEmpresa' | 'responsavel' | 'segmento' | 'faturamentoMedio' | 'quantidadeColaboradores' | 'emailResponsavel'>>,
+    newCreatorId?: string | null
+  ) => {
+    const target = projectsData.find(pd => pd.project.id === id);
+    if (!target) return;
+
+    const updatedProject: Project = { ...target.project, ...info };
+    const updatedData = { ...target.data, clienteNome: updatedProject.nomeEmpresa };
+    const updated: ProjectData = { ...target, project: updatedProject, data: updatedData };
+
+    try {
+      // Atualiza dados principais (name + JSONB via saveProject)
+      await saveProject(updated);
+
+      // Alteração de criador: apenas admins (guard também aplicado no banco)
+      if (newCreatorId !== undefined && newCreatorId !== target.project.createdById) {
+        const { data: updatedRow, error } = await supabase
+          .from('consulting_projects')
+          .update({ created_by: newCreatorId })
+          .eq('id', id)
+          .select('created_by, creator:profiles!consulting_projects_created_by_fkey(id, name, email)')
+          .single();
+        if (error) {
+          console.error('Error updating creator:', error);
+          toast.error('Erro ao alterar o criador do projeto');
+        } else {
+          updatedProject.createdById = (updatedRow as any)?.created_by ?? null;
+          updatedProject.createdByName = (updatedRow as any)?.creator?.name ?? null;
+          updatedProject.createdByEmail = (updatedRow as any)?.creator?.email ?? null;
+        }
+      }
+
+      setProjectsData(prev => prev.map(pd => pd.project.id === id
+        ? { ...pd, project: { ...updatedProject }, data: updatedData }
+        : pd
+      ));
+      toast.success('Projeto atualizado com sucesso!');
+    } catch (error) {
+      console.error('Error updating project:', error);
+      toast.error('Erro ao atualizar projeto');
+    }
+  }, [projectsData]);
 
   const createDemoProject = useCallback(async (params: { segmento: string; faturamentoMedio: number; quantidadeColaboradores: number; simulationType?: SimulationType }) => {
     const isFinancial = params.simulationType === 'financeira';
@@ -487,6 +552,7 @@ export function ConsultingProvider({ children }: { children: React.ReactNode }) 
       getTotalProgress,
       resetAll,
       createProject,
+      updateProjectInfo,
       createDemoProject,
       selectProject,
       deleteProject,

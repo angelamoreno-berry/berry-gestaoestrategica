@@ -15,12 +15,15 @@ export function V2ReportButton() {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     
-    // Abre a nova aba de forma nativa e confiavel
-    const win = window.open(url, '_blank');
-    if (!win) {
-        // Fallback caso ainda seja bloqueado (abre na mesma aba em ultimo caso)
-        window.location.href = url;
-    }
+    // Abre exclusivamente em nova aba via link programático.
+    // Nunca navega a janela atual — o app deve permanecer aberto.
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
