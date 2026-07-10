@@ -39,10 +39,10 @@ export function ICPBlock() {
 
   useEffect(() => {
     const hasCaracteristicas = String(localData.caracteristicasDemograficas ?? '').trim().length > 0 ? 1 : 0;
-    const hasDores = localData.dores.length > 0 ? 1 : 0;
-    const hasDesejos = localData.desejos.length > 0 ? 1 : 0;
-    const hasComportamento = localData.comportamento.trim().length > 0 ? 1 : 0;
-    const hasOnde = localData.ondeEncontrar.trim().length > 0 ? 1 : 0;
+    const hasDores = Array.isArray(localData.dores) && localData.dores.length > 0 ? 1 : 0;
+    const hasDesejos = Array.isArray(localData.desejos) && localData.desejos.length > 0 ? 1 : 0;
+    const hasComportamento = String(localData.comportamento ?? '').trim().length > 0 ? 1 : 0;
+    const hasOnde = String(localData.ondeEncontrar ?? '').trim().length > 0 ? 1 : 0;
     const progress = Math.round(((hasCaracteristicas + hasDores + hasDesejos + hasComportamento + hasOnde) / 5) * 100);
     updateBlockProgress('icp', progress);
     
@@ -88,7 +88,7 @@ export function ICPBlock() {
   };
 
   const showSuggestion = (field: string, value: string | string[]) => {
-    const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
+    const isEmpty = Array.isArray(value) ? value.length === 0 : !String(value ?? '').trim();
     return isEmpty && !dismissedSuggestions[field];
   };
 
