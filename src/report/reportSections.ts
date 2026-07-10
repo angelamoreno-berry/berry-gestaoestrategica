@@ -244,7 +244,7 @@ function renderResumo(m: any, data: ConsultingData, blocks: BlockStatus[]): stri
         </div>
         <div class="exec-card">
           <h3>3 Maiores Riscos <span style="text-transform:none;opacity:0.6">(Fraqueza × Ameaça)</span></h3>
-          ${riscos}
+          ${risks}
         </div>
         <div class="exec-card">
           <h3>3 Maiores Oportunidades <span style="text-transform:none;opacity:0.6">(Força × Oportunidade)</span></h3>
