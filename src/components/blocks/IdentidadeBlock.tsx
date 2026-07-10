@@ -28,8 +28,8 @@ export function IdentidadeBlock() {
 
   useEffect(() => {
     const fields = [localData.visao, localData.missao, localData.posicionamento];
-    const filledFields = fields.filter(f => f.trim().length > 0).length;
-    const hasValores = localData.valores.length > 0 ? 1 : 0;
+    const filledFields = fields.filter(f => String(f ?? '').trim().length > 0).length;
+    const hasValores = Array.isArray(localData.valores) && localData.valores.length > 0 ? 1 : 0;
     const progress = Math.round(((filledFields + hasValores) / 4) * 100);
     updateBlockProgress('identidade', progress);
     
