@@ -66,7 +66,7 @@ export function IdentidadeBlock() {
   };
 
   const showSuggestion = (field: string, value: string | string[]) => {
-    const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
+    const isEmpty = Array.isArray(value) ? value.length === 0 : !String(value ?? '').trim();
     return isEmpty && !dismissedSuggestions[field];
   };
 

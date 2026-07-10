@@ -38,7 +38,7 @@ export function ICPBlock() {
   const suggestions = aiSuggestions as unknown as ICPSuggestions | null;
 
   useEffect(() => {
-    const hasCaracteristicas = localData.caracteristicasDemograficas.trim().length > 0 ? 1 : 0;
+    const hasCaracteristicas = String(localData.caracteristicasDemograficas ?? '').trim().length > 0 ? 1 : 0;
     const hasDores = localData.dores.length > 0 ? 1 : 0;
     const hasDesejos = localData.desejos.length > 0 ? 1 : 0;
     const hasComportamento = localData.comportamento.trim().length > 0 ? 1 : 0;
