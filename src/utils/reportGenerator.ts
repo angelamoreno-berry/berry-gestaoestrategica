@@ -103,7 +103,13 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
   executiveMetrics.objective12Months ||
   "A definir com base na estratégia de longo prazo da empresa.";
 
-  let html = `
+
+  // ============================================================
+  // Seções do documento — renderizadores individuais (etapa 3).
+  // Cada função devolve o HTML de uma seção; a ordem de concatenação
+  // define a ordem do documento.
+  // ============================================================
+  const secDocumentHead = () => `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -116,7 +122,8 @@ ${reportStyles(overallProgress)}
   </style>
 </head>
 <body>
-  <!-- ===== EDIT TOOLBAR ===== -->
+  `;
+  const secEditToolbar = () => `<!-- ===== EDIT TOOLBAR ===== -->
   <div class="edit-toolbar">
     <span class="edit-toolbar-label">📝 Modo Edição</span>
     <button class="edit-toolbar-btn edit-toolbar-btn-primary" onclick="window.print()">
@@ -152,7 +159,8 @@ ${reportStyles(overallProgress)}
   </script>
   
   <div class="container editable-content" contenteditable="true">
-    <!-- ===== COVER PAGE ===== -->
+    `;
+  const secCoverPage = () => `<!-- ===== COVER PAGE ===== -->
     <div class="cover-page">
       <div class="cover-badge">Documento Estratégico Confidencial</div>
       <h1 class="cover-title">Plano de Estruturação<br>em Gestão</h1>
@@ -192,7 +200,8 @@ ${reportStyles(overallProgress)}
       </div>
     </div>
     
-    <!-- ===== TABLE OF CONTENTS ===== -->
+    `;
+  const secTableOfContents = () => `<!-- ===== TABLE OF CONTENTS ===== -->
     <div class="toc">
       <div class="toc-header">
         <div class="toc-badge">Navegação</div>
@@ -219,9 +228,11 @@ ${reportStyles(overallProgress)}
       </div>
     </div>
     
-    <!-- ===== CONTENT ===== -->
+    `;
+  const secContent = () => `<!-- ===== CONTENT ===== -->
     <div class="content">
-    <!-- ===== RESUMO EXECUTIVO ===== -->
+    `;
+  const secResumoExecutivo = () => `<!-- ===== RESUMO EXECUTIVO ===== -->
     <div class="section">
       <div class="section-header">
         <div class="section-badge">
@@ -283,10 +294,12 @@ ${reportStyles(overallProgress)}
       </div>
     </div>
 
-    <!-- ===== ROADMAP DE IMPLEMENTAÇÃO (placeholder, preenchido no pós-processamento) ===== -->
+    `;
+  const secRoadmapDeImplementacao = () => `<!-- ===== ROADMAP DE IMPLEMENTAÇÃO (placeholder, preenchido no pós-processamento) ===== -->
     <div id="__ROADMAP_PLACEHOLDER__"></div>
 
-      <!-- ===== COMPANY INFO ===== -->
+      `;
+  const secCompanyInfo = () => `<!-- ===== COMPANY INFO ===== -->
       <div class="section">
         <div class="section-header">
           <div class="section-badge">
@@ -378,7 +391,8 @@ ${reportStyles(overallProgress)}
         ` : ''}
       </div>
       
-      <!-- ===== GOLDEN CIRCLE ===== -->
+      `;
+  const secGoldenCircle = () => `<!-- ===== GOLDEN CIRCLE ===== -->
       ${data.goldenCircle.why || data.goldenCircle.how || data.goldenCircle.what ? `
       <div class="section page-break">
         <div class="section-header">
@@ -492,7 +506,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== IDENTIDADE ORGANIZACIONAL ===== -->
+      `;
+  const secIdentidadeOrganizacional = () => `<!-- ===== IDENTIDADE ORGANIZACIONAL ===== -->
       ${data.identidade.visao || data.identidade.missao || data.identidade.valores.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -597,7 +612,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== SWOT ===== -->
+      `;
+  const secSwot = () => `<!-- ===== SWOT ===== -->
       ${data.swot.forcas.length > 0 || data.swot.fraquezas.length > 0 || data.swot.oportunidades.length > 0 || data.swot.ameacas.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -726,7 +742,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== DIAGNÓSTICO ===== -->
+      `;
+  const secDiagnostico = () => `<!-- ===== DIAGNÓSTICO ===== -->
       <div class="section page-break">
         <div class="section-header">
           <div class="section-badge">
@@ -882,7 +899,8 @@ ${reportStyles(overallProgress)}
         </div>
       </div>
       
-      <!-- ===== ICP ===== -->
+      `;
+  const secIcp = () => `<!-- ===== ICP ===== -->
       ${data.icp.descricao || data.icp.segmentos.length > 0 || data.icp.dpisos.length > 0 || data.icp.necessidades.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1002,7 +1020,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== CONCORRENTES ===== -->
+      `;
+  const secConcorrentes = () => `<!-- ===== CONCORRENTES ===== -->
       ${data.concorrentes.principais.length > 0 || data.concorrentes.diferenciais.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1134,7 +1153,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== PRECIFICAÇÃO ===== -->
+      `;
+  const secPrecificacao = () => `<!-- ===== PRECIFICAÇÃO ===== -->
       ${(data.precificacao.produtos && data.precificacao.produtos.length > 0) ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1251,7 +1271,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== ESTRATÉGIAS DE VALOR ===== -->
+      `;
+  const secEstrategiasDeValor = () => `<!-- ===== ESTRATÉGIAS DE VALOR ===== -->
       ${data.estrategiasValor.novasOfertas.length > 0 || data.estrategiasValor.pacotes.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1345,7 +1366,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== MOTORES DE CRESCIMENTO ===== -->
+      `;
+  const secMotoresDeCrescimento = () => `<!-- ===== MOTORES DE CRESCIMENTO ===== -->
       ${data.motoresCrescimento.motoresPrincipais.length > 0 || data.motoresCrescimento.canais.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1491,7 +1513,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== ORGANOGRAMA ===== -->
+      `;
+  const secOrganograma = () => `<!-- ===== ORGANOGRAMA ===== -->
       ${data.organograma.cargos.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1559,7 +1582,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== PROCESSOS ===== -->
+      `;
+  const secProcessos = () => `<!-- ===== PROCESSOS ===== -->
       ${data.processos.lista.length > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1603,7 +1627,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== FINANCEIRO ===== -->
+      `;
+  const secFinanceiro = () => `<!-- ===== FINANCEIRO ===== -->
       ${data.financeiro.faturamentoMensal > 0 || data.financeiro.faturamentoAtual > 0 || data.financeiro.margemLucro > 0 ? `
       <div class="section page-break">
         <div class="section-header">
@@ -1932,7 +1957,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== SWOT PESSOAL ===== -->
+      `;
+  const secSwotPessoal = () => `<!-- ===== SWOT PESSOAL ===== -->
       ${data.swotPessoal && (data.swotPessoal.forcas.length > 0 || data.swotPessoal.fraquezas.length > 0) ? `
       <div class="section page-break">
         <div class="section-header">
@@ -2026,7 +2052,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== AGENDA CEO ===== -->
+      `;
+  const secAgendaCeo = () => `<!-- ===== AGENDA CEO ===== -->
       ${data.agendaCEO && (data.agendaCEO.prioridades.length > 0 || (data.agendaCEO.rotinas && data.agendaCEO.rotinas.length > 0)) ? `
       <div class="section page-break">
         <div class="section-header">
@@ -2163,7 +2190,8 @@ ${reportStyles(overallProgress)}
       </div>
       ` : ''}
       
-      <!-- ===== PRÓXIMOS PASSOS ===== -->
+      `;
+  const secProximosPassos = () => `<!-- ===== PRÓXIMOS PASSOS ===== -->
       <div class="section page-break">
         <div class="section-header">
           <div class="section-badge">
@@ -2220,7 +2248,8 @@ ${reportStyles(overallProgress)}
         </div>
       </div>
       
-      <!-- ===== MASTER CHECKLIST ===== -->
+      `;
+  const secMasterChecklist = () => `<!-- ===== MASTER CHECKLIST ===== -->
       <div class="section page-break">
         <div class="section-header">
           <div class="section-badge">
@@ -2571,7 +2600,8 @@ ${reportStyles(overallProgress)}
       
     </div>
     
-    <!-- ===== FOOTER ===== -->
+    `;
+  const secFooter = () => `<!-- ===== FOOTER ===== -->
     <div class="footer">
       <div class="footer-logo">📊</div>
       <div class="footer-title">Plano de Estruturação em Gestão</div>
@@ -2583,6 +2613,34 @@ ${reportStyles(overallProgress)}
 </body>
 </html>
 `;
+
+  let html = [
+    secDocumentHead(),
+    secEditToolbar(),
+    secCoverPage(),
+    secTableOfContents(),
+    secContent(),
+    secResumoExecutivo(),
+    secRoadmapDeImplementacao(),
+    secCompanyInfo(),
+    secGoldenCircle(),
+    secIdentidadeOrganizacional(),
+    secSwot(),
+    secDiagnostico(),
+    secIcp(),
+    secConcorrentes(),
+    secPrecificacao(),
+    secEstrategiasDeValor(),
+    secMotoresDeCrescimento(),
+    secOrganograma(),
+    secProcessos(),
+    secFinanceiro(),
+    secSwotPessoal(),
+    secAgendaCeo(),
+    secProximosPassos(),
+    secMasterChecklist(),
+    secFooter()
+  ].join('');;
 
   // ============================================================
   // Roadmap de Implementação consolidado — calculado das ações

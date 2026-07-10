@@ -86,9 +86,9 @@ O roadmap consolidado **não é calculado a partir dos dados do projeto**. O flu
 
 ## 6. Sequência de refactor aprovada
 
-1. **Extrair CSS** para módulo próprio — mecânico, validável por diff do HTML gerado;
-2. **Extrair funções de conteúdo + substituir regex do roadmap** por cálculo sobre dados (primeiro núcleo do `buildReportModel`);
-3. **Extrair as 21 seções** em renderizadores individuais consumindo o modelo;
+1. ✅ **Extrair CSS** → `reportStyles.ts` (verificado byte a byte);
+2. ✅ **Funções de conteúdo + roadmap sem regex** → `reportModel.ts` + coletor `renderActionPlan` (output validado idêntico com dados fixos);
+3. ✅ **Seções extraídas** em 25 renderizadores locais `secXxx()` dentro do generateReport (byte a byte idêntico);
 4. **Auditoria** do modelo contra a arquitetura canônica; correção dos bugs de conteúdo;
 5. **Redesign visual** alinhado ao modelo executivo (Playbook), incluindo capa, rodapé e tema claro/escuro.
 
