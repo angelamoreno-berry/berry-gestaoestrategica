@@ -2,436 +2,42 @@ import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting'
 import { getExecutiveMetrics } from "@/report/executiveMetrics";
 import * as ReportSections from "@/report/reportSections";
 import { reportStyles } from './reportStyles';
+import { generateCargoChecklist, generateMaturityInsights, generateActionPlan, generateMotorStrategies, buildRoadmap, URGENCIA_INFO, URGENCIA_ORDEM, Urgencia } from './reportModel';
 
 // Helper function to generate activity checklist suggestions for a position
-const generateCargoChecklist = (cargo: Cargo): string[] => {
-  const titulo = cargo.titulo.toLowerCase();
-  const nivel = cargo.nivel;
-  
-  // Base activities by level
-  const baseByLevel: Record<number, string[]> = {
-    1: [ // Strategic
-      "Definir metas e objetivos trimestrais da área",
-      "Reunião semanal de alinhamento com liderança",
-      "Análise mensal de indicadores estratégicos",
-      "Revisão trimestral de plano estratégico",
-      "Feedback mensal para líderes subordinados"
-    ],
-    2: [ // Tactical
-      "Acompanhamento diário de KPIs da equipe",
-      "Reunião semanal de status com equipe",
-      "Relatório semanal de progresso para diretoria",
-      "Treinamento contínuo da equipe",
-      "Identificação e resolução de gargalos operacionais"
-    ],
-    3: [ // Operational
-      "Execução das tarefas diárias conforme procedimentos",
-      "Registro de atividades realizadas",
-      "Comunicação de impedimentos ao supervisor",
-      "Manutenção da qualidade dos entregáveis",
-      "Participação em reuniões de equipe"
-    ]
-  };
-
-  // Specific activities by role keywords
-  const roleSpecific: Record<string, string[]> = {
-    'comercial': ["Prospecção de novos clientes", "Follow-up de propostas enviadas", "Atualização do CRM/pipeline", "Relatório de vendas semanal"],
-    'vendas': ["Prospecção de novos clientes", "Follow-up de propostas enviadas", "Atualização do CRM/pipeline", "Relatório de vendas semanal"],
-    'financeiro': ["Conciliação bancária diária", "Contas a pagar/receber", "Fechamento mensal", "Fluxo de caixa atualizado"],
-    'contabil': ["Lançamentos contábeis", "Conciliação de contas", "Apuração de impostos", "Demonstrativos financeiros"],
-    'rh': ["Processamento de folha", "Controle de ponto", "Recrutamento e seleção", "Treinamento e desenvolvimento"],
-    'pessoas': ["Acompanhamento de colaboradores", "Pesquisa de clima", "Plano de desenvolvimento individual", "Gestão de benefícios"],
-    'marketing': ["Gestão de redes sociais", "Análise de métricas de campanha", "Criação de conteúdo", "Planejamento de ações"],
-    'operacoes': ["Controle de qualidade", "Gestão de estoque", "Supervisão de processos", "Manutenção preventiva"],
-    'producao': ["Programação de produção", "Controle de qualidade", "Gestão de insumos", "Relatório de produtividade"],
-    'atendimento': ["Resposta a clientes", "Registro de chamados", "Pesquisa de satisfação", "Resolução de problemas"],
-    'suporte': ["Atendimento de tickets", "Documentação de soluções", "Escalonamento de problemas", "Base de conhecimento"],
-    'tecnologia': ["Manutenção de sistemas", "Backup de dados", "Suporte técnico", "Atualizações de segurança"],
-    'ti': ["Manutenção de infraestrutura", "Suporte aos usuários", "Gestão de acessos", "Monitoramento de sistemas"],
-    'administrativo': ["Organização de documentos", "Controle de agenda", "Gestão de fornecedores", "Compras e suprimentos"],
-    'logistica': ["Gestão de entregas", "Controle de estoque", "Roteirização", "Conferência de mercadorias"],
-    'juridico': ["Análise de contratos", "Acompanhamento processual", "Compliance", "Consultoria interna"],
-    'ceo': ["Reunião com conselho/sócios", "Análise de indicadores-chave", "Networking estratégico", "Desenvolvimento de parcerias"],
-    'diretor': ["Planejamento estratégico", "Gestão de budget", "Reuniões com stakeholders", "Desenvolvimento de lideranças"],
-    'gerente': ["Gestão de equipe", "Controle de metas", "Relatórios gerenciais", "Resolução de conflitos"],
-    'coordenador': ["Distribuição de tarefas", "Acompanhamento de entregas", "Feedback à equipe", "Interface com outras áreas"],
-    'supervisor': ["Supervisão de atividades", "Controle de qualidade", "Treinamento operacional", "Escala de trabalho"],
-    'analista': ["Análise de dados", "Elaboração de relatórios", "Propostas de melhoria", "Documentação de processos"],
-    'assistente': ["Apoio às atividades da área", "Organização de documentos", "Atendimento interno", "Controle de agendas"],
-    'auxiliar': ["Execução de tarefas operacionais", "Apoio à equipe", "Organização do ambiente", "Registro de informações"]
-  };
-
-  let checklist = [...baseByLevel[nivel] || baseByLevel[3]];
-  
-  // Add role-specific activities
-  for (const [keyword, activities] of Object.entries(roleSpecific)) {
-    if (titulo.includes(keyword)) {
-      checklist = [...checklist, ...activities.slice(0, 3)];
-      break;
-    }
-  }
-
-  // Add activities based on responsibilities
-  if (cargo.responsabilidades && cargo.responsabilidades.length > 0) {
-    cargo.responsabilidades.slice(0, 2).forEach(resp => {
-      checklist.push(`Executar: ${resp}`);
-    });
-  }
-
-  // Add KPI monitoring if KPIs exist
-  if (cargo.kpis && cargo.kpis.length > 0) {
-    checklist.push(`Monitorar KPIs: ${cargo.kpis.slice(0, 2).join(', ')}`);
-  }
-
-  // Return unique items, limited to 8
-  return [...new Set(checklist)].slice(0, 8);
-};
-
-// Helper functions for generating insights
-const generateMaturityInsights = (level: number, area: string): string => {
-  const insights: Record<number, Record<string, string>> = {
-    1: {
-      pessoas: "A área de pessoas está em estágio inicial. É fundamental estruturar processos básicos de RH, definir funções claras e criar uma cultura organizacional sólida.",
-      processos: "Os processos estão desorganizados ou inexistentes. Priorize mapear os processos críticos e documentá-los para garantir consistência operacional.",
-      financas: "O controle financeiro é precário. Implemente controles básicos de fluxo de caixa, DRE e balanço patrimonial imediatamente.",
-      mercado: "O conhecimento de mercado é superficial. Invista em pesquisa de mercado e análise competitiva para entender melhor o ambiente."
-    },
-    2: {
-      pessoas: "Existem estruturas básicas, mas falta profissionalização. Considere implementar avaliações de desempenho e planos de carreira.",
-      processos: "Alguns processos existem, mas não são padronizados. Documente procedimentos e crie indicadores de acompanhamento.",
-      financas: "Há controles básicos, mas falta análise estratégica. Implemente indicadores financeiros (ROI, margem, ponto de equilíbrio).",
-      mercado: "O posicionamento existe, mas não é diferenciado. Desenvolva uma proposta de valor única e comunique-a claramente."
-    },
-    3: {
-      pessoas: "A gestão de pessoas está em nível intermediário. Foque em desenvolvimento de lideranças e programas de engajamento.",
-      processos: "Os processos são razoavelmente estruturados. É hora de otimizar e automatizar onde possível.",
-      financas: "O controle financeiro é bom. Avance para planejamento financeiro de médio/longo prazo e gestão de investimentos.",
-      mercado: "O mercado é bem compreendido. Busque nichos específicos para dominar e criar barreiras competitivas."
-    },
-    4: {
-      pessoas: "A gestão de pessoas é madura. Implemente programas de inovação e intraempreendedorismo para manter o engajamento.",
-      processos: "Os processos são eficientes. Considere certificações (ISO) e melhoria contínua (Kaizen/Lean).",
-      financas: "A gestão financeira é profissional. Explore novos modelos de receita e estratégias de crescimento acelerado.",
-      mercado: "O posicionamento é forte. Explore expansão para novos mercados ou segmentos adjacentes."
-    },
-    5: {
-      pessoas: "Excelência em gestão de pessoas. Mantenha o padrão e torne-se referência do setor em employer branding.",
-      processos: "Excelência operacional. Considere escalar o modelo para outras unidades ou franquias.",
-      financas: "Excelência financeira. Explore M&A, venture capital ou IPO se for estratégico.",
-      mercado: "Liderança de mercado. Defina a agenda do setor e antecipe tendências."
-    }
-  };
-  return insights[level]?.[area] || "Avalie as necessidades específicas desta área para desenvolvimento.";
-};
-
-const generateActionPlan = (area: string, level: number): string[] => {
-  const plans: Record<string, Record<number, string[]>> = {
-    pessoas: {
-      1: ["Definir organograma básico e descrição de cargos", "Implementar processo de contratação estruturado", "Criar manual do colaborador"],
-      2: ["Implementar avaliação de desempenho trimestral", "Criar plano de cargos e salários", "Desenvolver programa de integração (onboarding)"],
-      3: ["Criar programa de desenvolvimento de lideranças", "Implementar pesquisa de clima organizacional", "Desenvolver plano de carreira para posições-chave"],
-      4: ["Criar programa de inovação interno", "Implementar gestão por OKRs", "Desenvolver programa de mentoria"],
-      5: ["Tornar-se referência em employer branding", "Criar academia corporativa", "Implementar programa de equity para colaboradores"]
-    },
-    processos: {
-      1: ["Mapear os 5 processos mais críticos", "Documentar procedimentos operacionais padrão (POPs)", "Criar checklist para atividades recorrentes"],
-      2: ["Implementar ferramentas de gestão de projetos", "Criar indicadores (KPIs) para cada processo", "Estabelecer reuniões de acompanhamento"],
-      3: ["Automatizar processos repetitivos", "Implementar sistema de gestão integrado (ERP)", "Criar comitê de melhoria contínua"],
-      4: ["Buscar certificação ISO 9001", "Implementar metodologia Lean/Six Sigma", "Criar centro de excelência operacional"],
-      5: ["Explorar RPA (automação robótica)", "Implementar IA nos processos-chave", "Desenvolver modelo escalável/franqueável"]
-    },
-    financas: {
-      1: ["Separar finanças pessoais das empresariais", "Implementar controle de fluxo de caixa semanal", "Criar DRE mensal simplificada"],
-      2: ["Implementar centro de custos", "Criar orçamento anual", "Calcular ponto de equilíbrio e margem de contribuição"],
-      3: ["Implementar análise de indicadores financeiros (ROI, ROE, EBITDA)", "Criar planejamento financeiro de 3 anos", "Desenvolver política de precificação baseada em valor"],
-      4: ["Implementar tesouraria profissional", "Criar comitê financeiro", "Explorar linhas de crédito e financiamento para crescimento"],
-      5: ["Avaliar captação de investimento externo", "Considerar fusões e aquisições", "Preparar estrutura para eventual IPO ou venda"]
-    },
-    mercado: {
-      1: ["Realizar pesquisa básica de concorrentes", "Definir persona do cliente ideal", "Criar proposta de valor inicial"],
-      2: ["Mapear jornada do cliente", "Implementar pesquisa de satisfação (NPS)", "Desenvolver estratégia de diferenciação"],
-      3: ["Criar programa de fidelização", "Desenvolver parcerias estratégicas", "Implementar inteligência de mercado"],
-      4: ["Expandir para novos segmentos ou regiões", "Desenvolver produtos/serviços complementares", "Criar barreiras de entrada para concorrentes"],
-      5: ["Liderar associações do setor", "Definir tendências e padrões do mercado", "Explorar internacionalização"]
-    }
-  };
-  return plans[area]?.[level] || ["Avaliar necessidades específicas", "Desenvolver plano customizado", "Implementar melhorias incrementais"];
-};
-
-// Helper function to generate detailed strategies for each growth engine
-const generateMotorStrategies = (motor: string): { estrategias: string[], implementacao: string[], metricas: string[], ferramentas: string[] } => {
-  const motorLower = motor.toLowerCase();
-  
-  const strategies: Record<string, { estrategias: string[], implementacao: string[], metricas: string[], ferramentas: string[] }> = {
-    'inbound marketing': {
-      estrategias: [
-        'Criar blog com conteúdo educativo sobre as dores do ICP',
-        'Desenvolver materiais ricos (e-books, webinars, templates)',
-        'Implementar estratégia de SEO para palavras-chave relevantes',
-        'Criar landing pages otimizadas para conversão'
-      ],
-      implementacao: [
-        'Semana 1-2: Definir persona e mapear jornada de compra',
-        'Semana 3-4: Criar calendário editorial com 3 posts/semana',
-        'Mês 2: Lançar primeiro material rico para captura de leads',
-        'Mês 3: Implementar automação de nutrição de leads'
-      ],
-      metricas: ['Tráfego orgânico', 'Taxa de conversão landing pages', 'Leads gerados/mês', 'Custo por lead'],
-      ferramentas: ['WordPress/Ghost para blog', 'RD Station/HubSpot para automação', 'Google Analytics', 'SEMrush/Ahrefs para SEO']
-    },
-    'outbound sales': {
-      estrategias: [
-        'Construir lista de prospecção qualificada (ICP)',
-        'Criar cadência de prospecção multicanal (email + LinkedIn + telefone)',
-        'Desenvolver scripts e templates personalizados',
-        'Implementar social selling no LinkedIn'
-      ],
-      implementacao: [
-        'Semana 1: Definir ICP e critérios de qualificação',
-        'Semana 2-3: Construir lista de 500+ prospects',
-        'Semana 4: Criar sequência de 7 touchpoints',
-        'Mês 2+: Executar 50+ contatos/dia por vendedor'
-      ],
-      metricas: ['Taxa de resposta', 'Taxa de agendamento', 'Conversão em vendas', 'Ticket médio'],
-      ferramentas: ['Apollo.io/Lusha para prospecção', 'Pipedrive/HubSpot CRM', 'LinkedIn Sales Navigator', 'Outreach/Salesloft']
-    },
-    'indicações': {
-      estrategias: [
-        'Criar programa formal de indicações com incentivos',
-        'Pedir indicações no momento certo (após entrega de valor)',
-        'Facilitar o processo de indicação (link único, WhatsApp)',
-        'Reconhecer publicamente quem indica'
-      ],
-      implementacao: [
-        'Semana 1: Definir mecânica e recompensas do programa',
-        'Semana 2: Criar materiais e comunicação',
-        'Semana 3: Lançar para clientes mais engajados (NPS 9-10)',
-        'Mensal: Pedir indicação após cada entrega bem-sucedida'
-      ],
-      metricas: ['Indicações recebidas/mês', 'Taxa de conversão de indicados', 'NPS dos clientes', 'Custo por aquisição'],
-      ferramentas: ['Programa manual ou Viral Loops/ReferralCandy', 'Formulários Google/Typeform', 'CRM para tracking']
-    },
-    'parcerias': {
-      estrategias: [
-        'Mapear parceiros complementares (não concorrentes)',
-        'Criar proposta de valor clara para parceiros',
-        'Desenvolver programa de parceria com níveis',
-        'Oferecer co-marketing e leads recíprocos'
-      ],
-      implementacao: [
-        'Semana 1-2: Listar 20 potenciais parceiros ideais',
-        'Semana 3-4: Abordar e apresentar proposta',
-        'Mês 2: Formalizar primeiras parcerias',
-        'Trimestral: Revisar resultados e expandir programa'
-      ],
-      metricas: ['Parceiros ativos', 'Leads via parceiros', 'Receita de parcerias', 'ROI por parceiro'],
-      ferramentas: ['PartnerStack/Impact para gestão', 'CRM para tracking', 'Google Drive para materiais compartilhados']
-    },
-    'product-led growth': {
-      estrategias: [
-        'Criar versão freemium ou trial do produto',
-        'Otimizar onboarding para ativação rápida',
-        'Implementar loops virais no produto',
-        'Usar dados de uso para upsell'
-      ],
-      implementacao: [
-        'Mês 1: Definir modelo free vs paid (features)',
-        'Mês 2: Redesenhar onboarding para "aha moment" em <5min',
-        'Mês 3: Implementar convites e compartilhamento in-app',
-        'Contínuo: Analisar funil e otimizar conversão'
-      ],
-      metricas: ['Ativação (% que usa feature-chave)', 'Trial to paid conversion', 'Viral coefficient', 'Time to value'],
-      ferramentas: ['Amplitude/Mixpanel para analytics', 'Intercom/Pendo para onboarding', 'Stripe para billing']
-    },
-    'marketing de conteúdo': {
-      estrategias: [
-        'Desenvolver pilares de conteúdo alinhados ao negócio',
-        'Criar conteúdo em múltiplos formatos (texto, vídeo, áudio)',
-        'Distribuir em canais onde o ICP está',
-        'Reutilizar conteúdo em diferentes formatos'
-      ],
-      implementacao: [
-        'Semana 1: Definir 3-5 pilares temáticos',
-        'Semana 2: Criar calendário de 30 dias',
-        'Semanal: Produzir 2-3 peças de conteúdo',
-        'Mensal: Analisar performance e ajustar'
-      ],
-      metricas: ['Alcance/impressões', 'Engajamento', 'Leads gerados', 'Tráfego para site'],
-      ferramentas: ['Notion/Trello para planejamento', 'Canva para design', 'Buffer/Hootsuite para agendamento']
-    },
-    'seo local': {
-      estrategias: [
-        'Otimizar Google Meu Negócio completamente',
-        'Coletar avaliações positivas consistentemente',
-        'Criar páginas locais otimizadas',
-        'Construir citações em diretórios locais'
-      ],
-      implementacao: [
-        'Semana 1: Completar 100% do Google Meu Negócio',
-        'Semana 2: Criar processo para pedir avaliações',
-        'Semana 3-4: Listar em 20+ diretórios locais',
-        'Mensal: Responder todas avaliações em <24h'
-      ],
-      metricas: ['Posição no Google Maps', 'Avaliações (qtd e média)', 'Cliques no GMB', 'Ligações recebidas'],
-      ferramentas: ['Google Meu Negócio', 'BrightLocal para gestão', 'Google Search Console']
-    },
-    'eventos e networking': {
-      estrategias: [
-        'Identificar eventos-chave do setor',
-        'Participar como palestrante ou patrocinador',
-        'Criar eventos próprios (meetups, workshops)',
-        'Fazer follow-up estruturado pós-evento'
-      ],
-      implementacao: [
-        'Mês 1: Mapear calendário de eventos do ano',
-        'Mês 2: Submeter proposta para 3 eventos',
-        'Trimestral: Organizar evento próprio pequeno',
-        'Após cada evento: Follow-up em até 48h'
-      ],
-      metricas: ['Eventos participados', 'Leads coletados por evento', 'Conversão pós-evento', 'ROI por evento'],
-      ferramentas: ['Eventbrite/Sympla', 'Calendly para agendamento', 'CRM para tracking']
-    },
-    'social selling': {
-      estrategias: [
-        'Otimizar perfil LinkedIn para conversão',
-        'Criar conteúdo de valor consistentemente',
-        'Engajar estrategicamente com prospects',
-        'Converter conexões em conversas'
-      ],
-      implementacao: [
-        'Semana 1: Otimizar perfil LinkedIn (SSI > 70)',
-        'Diário: Postar ou comentar em 3+ posts relevantes',
-        'Semanal: Adicionar 50+ conexões qualificadas',
-        'Diário: Iniciar 5+ conversas no inbox'
-      ],
-      metricas: ['SSI (Social Selling Index)', 'Conexões/seguidores', 'Mensagens respondidas', 'Reuniões agendadas'],
-      ferramentas: ['LinkedIn Sales Navigator', 'Shield para analytics', 'Calendly para agendamento']
-    },
-    'comunidade': {
-      estrategias: [
-        'Criar espaço de comunidade (grupo/fórum)',
-        'Entregar valor exclusivo para membros',
-        'Facilitar conexões entre membros',
-        'Converter comunidade em clientes'
-      ],
-      implementacao: [
-        'Mês 1: Escolher plataforma e criar comunidade',
-        'Mês 2: Convidar primeiros 50 membros (clientes atuais)',
-        'Semanal: Criar conteúdo/evento exclusivo',
-        'Mensal: Analisar engajamento e ajustar'
-      ],
-      metricas: ['Membros ativos', 'Engajamento (posts/comentários)', 'Conversão para clientes', 'Retenção'],
-      ferramentas: ['Circle/Discord/Slack', 'Notion para recursos', 'Zoom para eventos']
-    },
-    'afiliados': {
-      estrategias: [
-        'Definir comissões atrativas e competitivas',
-        'Criar materiais de marketing para afiliados',
-        'Recrutar afiliados estratégicos do nicho',
-        'Treinar e suportar afiliados top performers'
-      ],
-      implementacao: [
-        'Semana 1-2: Definir estrutura de comissões',
-        'Semana 3-4: Criar kit de materiais para afiliados',
-        'Mês 2: Recrutar primeiros 10-20 afiliados',
-        'Mensal: Revisar performance e otimizar'
-      ],
-      metricas: ['Afiliados ativos', 'Vendas por afiliado', 'Comissões pagas', 'ROI do programa'],
-      ferramentas: ['Hotmart/Kiwify para infoprodutos', 'FirstPromoter/Rewardful para SaaS', 'Planilha de acompanhamento']
-    },
-    'account-based marketing': {
-      estrategias: [
-        'Selecionar 10-50 contas-alvo prioritárias',
-        'Criar campanhas personalizadas por conta',
-        'Alinhar marketing e vendas no processo',
-        'Executar touchpoints multicanal coordenados'
-      ],
-      implementacao: [
-        'Semana 1: Definir lista de target accounts',
-        'Semana 2-3: Pesquisar cada conta profundamente',
-        'Semana 4: Criar abordagem personalizada por conta',
-        'Mensal: Executar cadência e medir resultados'
-      ],
-      metricas: ['Contas engajadas', 'Reuniões com decision-makers', 'Pipeline gerado', 'Deals fechados'],
-      ferramentas: ['LinkedIn Sales Navigator', '6sense/Demandbase', 'CRM com segmentação por conta']
-    },
-    'influenciadores': {
-      estrategias: [
-        'Mapear micro e macro influenciadores do nicho',
-        'Criar proposta de parceria clara',
-        'Testar com micro-influenciadores primeiro',
-        'Medir ROI de cada parceria'
-      ],
-      implementacao: [
-        'Semana 1: Listar 30+ influenciadores relevantes',
-        'Semana 2: Abordar 10 micro-influenciadores',
-        'Mês 2: Fechar 3-5 parcerias piloto',
-        'Mensal: Analisar resultados e expandir'
-      ],
-      metricas: ['Alcance das campanhas', 'Engajamento', 'Código de desconto usado', 'ROI por influenciador'],
-      ferramentas: ['BuzzSumo/HypeAuditor', 'Instagram/TikTok', 'Tracking links (UTMs)']
-    },
-    'email marketing': {
-      estrategias: [
-        'Construir lista qualificada (lead magnets)',
-        'Segmentar lista por comportamento/interesse',
-        'Criar sequências de nutrição automatizadas',
-        'Testar assuntos, horários e conteúdo'
-      ],
-      implementacao: [
-        'Semana 1: Criar 3 lead magnets',
-        'Semana 2: Configurar sequência de boas-vindas',
-        'Semana 3-4: Criar newsletter semanal/quinzenal',
-        'Contínuo: Testar A/B e otimizar'
-      ],
-      metricas: ['Lista de emails', 'Taxa de abertura', 'Taxa de cliques', 'Conversões de email'],
-      ferramentas: ['Mailchimp/ConvertKit', 'RD Station', 'Google Analytics para tracking']
-    },
-    'webinars e workshops': {
-      estrategias: [
-        'Criar webinars educativos de alto valor',
-        'Promover via múltiplos canais',
-        'Converter participantes em leads/clientes',
-        'Reutilizar conteúdo em outros formatos'
-      ],
-      implementacao: [
-        'Semana 1: Definir tema e estrutura',
-        'Semana 2: Criar landing page e promoção',
-        'Semana 3: Executar webinar e gravar',
-        'Pós-evento: Follow-up em 24-48h'
-      ],
-      metricas: ['Inscritos', 'Taxa de comparecimento', 'Engajamento (perguntas)', 'Conversão pós-webinar'],
-      ferramentas: ['Zoom/StreamYard', 'WebinarJam/Demio', 'Landing pages + email marketing']
-    }
-  };
-
-  // Try to find exact match first, then partial match
-  for (const [key, value] of Object.entries(strategies)) {
-    if (motorLower.includes(key) || key.includes(motorLower)) {
-      return value;
-    }
-  }
-
-  // Default strategies for custom motors
-  return {
-    estrategias: [
-      'Definir público-alvo específico para este canal',
-      'Criar proposta de valor clara para o canal',
-      'Estabelecer processos e rotinas de execução',
-      'Medir resultados e otimizar continuamente'
-    ],
-    implementacao: [
-      'Semana 1: Pesquisar e planejar abordagem',
-      'Semana 2-3: Criar materiais e estrutura',
-      'Semana 4: Executar primeiro piloto',
-      'Mensal: Analisar resultados e escalar'
-    ],
-    metricas: ['Alcance', 'Engajamento', 'Leads gerados', 'Conversão em vendas'],
-    ferramentas: ['CRM para gestão', 'Planilhas para acompanhamento', 'Ferramentas específicas do canal']
-  };
-};
-
 export function generateReport(project: Project, data: ConsultingData, blocks: BlockStatus[]) {
+  // ============================================================
+  // Coletor de ações: cada plano de ação renderizado registra seus
+  // itens aqui; o Roadmap consolidado é calculado destes dados
+  // (substitui a antiga extração por regex sobre o HTML gerado).
+  // ============================================================
+  interface AcaoItem { texto: string; detalhe: string; tags?: string[]; cond?: boolean; numero?: string }
+  const acoesColetadas: { titulo: string; origem: string }[] = [];
+
+  const renderActionPlan = (origem: string, badge: string, styleAttr: string, itens: AcaoItem[]): string => {
+    const visiveis = itens.filter(it => it.cond !== false);
+    visiveis.forEach(it => acoesColetadas.push({ titulo: it.texto, origem }));
+    const lis = visiveis.map((it, i) => `
+            <li class="action-plan-item">
+              <span class="action-plan-number">${it.numero ?? String(i + 1)}</span>
+              <div class="action-plan-content">
+                <div class="action-plan-text">${it.texto}</div>
+                <div class="action-plan-detail">${it.detalhe}</div>${it.tags && it.tags.length ? `
+                <div class="action-plan-meta">
+                  ${it.tags.map(t => `<span class="action-plan-tag">${t}</span>`).join('\n                  ')}
+                </div>` : ''}
+              </div>
+            </li>`).join('');
+    return `<div class="action-plan"${styleAttr}>
+          <div class="action-plan-header">
+            <div class="action-plan-title">📋 Plano de Ação - ${origem}</div>
+            <span class="action-plan-badge">${badge}</span>
+          </div>
+          <ul class="action-plan-list">${lis}
+          </ul>
+        </div>`;
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -878,47 +484,11 @@ ${reportStyles(overallProgress)}
           </div>
         </div>
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Golden Circle</div>
-            <span class="action-plan-badge">Próximos 30 dias</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Validar o Golden Circle com 5 clientes atuais</div>
-                <div class="action-plan-detail">Pergunte: "O que te fez escolher a ${project.nomeEmpresa}?" - as respostas devem refletir seu PORQUÊ. Se não refletirem, refine a mensagem.</div>
-                <div class="action-plan-meta">
-                  <span class="action-plan-tag">⏱️ 1 semana</span>
-                  <span class="action-plan-tag">👤 Comercial</span>
-                </div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Atualizar apresentação comercial com a nova narrativa</div>
-                <div class="action-plan-detail">Slide 1: PORQUÊ (gere identificação) → Slide 2: COMO (credibilidade) → Slides 3+: O QUÊ (detalhes).</div>
-                <div class="action-plan-meta">
-                  <span class="action-plan-tag">⏱️ 2 semanas</span>
-                  <span class="action-plan-tag">👤 Marketing</span>
-                </div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar vídeo institucional de 60 segundos</div>
-                <div class="action-plan-detail">Roteiro: 20s contando o PORQUÊ, 20s mostrando COMO trabalham, 20s apresentando O QUÊ oferecem. Use depoimentos de clientes.</div>
-                <div class="action-plan-meta">
-                  <span class="action-plan-tag">⏱️ 4 semanas</span>
-                  <span class="action-plan-tag">👤 Marketing</span>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Golden Circle`, `Próximos 30 dias`, '', [
+          { texto: `Validar o Golden Circle com 5 clientes atuais`, detalhe: `Pergunte: "O que te fez escolher a ${project.nomeEmpresa}?" - as respostas devem refletir seu PORQUÊ. Se não refletirem, refine a mensagem.`, tags: [`⏱️ 1 semana`, `👤 Comercial`] },
+          { texto: `Atualizar apresentação comercial com a nova narrativa`, detalhe: `Slide 1: PORQUÊ (gere identificação) → Slide 2: COMO (credibilidade) → Slides 3+: O QUÊ (detalhes).`, tags: [`⏱️ 2 semanas`, `👤 Marketing`] },
+          { texto: `Criar vídeo institucional de 60 segundos`, detalhe: `Roteiro: 20s contando o PORQUÊ, 20s mostrando COMO trabalham, 20s apresentando O QUÊ oferecem. Use depoimentos de clientes.`, tags: [`⏱️ 4 semanas`, `👤 Marketing`] }
+        ])}
       </div>
       ` : ''}
       
@@ -1019,35 +589,11 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Identidade</div>
-            <span class="action-plan-badge">Cultura organizacional</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar "Manual de Cultura" de 1 página</div>
-                <div class="action-plan-detail">Inclua: Visão, Missão, Valores + 3 comportamentos esperados para cada valor. Distribua para todos e use no onboarding.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar "Momento Valor" nas reuniões semanais</div>
-                <div class="action-plan-detail">Dedique 5 minutos para alguém compartilhar um exemplo real de quando vivenciou um dos valores. Isso reforça a cultura de forma orgânica.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Incluir valores na avaliação de desempenho</div>
-                <div class="action-plan-detail">Além de metas numéricas, avalie como cada colaborador pratica os valores. Peso sugerido: 30% da avaliação.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Identidade`, `Cultura organizacional`, '', [
+          { texto: `Criar "Manual de Cultura" de 1 página`, detalhe: `Inclua: Visão, Missão, Valores + 3 comportamentos esperados para cada valor. Distribua para todos e use no onboarding.` },
+          { texto: `Implementar "Momento Valor" nas reuniões semanais`, detalhe: `Dedique 5 minutos para alguém compartilhar um exemplo real de quando vivenciou um dos valores. Isso reforça a cultura de forma orgânica.` },
+          { texto: `Incluir valores na avaliação de desempenho`, detalhe: `Além de metas numéricas, avalie como cada colaborador pratica os valores. Peso sugerido: 30% da avaliação.` }
+        ])}
       </div>
       ` : ''}
       
@@ -1171,50 +717,12 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - SWOT</div>
-            <span class="action-plan-badge">Estratégico</span>
-          </div>
-          <ul class="action-plan-list">
-            ${data.swot.forcas.length > 0 ? `
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Documentar e comunicar suas forças</div>
-                <div class="action-plan-detail">Crie materiais de marketing que destaquem: ${data.swot.forcas.slice(0, 2).join(', ')}. Use em propostas, site e redes sociais.</div>
-              </div>
-            </li>
-            ` : ''}
-            ${data.swot.fraquezas.length > 0 ? `
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar plano de melhoria para principal fraqueza</div>
-                <div class="action-plan-detail">Foco em "${data.swot.fraquezas[0]}": defina responsável, prazo de 60 dias e 3 ações específicas para melhorar este ponto.</div>
-              </div>
-            </li>
-            ` : ''}
-            ${data.swot.oportunidades.length > 0 ? `
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Desenvolver iniciativa para capturar oportunidade</div>
-                <div class="action-plan-detail">Oportunidade: "${data.swot.oportunidades[0]}". Crie um projeto específico com metas, orçamento e cronograma para aproveitá-la.</div>
-              </div>
-            </li>
-            ` : ''}
-            ${data.swot.ameacas.length > 0 ? `
-            <li class="action-plan-item">
-              <span class="action-plan-number">4</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Montar plano de contingência para ameaças</div>
-                <div class="action-plan-detail">Ameaça: "${data.swot.ameacas[0]}". Defina: sinais de alerta para monitorar, ações de resposta, responsável pela vigilância.</div>
-              </div>
-            </li>
-            ` : ''}
-          </ul>
-        </div>
+        ${renderActionPlan(`SWOT`, `Estratégico`, '', [
+          { cond: data.swot.forcas.length > 0, numero: '1', texto: `Documentar e comunicar suas forças`, detalhe: `Crie materiais de marketing que destaquem: ${data.swot.forcas.slice(0, 2).join(', ')}. Use em propostas, site e redes sociais.` },
+          { cond: data.swot.fraquezas.length > 0, numero: '2', texto: `Criar plano de melhoria para principal fraqueza`, detalhe: `Foco em "${data.swot.fraquezas[0]}": defina responsável, prazo de 60 dias e 3 ações específicas para melhorar este ponto.` },
+          { cond: data.swot.oportunidades.length > 0, numero: '3', texto: `Desenvolver iniciativa para capturar oportunidade`, detalhe: `Oportunidade: "${data.swot.oportunidades[0]}". Crie um projeto específico com metas, orçamento e cronograma para aproveitá-la.` },
+          { cond: data.swot.ameacas.length > 0, numero: '4', texto: `Montar plano de contingência para ameaças`, detalhe: `Ameaça: "${data.swot.ameacas[0]}". Defina: sinais de alerta para monitorar, ações de resposta, responsável pela vigilância.` }
+        ])}
       </div>
       ` : ''}
       
@@ -1486,35 +994,11 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - ICP</div>
-            <span class="action-plan-badge">Comercial</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar "ICP Card" para equipe comercial</div>
-                <div class="action-plan-detail">Documento de 1 página com: descrição, segmentos, dores principais e necessidades. Todo vendedor deve ter na mesa ou no celular.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Revisar base atual de clientes</div>
-                <div class="action-plan-detail">Classifique seus clientes atuais: quantos são ICP perfeito? Priorize atendimento e upsell para estes. Considere descontinuar clientes muito fora do perfil.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar conteúdo específico para ICP</div>
-                <div class="action-plan-detail">Desenvolva: 1 e-book sobre uma dor específica, 3 posts de LinkedIn por semana falando das dores, 1 webinar por mês resolvendo um problema do ICP.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`ICP`, `Comercial`, '', [
+          { texto: `Criar "ICP Card" para equipe comercial`, detalhe: `Documento de 1 página com: descrição, segmentos, dores principais e necessidades. Todo vendedor deve ter na mesa ou no celular.` },
+          { texto: `Revisar base atual de clientes`, detalhe: `Classifique seus clientes atuais: quantos são ICP perfeito? Priorize atendimento e upsell para estes. Considere descontinuar clientes muito fora do perfil.` },
+          { texto: `Criar conteúdo específico para ICP`, detalhe: `Desenvolva: 1 e-book sobre uma dor específica, 3 posts de LinkedIn por semana falando das dores, 1 webinar por mês resolvendo um problema do ICP.` }
+        ])}
       </div>
       ` : ''}
       
@@ -1642,35 +1126,11 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Concorrência</div>
-            <span class="action-plan-badge">Posicionamento</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar "Battle Card" interno</div>
-                <div class="action-plan-detail">Documento comparando você vs cada concorrente principal. Inclua: diferenciais, objeções comuns e como respondê-las. Treine a equipe comercial.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Desenvolver 3 cases de sucesso destacando diferenciais</div>
-                <div class="action-plan-detail">Para cada diferencial principal, tenha um case que comprove. Formato: Desafio → Solução → Resultado com números.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar ritual mensal de inteligência competitiva</div>
-                <div class="action-plan-detail">Reunião de 30min/mês para compartilhar novidades sobre concorrentes. Quem viu o quê? O que aprendemos? Como reagir?</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Concorrência`, `Posicionamento`, '', [
+          { texto: `Criar "Battle Card" interno`, detalhe: `Documento comparando você vs cada concorrente principal. Inclua: diferenciais, objeções comuns e como respondê-las. Treine a equipe comercial.` },
+          { texto: `Desenvolver 3 cases de sucesso destacando diferenciais`, detalhe: `Para cada diferencial principal, tenha um case que comprove. Formato: Desafio → Solução → Resultado com números.` },
+          { texto: `Implementar ritual mensal de inteligência competitiva`, detalhe: `Reunião de 30min/mês para compartilhar novidades sobre concorrentes. Quem viu o quê? O que aprendemos? Como reagir?` }
+        ])}
       </div>
       ` : ''}
       
@@ -1783,35 +1243,11 @@ ${reportStyles(overallProgress)}
         </div>
         `).join('')}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Precificação</div>
-            <span class="action-plan-badge">Receita</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar planilha de custos detalhada</div>
-                <div class="action-plan-detail">Para cada produto/serviço, liste todos os custos: diretos, indiretos, tempo envolvido. Calcule margem real atual.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Pesquisar willingness-to-pay com 10 clientes</div>
-                <div class="action-plan-detail">Pergunte: "Quanto você esperava pagar por este resultado?" - A média das respostas é seu teto de preço.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar pelo menos 1 versão premium</div>
-                <div class="action-plan-detail">Escolha seu produto mais vendido e crie uma versão 2x mais cara com benefícios exclusivos. Mesmo que venda pouco, melhora a percepção do produto padrão.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Precificação`, `Receita`, '', [
+          { texto: `Criar planilha de custos detalhada`, detalhe: `Para cada produto/serviço, liste todos os custos: diretos, indiretos, tempo envolvido. Calcule margem real atual.` },
+          { texto: `Pesquisar willingness-to-pay com 10 clientes`, detalhe: `Pergunte: "Quanto você esperava pagar por este resultado?" - A média das respostas é seu teto de preço.` },
+          { texto: `Implementar pelo menos 1 versão premium`, detalhe: `Escolha seu produto mais vendido e crie uma versão 2x mais cara com benefícios exclusivos. Mesmo que venda pouco, melhora a percepção do produto padrão.` }
+        ])}
       </div>
       ` : ''}
       
@@ -1901,35 +1337,11 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Estratégias de Valor</div>
-            <span class="action-plan-badge">Inovação</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Priorizar 1 nova oferta para os próximos 60 dias</div>
-                <div class="action-plan-detail">Critérios de escolha: menor esforço de desenvolvimento, maior demanda de clientes, melhor margem potencial. Foque 100% até lançar.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar página de vendas para cada pacote</div>
-                <div class="action-plan-detail">Estrutura: Headline com benefício principal → 3 bullets com o que inclui → Preço com âncora → Depoimentos → CTA urgente.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Treinar equipe no pitch de cada oferta</div>
-                <div class="action-plan-detail">Role-play semanal: cada vendedor deve saber apresentar cada pacote em 60 segundos, responder 3 objeções comuns e fazer pergunta de fechamento.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Estratégias de Valor`, `Inovação`, '', [
+          { texto: `Priorizar 1 nova oferta para os próximos 60 dias`, detalhe: `Critérios de escolha: menor esforço de desenvolvimento, maior demanda de clientes, melhor margem potencial. Foque 100% até lançar.` },
+          { texto: `Criar página de vendas para cada pacote`, detalhe: `Estrutura: Headline com benefício principal → 3 bullets com o que inclui → Preço com âncora → Depoimentos → CTA urgente.` },
+          { texto: `Treinar equipe no pitch de cada oferta`, detalhe: `Role-play semanal: cada vendedor deve saber apresentar cada pacote em 60 segundos, responder 3 objeções comuns e fazer pergunta de fechamento.` }
+        ])}
       </div>
       ` : ''}
       
@@ -2071,35 +1483,11 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Crescimento</div>
-            <span class="action-plan-badge">Escala</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar dashboard de métricas de crescimento</div>
-                <div class="action-plan-detail">Inclua: leads gerados, taxa de conversão, ticket médio, CAC, LTV. Atualize semanalmente. Compartilhe com a equipe.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar programa de indicação estruturado</div>
-                <div class="action-plan-detail">Ofereça: desconto para quem indica E para quem foi indicado. Peça indicações no momento de máxima satisfação (após entrega bem-sucedida).</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Definir experimento de canal para próximo trimestre</div>
-                <div class="action-plan-detail">Escolha 1 novo canal para testar com 10% do orçamento. Defina critério de sucesso antes de começar. Se funcionar, escale; se não, descarte sem remorso.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Crescimento`, `Escala`, '', [
+          { texto: `Criar dashboard de métricas de crescimento`, detalhe: `Inclua: leads gerados, taxa de conversão, ticket médio, CAC, LTV. Atualize semanalmente. Compartilhe com a equipe.` },
+          { texto: `Implementar programa de indicação estruturado`, detalhe: `Ofereça: desconto para quem indica E para quem foi indicado. Peça indicações no momento de máxima satisfação (após entrega bem-sucedida).` },
+          { texto: `Definir experimento de canal para próximo trimestre`, detalhe: `Escolha 1 novo canal para testar com 10% do orçamento. Defina critério de sucesso antes de começar. Se funcionar, escale; se não, descarte sem remorso.` }
+        ])}
       </div>
       ` : ''}
       
@@ -2163,35 +1551,11 @@ ${reportStyles(overallProgress)}
           }).join('')}
         </div>
         
-        <div class="action-plan" style="margin-top: 32px;">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Organograma</div>
-            <span class="action-plan-badge">Pessoas</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Comunicar estrutura para toda equipe</div>
-                <div class="action-plan-detail">Reunião de apresentação: quem responde a quem, quais são as responsabilidades de cada um. Deixe claro "quem procurar para quê".</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar descrição de cargo formal para cada posição</div>
-                <div class="action-plan-detail">Inclua: objetivo do cargo, responsabilidades detalhadas, competências necessárias, KPIs. Use para avaliações e contratações.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar reuniões 1:1 mensais</div>
-                <div class="action-plan-detail">Cada gestor com seus subordinados diretos. Pauta: feedback de desempenho, evolução dos KPIs, desenvolvimento profissional, impedimentos.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Organograma`, `Pessoas`, ' style="margin-top: 32px;"', [
+          { texto: `Comunicar estrutura para toda equipe`, detalhe: `Reunião de apresentação: quem responde a quem, quais são as responsabilidades de cada um. Deixe claro "quem procurar para quê".` },
+          { texto: `Criar descrição de cargo formal para cada posição`, detalhe: `Inclua: objetivo do cargo, responsabilidades detalhadas, competências necessárias, KPIs. Use para avaliações e contratações.` },
+          { texto: `Implementar reuniões 1:1 mensais`, detalhe: `Cada gestor com seus subordinados diretos. Pauta: feedback de desempenho, evolução dos KPIs, desenvolvimento profissional, impedimentos.` }
+        ])}
       </div>
       ` : ''}
       
@@ -2231,35 +1595,11 @@ ${reportStyles(overallProgress)}
           </div>
         `).join('')}
         
-        <div class="action-plan" style="margin-top: 32px;">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Processos</div>
-            <span class="action-plan-badge">Eficiência</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar POPs (Procedimentos Operacionais Padrão)</div>
-                <div class="action-plan-detail">Para cada processo listado, documente passo-a-passo: o que fazer, como fazer, ferramentas usadas, critérios de qualidade. Use Google Docs ou Notion.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar checklists para processos críticos</div>
-                <div class="action-plan-detail">Identifique os 3 processos mais importantes e crie checklists que garantam que nada será esquecido. Revise e atualize trimestralmente.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar indicadores para cada processo</div>
-                <div class="action-plan-detail">Exemplo: processo de vendas → taxa de conversão, tempo de ciclo. Processo financeiro → prazo médio de recebimento, inadimplência.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Processos`, `Eficiência`, ' style="margin-top: 32px;"', [
+          { texto: `Criar POPs (Procedimentos Operacionais Padrão)`, detalhe: `Para cada processo listado, documente passo-a-passo: o que fazer, como fazer, ferramentas usadas, critérios de qualidade. Use Google Docs ou Notion.` },
+          { texto: `Criar checklists para processos críticos`, detalhe: `Identifique os 3 processos mais importantes e crie checklists que garantam que nada será esquecido. Revise e atualize trimestralmente.` },
+          { texto: `Implementar indicadores para cada processo`, detalhe: `Exemplo: processo de vendas → taxa de conversão, tempo de ciclo. Processo financeiro → prazo médio de recebimento, inadimplência.` }
+        ])}
       </div>
       ` : ''}
       
@@ -2582,53 +1922,13 @@ ${reportStyles(overallProgress)}
         ` : ''}
         
         <!-- Plano de Ação -->
-        <div class="action-plan" style="margin-top: 32px;">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Financeiro</div>
-            <span class="action-plan-badge">Saúde Financeira</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar DRE mensal gerencial</div>
-                <div class="action-plan-detail">Feche o mês até dia 5 e analise: receita, custos variáveis, margem de contribuição, custos fixos e lucro líquido. Decisões sem DRE são tiros no escuro.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Monitorar indicadores-chave semanalmente</div>
-                <div class="action-plan-detail">CAC, LTV, ticket médio, inadimplência, ciclo financeiro. Monte um dashboard simples e revise toda segunda-feira. O que não é medido não é gerenciado.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar reserva de emergência empresarial</div>
-                <div class="action-plan-detail">Meta: 6 meses de custos fixos. Separe 10% do lucro mensalmente. Isso permite tomar decisões de longo prazo sem pressão de caixa.</div>
-              </div>
-            </li>
-            ${data.financeiro.comprometimentoReceita > 15 ? `
-            <li class="action-plan-item">
-              <span class="action-plan-number">4</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Renegociar e consolidar dívidas</div>
-                <div class="action-plan-detail">Priorize quitar dívidas de maior taxa. Considere consolidação em linha de crédito mais barata. Meta: comprometimento abaixo de 15% da receita.</div>
-              </div>
-            </li>
-            ` : ''}
-            ${data.financeiro.cac > 0 && data.financeiro.ltv > 0 && (data.financeiro.ltv / data.financeiro.cac) < 3 ? `
-            <li class="action-plan-item">
-              <span class="action-plan-number">${data.financeiro.comprometimentoReceita > 15 ? '5' : '4'}</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Melhorar ratio LTV/CAC</div>
-                <div class="action-plan-detail">Para aumentar LTV: programas de fidelização, upsell, cross-sell. Para reduzir CAC: refine o ICP, melhore conversão, foque em canais orgânicos.</div>
-              </div>
-            </li>
-            ` : ''}
-          </ul>
-        </div>
+        ${renderActionPlan(`Financeiro`, `Saúde Financeira`, ' style="margin-top: 32px;"', [
+          { texto: `Implementar DRE mensal gerencial`, detalhe: `Feche o mês até dia 5 e analise: receita, custos variáveis, margem de contribuição, custos fixos e lucro líquido. Decisões sem DRE são tiros no escuro.` },
+          { texto: `Monitorar indicadores-chave semanalmente`, detalhe: `CAC, LTV, ticket médio, inadimplência, ciclo financeiro. Monte um dashboard simples e revise toda segunda-feira. O que não é medido não é gerenciado.` },
+          { texto: `Criar reserva de emergência empresarial`, detalhe: `Meta: 6 meses de custos fixos. Separe 10% do lucro mensalmente. Isso permite tomar decisões de longo prazo sem pressão de caixa.` },
+          { cond: data.financeiro.comprometimentoReceita > 15, numero: '4', texto: `Renegociar e consolidar dívidas`, detalhe: `Priorize quitar dívidas de maior taxa. Considere consolidação em linha de crédito mais barata. Meta: comprometimento abaixo de 15% da receita.` },
+          { cond: data.financeiro.cac > 0 && data.financeiro.ltv > 0 && (data.financeiro.ltv / data.financeiro.cac) < 3, numero: data.financeiro.comprometimentoReceita > 15 ? '5' : '4', texto: `Melhorar ratio LTV/CAC`, detalhe: `Para aumentar LTV: programas de fidelização, upsell, cross-sell. Para reduzir CAC: refine o ICP, melhore conversão, foque em canais orgânicos.` }
+        ])}
       </div>
       ` : ''}
       
@@ -2718,35 +2018,11 @@ ${reportStyles(overallProgress)}
         </div>
         ` : ''}
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Desenvolvimento Pessoal</div>
-            <span class="action-plan-badge">Liderança</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Buscar feedback 360° com equipe e clientes</div>
-                <div class="action-plan-detail">Pergunte: "O que eu faço bem? O que eu poderia melhorar? O que eu deveria parar de fazer?" Faça anotações e compare com sua autoavaliação.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Definir 1 competência para desenvolver no trimestre</div>
-                <div class="action-plan-detail">Escolha a fraqueza que mais impacta o negócio. Defina ações: curso, livro, mentoria. Avalie progresso mensalmente.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Criar rotina de autocuidado</div>
-                <div class="action-plan-detail">Empreendedor exausto toma decisões ruins. Defina: exercício 3x/semana, 7h+ de sono, 1 dia de folga real por semana. Energia é recurso estratégico.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Desenvolvimento Pessoal`, `Liderança`, '', [
+          { texto: `Buscar feedback 360° com equipe e clientes`, detalhe: `Pergunte: "O que eu faço bem? O que eu poderia melhorar? O que eu deveria parar de fazer?" Faça anotações e compare com sua autoavaliação.` },
+          { texto: `Definir 1 competência para desenvolver no trimestre`, detalhe: `Escolha a fraqueza que mais impacta o negócio. Defina ações: curso, livro, mentoria. Avalie progresso mensalmente.` },
+          { texto: `Criar rotina de autocuidado`, detalhe: `Empreendedor exausto toma decisões ruins. Defina: exercício 3x/semana, 7h+ de sono, 1 dia de folga real por semana. Energia é recurso estratégico.` }
+        ])}
       </div>
       ` : ''}
       
@@ -2879,35 +2155,11 @@ ${reportStyles(overallProgress)}
           </div>
         </div>
         
-        <div class="action-plan">
-          <div class="action-plan-header">
-            <div class="action-plan-title">📋 Plano de Ação - Agenda CEO</div>
-            <span class="action-plan-badge">Produtividade</span>
-          </div>
-          <ul class="action-plan-list">
-            <li class="action-plan-item">
-              <span class="action-plan-number">1</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Bloquear tempo para prioridades no calendário</div>
-                <div class="action-plan-detail">Reserve blocos de 2-3h para trabalho focado nas prioridades. Marque como "ocupado". Proteja esse tempo como uma reunião com o cliente mais importante.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">2</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Implementar "No Meeting Wednesday"</div>
-                <div class="action-plan-detail">Um dia por semana sem reuniões para trabalho estratégico profundo. Comunique para equipe e respeite o combinado.</div>
-              </div>
-            </li>
-            <li class="action-plan-item">
-              <span class="action-plan-number">3</span>
-              <div class="action-plan-content">
-                <div class="action-plan-text">Fazer auditoria de tempo por 1 semana</div>
-                <div class="action-plan-detail">Anote tudo que faz e quanto tempo gasta. Depois analise: quanto foi em prioridades? Quanto poderia delegar? Ajuste agenda baseado nos dados.</div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        ${renderActionPlan(`Agenda CEO`, `Produtividade`, '', [
+          { texto: `Bloquear tempo para prioridades no calendário`, detalhe: `Reserve blocos de 2-3h para trabalho focado nas prioridades. Marque como "ocupado". Proteja esse tempo como uma reunião com o cliente mais importante.` },
+          { texto: `Implementar "No Meeting Wednesday"`, detalhe: `Um dia por semana sem reuniões para trabalho estratégico profundo. Comunique para equipe e respeite o combinado.` },
+          { texto: `Fazer auditoria de tempo por 1 semana`, detalhe: `Anote tudo que faz e quanto tempo gasta. Depois analise: quanto foi em prioridades? Quanto poderia delegar? Ajuste agenda baseado nos dados.` }
+        ])}
       </div>
       ` : ''}
       
@@ -3333,55 +2585,11 @@ ${reportStyles(overallProgress)}
 `;
 
   // ============================================================
-  // PÓS-PROCESSAMENTO: Roadmap de Implementação consolidado
-  // Extrai todas as ações já escritas nos 14 capítulos, remove duplicatas
-  // e classifica por urgência (regras por palavra-chave — sem dependência
-  // automática entre ações, por decisão de escopo do MVP).
+  // Roadmap de Implementação consolidado — calculado das ações
+  // coletadas durante a geração (renderActionPlan), sem regex.
+  // Dedup e classificação por urgência em reportModel.buildRoadmap.
   // ============================================================
-  type Urgencia = 'critica' | 'alta' | 'media' | 'evolucao' | 'estrategica';
-  const URGENCIA_INFO: Record<Urgencia, { label: string; prazo: string }> = {
-    critica: { label: 'Crítica', prazo: 'até 30 dias' },
-    alta: { label: 'Alta', prazo: 'até 3 meses' },
-    media: { label: 'Média', prazo: 'até 6 meses' },
-    evolucao: { label: 'Evolução', prazo: 'até 9 meses' },
-    estrategica: { label: 'Estratégica', prazo: 'até 12 meses' },
-  };
-  const URGENCIA_ORDEM: Urgencia[] = ['critica', 'alta', 'media', 'evolucao', 'estrategica'];
-  const KEYWORDS: [Urgencia, string[]][] = [
-    ['critica', ['dre', 'fluxo de caixa', 'precific', 'capital de giro', 'ruptura', 'regulariza']],
-    ['alta', ['processo', 'compra', 'estoque', 'comercial', 'crm', 'agenda']],
-    ['media', ['kpi', 'indicador', 'marketing', 'icp', 'funil', 'automa']],
-    ['evolucao', ['cultura', 'liderança', 'lideranca', 'avaliação', 'avaliacao', 'treinamento', 'pessoa', 'equipe']],
-    ['estrategica', ['nova unidade', 'novo produto', 'franquia', 'filial', 'novo mercado', 'expans', 'segunda unidade']],
-  ];
-  const classificarUrgencia = (texto: string): Urgencia => {
-    const t = texto.toLowerCase();
-    for (const [tier, palavras] of KEYWORDS) {
-      if (palavras.some(p => t.includes(p))) return tier;
-    }
-    return 'media';
-  };
-  const normalizarTitulo = (texto: string) =>
-    texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
-
-  const roadmapItens: { titulo: string; origem: string; urgencia: Urgencia }[] = [];
-  const vistos = new Set<string>();
-
-  const blocoRegex = /<div class="action-plan-title">📋 Plano de Ação - ([^<]+)<\/div>[\s\S]*?<ul class="action-plan-list">([\s\S]*?)<\/ul>/g;
-  let blocoMatch: RegExpExecArray | null;
-  while ((blocoMatch = blocoRegex.exec(html)) !== null) {
-    const origem = blocoMatch[1].trim();
-    const itensHtml = blocoMatch[2];
-    const itemRegex = /<div class="action-plan-text">([^<]+)<\/div>/g;
-    let itemMatch: RegExpExecArray | null;
-    while ((itemMatch = itemRegex.exec(itensHtml)) !== null) {
-      const titulo = itemMatch[1].trim();
-      const chave = normalizarTitulo(titulo);
-      if (vistos.has(chave)) continue;
-      vistos.add(chave);
-      roadmapItens.push({ titulo, origem, urgencia: classificarUrgencia(titulo) });
-    }
-  }
+  const roadmapItens = buildRoadmap(acoesColetadas);
 
   const roadmapHtml = `
     <!-- ===== ROADMAP DE IMPLEMENTAÇÃO ===== -->
