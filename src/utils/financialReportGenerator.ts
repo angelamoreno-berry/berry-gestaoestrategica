@@ -124,10 +124,26 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
       --gold: #A16207; --gold-light: #FEF9C3;
       --bg: #FFFFFF; --fg: #18181B; --muted: #71717A; --border: #E4E4E7;
       --green: #16a34a; --red: #dc2626; --orange: #d97706; --blue: #2563eb;
+      --page-bg: #f8f8f8; --card-bg: #FFFFFF; --surface: var(--surface);
+      --tint-green: #f0fdf4; --tint-green-border: #bbf7d0; --tint-green-strong: #dcfce7; --green-dark: #166534;
+      --tint-amber: #fffbeb; --tint-amber-border: #fde68a; --tint-amber-strong: #fef3c7;
+      --tint-red: #fef2f2; --tint-red-border: #fecaca; --tint-red-strong: #fee2e2;
+      --tint-purple: #faf5ff; --tint-blue-border: #d1fae5;
+    }
+    html[data-theme="dark"] {
+      --primary: #F0F0F0; --accent: #47C97E; --accent-light: rgba(71,201,126,0.15);
+      --gold: #EAB308; --gold-light: rgba(234,179,8,0.15);
+      --bg: #141414; --fg: #F0F0F0; --muted: #9CA3AF; --border: #2A2A2A;
+      --green: #4ADE80; --red: #F87171; --orange: #FBBF24; --blue: #60A5FA;
+      --page-bg: #080808; --card-bg: #141414; --surface: #1E1E1E;
+      --tint-green: rgba(74,222,128,0.08); --tint-green-border: rgba(74,222,128,0.3); --tint-green-strong: rgba(74,222,128,0.15); --green-dark: #4ADE80;
+      --tint-amber: rgba(251,191,36,0.08); --tint-amber-border: rgba(251,191,36,0.3); --tint-amber-strong: rgba(251,191,36,0.15);
+      --tint-red: rgba(248,113,113,0.08); --tint-red-border: rgba(248,113,113,0.3); --tint-red-strong: rgba(248,113,113,0.15);
+      --tint-purple: rgba(167,139,250,0.08); --tint-blue-border: rgba(74,222,128,0.3);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; line-height: 1.8; color: var(--fg); background: #f8f8f8; font-size: 15px; -webkit-font-smoothing: antialiased; }
-    .container { max-width: 900px; margin: 0 auto; background: white; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
+    body { font-family: 'Inter', sans-serif; line-height: 1.8; color: var(--fg); background: var(--page-bg); font-size: 15px; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 900px; margin: 0 auto; background: var(--card-bg); box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
     .editable-content { outline: none; }
     
     /* Cover */
@@ -143,16 +159,16 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     .cover .score-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; }
 
     /* Toolbar */
-    .edit-toolbar { position: fixed; top: 20px; right: 20px; background: white; border-radius: 16px; padding: 12px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); display: flex; gap: 8px; align-items: center; z-index: 1000; border: 1px solid var(--border); }
+    .edit-toolbar { position: fixed; top: 20px; right: 20px; background: var(--card-bg); border-radius: 16px; padding: 12px 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); display: flex; gap: 8px; align-items: center; z-index: 1000; border: 1px solid var(--border); }
     .edit-toolbar button { padding: 10px 16px; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .edit-toolbar .primary { background: var(--fg); color: white; }
-    .edit-toolbar .secondary { background: white; color: var(--fg); border: 1px solid var(--border); }
+    .edit-toolbar .secondary { background: var(--card-bg); color: var(--fg); border: 1px solid var(--border); }
     .edit-toolbar span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-right: 8px; }
 
     /* Content */
     .content { padding: 60px 48px; overflow: hidden; }
     .section { margin-bottom: 72px; page-break-inside: avoid; overflow: hidden; }
-    .section-badge { display: inline-flex; align-items: center; gap: 10px; background: #f4f4f5; padding: 10px 18px; border-radius: 100px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+    .section-badge { display: inline-flex; align-items: center; gap: 10px; background: var(--surface); padding: 10px 18px; border-radius: 100px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
     .section-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.02em; }
     .section-desc { font-size: 15px; color: var(--muted); max-width: 600px; margin-bottom: 32px; }
     .page-break { page-break-before: always; }
@@ -163,7 +179,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     .metric-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
     .metric-card .value { font-size: 22px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
 
-    .info-box { background: #f4f4f5; border-left: 3px solid var(--fg); padding: 24px 28px; border-radius: 0 12px 12px 0; margin-bottom: 32px; overflow: hidden; word-break: break-word; }
+    .info-box { background: var(--surface); border-left: 3px solid var(--fg); padding: 24px 28px; border-radius: 0 12px 12px 0; margin-bottom: 32px; overflow: hidden; word-break: break-word; }
     .info-box .title { font-weight: 600; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
     .info-box .text { font-size: 14px; line-height: 1.8; }
 
@@ -171,13 +187,13 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     .insight-box .title { font-weight: 600; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
     .insight-box .text { color: #713F12; font-size: 14px; line-height: 1.8; }
 
-    .alert-box { background: #fef2f2; border-left: 3px solid var(--red); padding: 24px 28px; border-radius: 0 12px 12px 0; margin-bottom: 32px; overflow: hidden; word-break: break-word; }
+    .alert-box { background: var(--tint-red); border-left: 3px solid var(--red); padding: 24px 28px; border-radius: 0 12px 12px 0; margin-bottom: 32px; overflow: hidden; word-break: break-word; }
     .alert-box .title { font-weight: 600; color: var(--red); margin-bottom: 12px; }
     .alert-box .text { color: #991B1B; font-size: 14px; line-height: 1.8; }
 
-    .success-box { background: #f0fdf4; border-left: 3px solid var(--green); padding: 24px 28px; border-radius: 0 12px 12px 0; margin-bottom: 32px; overflow: hidden; word-break: break-word; }
+    .success-box { background: var(--tint-green); border-left: 3px solid var(--green); padding: 24px 28px; border-radius: 0 12px 12px 0; margin-bottom: 32px; overflow: hidden; word-break: break-word; }
     .success-box .title { font-weight: 600; color: var(--green); margin-bottom: 12px; }
-    .success-box .text { color: #166534; font-size: 14px; line-height: 1.8; }
+    .success-box .text { color: var(--green-dark); font-size: 14px; line-height: 1.8; }
 
     /* Maturity bar */
     .mat-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
@@ -193,23 +209,23 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
     th { background: var(--fg); color: white; padding: 12px 16px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
     td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; overflow: hidden; text-overflow: ellipsis; word-break: break-word; }
     tr:last-child td { border-bottom: none; }
-    tr:nth-child(even) { background: #fafafa; }
+    tr:nth-child(even) { background: var(--surface); }
 
     /* Decision cards */
     .decision-card { padding: 20px; border-radius: 12px; border: 1px solid; margin-bottom: 16px; overflow: hidden; word-break: break-word; }
-    .decision-card.risco { background: #fef2f2; border-color: #fecaca; }
-    .decision-card.oportunidade { background: #f0fdf4; border-color: #bbf7d0; }
-    .decision-card.melhoria { background: #fffbeb; border-color: #fde68a; }
+    .decision-card.risco { background: var(--tint-red); border-color: var(--tint-red-border); }
+    .decision-card.oportunidade { background: var(--tint-green); border-color: var(--tint-green-border); }
+    .decision-card.melhoria { background: var(--tint-amber); border-color: var(--tint-amber-border); }
     .decision-card .d-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
     .decision-card .d-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
     .decision-card .d-badge { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
 
     /* Action plan */
-    .action-plan { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 28px; margin-bottom: 32px; overflow: hidden; }
-    .action-plan .ap-title { font-weight: 600; color: #166534; font-size: 18px; margin-bottom: 24px; }
-    .action-item { display: flex; gap: 14px; padding: 16px; background: white; border-radius: 10px; border: 1px solid #d1fae5; margin-bottom: 12px; overflow: hidden; }
-    .action-item .num { width: 28px; height: 28px; background: #166534; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; flex-shrink: 0; }
-    .action-item .text { font-weight: 600; color: #166534; font-size: 14px; margin-bottom: 4px; }
+    .action-plan { background: var(--tint-green); border: 1px solid var(--tint-green-border); border-radius: 12px; padding: 28px; margin-bottom: 32px; overflow: hidden; }
+    .action-plan .ap-title { font-weight: 600; color: var(--green-dark); font-size: 18px; margin-bottom: 24px; }
+    .action-item { display: flex; gap: 14px; padding: 16px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--tint-blue-border); margin-bottom: 12px; overflow: hidden; }
+    .action-item .num { width: 28px; height: 28px; background: var(--green-dark); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; flex-shrink: 0; }
+    .action-item .text { font-weight: 600; color: var(--green-dark); font-size: 14px; margin-bottom: 4px; }
     .action-item .detail { color: #15803d; font-size: 13px; line-height: 1.7; }
 
     /* Checklist */
@@ -239,6 +255,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
 </head>
 <body>
   <div class="edit-toolbar">
+    <button class="secondary" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
     <span>📝 Modo Edição</span>
     <button class="primary" onclick="window.print()">🖨️ Imprimir</button>
     <button class="secondary" onclick="saveHTML()">💾 Salvar HTML</button>
@@ -305,7 +322,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
         <div class="info-box">
           <div class="title">📊 Progresso por Módulo</div>
           <div class="text">
-            ${blocks.filter(b => b.id !== 'scoreGeral').map(b => `<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:16px;">${b.icon}</span><span style="flex:1; font-size:14px;">${b.name}</span><div style="width:100px; height:6px; background:#e4e4e7; border-radius:3px; overflow:hidden;"><div style="height:100%; width:${b.progress}%; background:var(--accent); border-radius:3px;"></div></div><span style="font-size:12px; color:var(--muted); width:36px; text-align:right;">${b.progress}%</span></div>`).join('')}
+            ${blocks.filter(b => b.id !== 'scoreGeral').map(b => `<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;"><span style="font-size:16px;">${b.icon}</span><span style="flex:1; font-size:14px;">${b.name}</span><div style="width:100px; height:6px; background:var(--border); border-radius:3px; overflow:hidden;"><div style="height:100%; width:${b.progress}%; background:var(--accent); border-radius:3px;"></div></div><span style="font-size:12px; color:var(--muted); width:36px; text-align:right;">${b.progress}%</span></div>`).join('')}
           </div>
         </div>
       </div>
@@ -318,7 +335,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
         <p class="section-desc">Avaliação de 17 dimensões organizadas em 4 categorias, com notas de 1 (Inexistente) a 5 (Otimizado).</p>
 
         <div class="metric-grid">
-          <div class="metric-card" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: var(--accent);">
+          <div class="metric-card" style="background: linear-gradient(135deg, var(--tint-green), var(--tint-green-strong)); border-color: var(--accent);">
             <div class="label">Média Geral</div>
             <div class="value" style="color: var(--accent);">${Math.round(mpAvg)}/5</div>
           </div>
@@ -361,7 +378,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
         <h2 class="section-title">Governança Financeira</h2>
         <p class="section-desc">Avaliação da disciplina, separação patrimonial e qualidade da gestão financeira.</p>
 
-        <div class="metric-card" style="text-align:center; padding:32px; margin-bottom:32px; background: linear-gradient(135deg, #f4f4f5, #e4e4e7);">
+        <div class="metric-card" style="text-align:center; padding:32px; margin-bottom:32px; background: linear-gradient(135deg, var(--surface), var(--border));">
           <div class="label">Score de Governança</div>
           <div class="value" style="font-size:40px;">${Math.round(gfAvg)}/5</div>
         </div>
@@ -390,11 +407,11 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
         <p class="section-desc">Leitura dos números atuais, ponto de equilíbrio e saúde financeira.</p>
 
         <div class="metric-grid">
-          <div class="metric-card" style="background: #f0fdf4;">
+          <div class="metric-card" style="background: var(--tint-green);">
             <div class="label">Faturamento</div>
             <div class="value" style="color: var(--green);">${fmtCurrency(af.faturamentoMensal)}</div>
           </div>
-          <div class="metric-card" style="background: #fef2f2;">
+          <div class="metric-card" style="background: var(--tint-red);">
             <div class="label">Despesas Totais</div>
             <div class="value" style="color: var(--red);">${fmtCurrency(af.despesasFixas + af.despesasVariaveis)}</div>
           </div>
@@ -411,7 +428,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
         ${af.ticketMedio > 0 ? `<div class="metric-grid"><div class="metric-card"><div class="label">Ticket Médio</div><div class="value">${fmtCurrency(af.ticketMedio)}</div></div><div class="metric-card"><div class="label">Clientes</div><div class="value">${af.quantidadeClientes}</div></div></div>` : ''}
 
         ${pe > 0 ? `
-        <div class="info-box" style="border-left-color: var(--orange); background: #fffbeb;">
+        <div class="info-box" style="border-left-color: var(--orange); background: var(--tint-amber);">
           <div class="title" style="color: var(--orange);">⚠️ Ponto de Equilíbrio (Break-even)</div>
           <div class="text">
             <strong>Faturamento mínimo necessário:</strong> ${fmtCurrency(pe)}<br>
@@ -476,8 +493,8 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
 
         <div class="metric-grid">
           <div class="metric-card"><div class="label">Ciclo Operacional</div><div class="value">${cicloOp} dias</div></div>
-          <div class="metric-card" style="background: ${cicloFin > 0 ? '#fffbeb' : '#f0fdf4'};"><div class="label">Ciclo Financeiro</div><div class="value" style="color: ${cicloFin > 0 ? 'var(--orange)' : 'var(--green)'};">${cicloFin} dias</div></div>
-          <div class="metric-card" style="background: ${gapCG > 0 ? '#fef2f2' : '#f0fdf4'};"><div class="label">Gap de Capital</div><div class="value" style="color: ${gapCG > 0 ? 'var(--red)' : 'var(--green)'};">${fmtCurrency(gapCG)}</div></div>
+          <div class="metric-card" style="background: ${cicloFin > 0 ? 'var(--tint-amber)' : 'var(--tint-green)'};"><div class="label">Ciclo Financeiro</div><div class="value" style="color: ${cicloFin > 0 ? 'var(--orange)' : 'var(--green)'};">${cicloFin} dias</div></div>
+          <div class="metric-card" style="background: ${gapCG > 0 ? 'var(--tint-red)' : 'var(--tint-green)'};"><div class="label">Gap de Capital</div><div class="value" style="color: ${gapCG > 0 ? 'var(--red)' : 'var(--green)'};">${fmtCurrency(gapCG)}</div></div>
         </div>
 
         <div class="table-wrap">
@@ -536,7 +553,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
           ${kpi.eficienciaOperacional > 0 ? `<div class="metric-card"><div class="label">Eficiência</div><div class="value">${kpi.eficienciaOperacional}%</div></div>` : ''}
           ${kpi.cac > 0 ? `<div class="metric-card"><div class="label">CAC</div><div class="value">${fmtCurrency(kpi.cac)}</div></div>` : ''}
           ${kpi.ltv > 0 ? `<div class="metric-card"><div class="label">LTV</div><div class="value">${fmtCurrency(kpi.ltv)}</div></div>` : ''}
-          ${kpi.cac > 0 && kpi.ltv > 0 ? `<div class="metric-card" style="background: ${ltvCac >= 3 ? '#f0fdf4' : '#fffbeb'};"><div class="label">LTV/CAC</div><div class="value" style="color: ${ltvCac >= 3 ? 'var(--green)' : 'var(--orange)'};">${ltvCac}x</div><div style="font-size:11px; color:var(--muted);">ideal: ≥ 3x</div></div>` : ''}
+          ${kpi.cac > 0 && kpi.ltv > 0 ? `<div class="metric-card" style="background: ${ltvCac >= 3 ? 'var(--tint-green)' : 'var(--tint-amber)'};"><div class="label">LTV/CAC</div><div class="value" style="color: ${ltvCac >= 3 ? 'var(--green)' : 'var(--orange)'};">${ltvCac}x</div><div style="font-size:11px; color:var(--muted);">ideal: ≥ 3x</div></div>` : ''}
         </div>
 
         ${kpi.notes ? `<div class="insight-box"><div class="title">💡 Observações</div><div class="text">${kpi.notes}</div></div>` : ''}
@@ -551,7 +568,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
         <p class="section-desc">Avaliação do nível de risco e capacidade de absorver impactos financeiros.</p>
 
         <div class="metric-grid">
-          <div class="metric-card" style="background: ${riskLevel === 'Alto' ? '#fef2f2' : riskLevel === 'Moderado' ? '#fffbeb' : '#f0fdf4'};">
+          <div class="metric-card" style="background: ${riskLevel === 'Alto' ? 'var(--tint-red)' : riskLevel === 'Moderado' ? 'var(--tint-amber)' : 'var(--tint-green)'};">
             <div class="label">Nível de Risco</div>
             <div class="value" style="color: ${riskLevel === 'Alto' ? 'var(--red)' : riskLevel === 'Moderado' ? 'var(--orange)' : 'var(--green)'};">${riskLevel}</div>
           </div>
@@ -592,7 +609,7 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
 
         ${decisoes.map(d => `
         <div class="decision-card ${d.tipo}">
-          <div class="d-badge" style="background: ${d.tipo === 'risco' ? '#fee2e2' : d.tipo === 'oportunidade' ? '#dcfce7' : '#fef3c7'}; color: ${d.tipo === 'risco' ? 'var(--red)' : d.tipo === 'oportunidade' ? 'var(--green)' : 'var(--orange)'};">
+          <div class="d-badge" style="background: ${d.tipo === 'risco' ? 'var(--tint-red-strong)' : d.tipo === 'oportunidade' ? 'var(--tint-green-strong)' : 'var(--tint-amber-strong)'}; color: ${d.tipo === 'risco' ? 'var(--red)' : d.tipo === 'oportunidade' ? 'var(--green)' : 'var(--orange)'};">
             ${d.tipo === 'risco' ? '⚠️ Risco' : d.tipo === 'oportunidade' ? '📈 Oportunidade' : '💡 Melhoria'} — ${d.impacto === 'alto' ? 'Alto Impacto' : d.impacto === 'medio' ? 'Médio Impacto' : 'Baixo Impacto'}
           </div>
           <div class="d-title">${d.titulo}</div>
@@ -702,6 +719,21 @@ export function generateFinancialReport(project: Project, data: ConsultingData, 
       <div class="f-date">Gerado em ${formatDate(new Date().toISOString())}</div>
     </div>
   </div>
+<script>
+(function(){
+  var KEY = 'berry-report-theme';
+  var root = document.documentElement;
+  function apply(t){ if(t==='dark'){ root.setAttribute('data-theme','dark'); } else { root.removeAttribute('data-theme'); } }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch(e) {}
+  apply(saved === 'dark' ? 'dark' : 'light');
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try { localStorage.setItem(KEY, next); } catch(e) {}
+  });
+})();
+</script>
 </body>
 </html>`;
 

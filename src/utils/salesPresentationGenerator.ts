@@ -28,12 +28,20 @@ export function generateSalesPresentation() {
       --bg-card: #ffffff;
       --border-color: #e2e8f0;
     }
+    html[data-theme="dark"] {
+      --text-primary: #F0F0F0;
+      --text-secondary: #C4C9D2;
+      --text-muted: #8B93A1;
+      --bg-light: #080808;
+      --bg-card: #141414;
+      --border-color: #2A2A2A;
+    }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      background: var(--bg-light);
       color: var(--text-primary);
       line-height: 1.6;
     }
@@ -133,7 +141,7 @@ export function generateSalesPresentation() {
     }
     
     .maturity-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
-    .maturity-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+    .maturity-bar { height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
     .maturity-fill { height: 100%; background: var(--gradient-primary); border-radius: 4px; }
     .maturity-value { font-size: 14px; font-weight: 600; }
     
@@ -294,8 +302,12 @@ export function generateSalesPresentation() {
       .org-children { flex-direction: column; }
     }
     
+    .theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 1000; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; }
+    .theme-toggle:hover { transform: scale(1.05); }
+
     @media print {
       body { background: white; }
+      .theme-toggle { display: none !important; }
       .preview-section { break-inside: avoid; }
     }
   </style>
@@ -311,8 +323,8 @@ export function generateSalesPresentation() {
         <circle cx="30" cy="75" r="22" fill="none" stroke="#2563eb" stroke-width="8"/>
         <circle cx="68" cy="52" r="18" fill="none" stroke="#4ade80" stroke-width="7"/>
         <!-- Text -->
-        <text x="100" y="65" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="700" fill="#1e293b">berry</text>
-        <text x="100" y="95" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="400" fill="#64748b">Consultoria empresarial</text>
+        <text x="100" y="65" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="700" fill="var(--text-primary)">berry</text>
+        <text x="100" y="95" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="400" fill="var(--text-secondary)">Consultoria empresarial</text>
       </svg>
     </div>
     
@@ -553,32 +565,32 @@ export function generateSalesPresentation() {
       <div style="background: var(--bg-light); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
         <div style="font-weight: 600; font-size: 14px; margin-bottom: 12px;">📦 Exemplo: Consultoria Estratégica - Preço base R$ 1.000</div>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #10b981;">
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; border-left: 3px solid #10b981;">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">💎 Valor Agregado</div>
             <div style="font-size: 1.1rem; font-weight: 700; color: #10b981;">R$ 1.400</div>
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">+40% com garantia e suporte VIP</div>
           </div>
-          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #3b82f6;">
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; border-left: 3px solid #3b82f6;">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">📦 Combo/Pacote</div>
             <div style="font-size: 1.1rem; font-weight: 700; color: #3b82f6;">R$ 2.500</div>
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">3 serviços com 15% desconto</div>
           </div>
-          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #f59e0b;">
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; border-left: 3px solid #f59e0b;">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">👑 Plano Premium</div>
             <div style="font-size: 1.1rem; font-weight: 700; color: #f59e0b;">R$ 2.000</div>
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">2x com atendimento prioritário</div>
           </div>
-          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #8b5cf6;">
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; border-left: 3px solid #8b5cf6;">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">🔄 Recorrência</div>
             <div style="font-size: 1.1rem; font-weight: 700; color: #8b5cf6;">R$ 150/mês</div>
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">15% mensal = 12x retorno anual</div>
           </div>
-          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #ec4899;">
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; border-left: 3px solid #ec4899;">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">🎯 Baseado em ROI</div>
             <div style="font-size: 1.1rem; font-weight: 700; color: #ec4899;">R$ 3.000</div>
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Se gera 10x retorno, 3x é "barato"</div>
           </div>
-          <div style="background: white; padding: 16px; border-radius: 10px; border-left: 3px solid #06b6d4;">
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; border-left: 3px solid #06b6d4;">
             <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">⚓ Ancoragem</div>
             <div style="font-size: 1.1rem; font-weight: 700; color: #06b6d4;">De R$ 2.000 por R$ 1.000</div>
             <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">Âncora alta = oportunidade</div>
@@ -851,6 +863,22 @@ export function generateSalesPresentation() {
     </div>
     
   </div>
+<button id="themeToggle" class="theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
+<script>
+(function(){
+  var KEY = 'berry-report-theme';
+  var root = document.documentElement;
+  function apply(t){ if(t==='dark'){ root.setAttribute('data-theme','dark'); } else { root.removeAttribute('data-theme'); } }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch(e) {}
+  apply(saved === 'dark' ? 'dark' : 'light');
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try { localStorage.setItem(KEY, next); } catch(e) {}
+  });
+})();
+</script>
 </body>
 </html>
 `;
