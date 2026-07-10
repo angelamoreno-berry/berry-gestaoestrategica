@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft, BarChart3, LayoutGrid, Settings2, UserCircle2 } from 'lucide-react';
+import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft, BarChart3, LayoutGrid, Settings2, UserCircle2, Search } from 'lucide-react';
 import { openSalesPresentationInNewTab } from '@/utils/salesPresentationGenerator';
 import { Project, ProjectType, SimulationType } from '@/types/consulting';
 
@@ -44,6 +44,7 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
     quantidadeColaboradores: ''
   });
   const [simulationType, setSimulationType] = useState<SimulationType>('completa');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Edição de projeto (engrenagem)
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -125,6 +126,13 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
   const canCreate = isSimulation ? isBerry : isAdmin;
   const canDelete = isSimulation ? isBerry : isAdmin;
   const filteredProjects = projects.filter(p => (p.projectType || 'real') === projectType);
+
+  // Busca por nome da empresa (ignora maiúsculas e acentos)
+  const normalize = (s: string) =>
+    s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const searchedProjects = searchTerm.trim()
+    ? filteredProjects.filter(p => normalize(p.nomeEmpresa).includes(normalize(searchTerm)))
+    : filteredProjects;
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -236,8 +244,18 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
           </p>
         </div>
 
+        <div className="max-w-md mx-auto mb-8 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar empresa pelo nome..."
+            className="pl-9"
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {!isSimulation && canCreate && (
+          {!isSimulation && canCreate && !searchTerm.trim() && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
@@ -273,7 +291,7 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
            </Dialog>
           )}
 
-          {isSimulation && canCreate && (
+          {isSimulation && canCreate && !searchTerm.trim() && (
             <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
               <DialogTrigger asChild>
                 <Card className="cursor-pointer border-dashed border-2 hover:border-primary hover:bg-primary/5 transition-all duration-300 flex items-center justify-center min-h-[280px]">
@@ -381,7 +399,7 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
             </Dialog>
           )}
 
-          {filteredProjects.map((project) => (
+          {searchedProjects.map((project) => (
             <Card 
               key={project.id} 
               className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${
@@ -507,11 +525,15 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
           </DialogContent>
         </Dialog>
 
-        {filteredProjects.length === 0 && !isSimulation && (
+        {searchedProjects.length === 0 && !isSimulation && (
           <div className="text-center py-12">
             <Building2 className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">Nenhum projeto cadastrado</h3>
-            <p className="text-muted-foreground">Comece criando seu primeiro projeto de consultoria</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              {searchTerm.trim() ? 'Nenhuma empresa encontrada' : 'Nenhum projeto cadastrado'}
+            </h3>
+            <p className="text-muted-foreground">
+              {searchTerm.trim() ? 'Ajuste o termo de busca' : 'Comece criando seu primeiro projeto de consultoria'}
+            </p>
           </div>
         )}
 
