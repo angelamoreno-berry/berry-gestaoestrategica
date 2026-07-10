@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft, BarChart3, LayoutGrid, Settings2, UserCircle2, Search } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Plus, Building2, Users, Mail, TrendingUp, Briefcase, Trash2, Sparkles, Presentation, ArrowLeft, BarChart3, LayoutGrid, Settings2, UserCircle2, Search, EyeOff } from 'lucide-react';
 import { openSalesPresentationInNewTab } from '@/utils/salesPresentationGenerator';
 import { Project, ProjectType, SimulationType } from '@/types/consulting';
 
@@ -45,6 +46,12 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
   });
   const [simulationType, setSimulationType] = useState<SimulationType>('completa');
   const [searchTerm, setSearchTerm] = useState('');
+  const [discreetMode, setDiscreetMode] = useState<boolean>(() => localStorage.getItem('berry-discreet-mode') === '1');
+
+  const toggleDiscreetMode = (value: boolean) => {
+    setDiscreetMode(value);
+    localStorage.setItem('berry-discreet-mode', value ? '1' : '0');
+  };
 
   // Edição de projeto (engrenagem)
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -244,14 +251,23 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
           </p>
         </div>
 
-        <div className="max-w-md mx-auto mb-8 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar empresa pelo nome..."
-            className="pl-9"
-          />
+        <div className="max-w-md mx-auto mb-8 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar empresa pelo nome..."
+              className="pl-9"
+            />
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Switch id="discreet-mode" checked={discreetMode} onCheckedChange={toggleDiscreetMode} />
+            <Label htmlFor="discreet-mode" className="text-sm text-muted-foreground cursor-pointer flex items-center gap-1.5">
+              <EyeOff className="h-3.5 w-3.5" />
+              Modo discreto (oculta dados sensíveis dos cards)
+            </Label>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -449,33 +465,39 @@ export function ProjectSelector({ projectType }: ProjectSelectorProps) {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  <span>{project.responsavel}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="h-4 w-4" />
-                  <span className="truncate">{project.emailResponsavel}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <TrendingUp className="h-4 w-4" />
-                  <span>{formatCurrency(project.faturamentoMedio)}/mês</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Briefcase className="h-4 w-4" />
-                  <span>{project.quantidadeColaboradores} colaboradores</span>
-                </div>
-                <div className="pt-2 border-t space-y-1">
-                  <p className="text-xs text-muted-foreground">
-                    Criado em {new Date(project.dataCriacao).toLocaleDateString('pt-BR')}
-                  </p>
-                  {!isSimulation && (
-                    <p className="text-xs text-muted-foreground flex items-center gap-1" title={project.createdByEmail || undefined}>
-                      <UserCircle2 className="h-3.5 w-3.5" />
-                      Criado por: {project.createdByName || project.createdByEmail || '—'}
-                    </p>
-                  )}
-                </div>
+                {discreetMode ? (
+                  <p className="text-xs text-muted-foreground italic">Dados ocultos — modo discreto ativo</p>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Users className="h-4 w-4" />
+                      <span>{project.responsavel}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Mail className="h-4 w-4" />
+                      <span className="truncate">{project.emailResponsavel}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <TrendingUp className="h-4 w-4" />
+                      <span>{formatCurrency(project.faturamentoMedio)}/mês</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Briefcase className="h-4 w-4" />
+                      <span>{project.quantidadeColaboradores} colaboradores</span>
+                    </div>
+                    <div className="pt-2 border-t space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        Criado em {new Date(project.dataCriacao).toLocaleDateString('pt-BR')}
+                      </p>
+                      {!isSimulation && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1" title={project.createdByEmail || undefined}>
+                          <UserCircle2 className="h-3.5 w-3.5" />
+                          Criado por: {project.createdByName || project.createdByEmail || '—'}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           ))}
