@@ -8,14 +8,17 @@ import { Label } from '@/components/ui/label';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Camera, KeyRound, LogOut, ChevronDown, ShieldCheck } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { Camera, KeyRound, LogOut, ChevronDown, ShieldCheck, Sun, Moon, Monitor, Palette, Check } from 'lucide-react';
 
 export function UserMenu() {
   const navigate = useNavigate();
   const { profile, isAdmin, memberships, signOut, updatePassword, uploadAvatar } = useAuth();
+  const { theme, setTheme } = useTheme();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pwOpen, setPwOpen] = useState(false);
   const [newPw, setNewPw] = useState('');
@@ -92,6 +95,27 @@ export function UserMenu() {
           <DropdownMenuItem onClick={() => setPwOpen(true)}>
             <KeyRound className="w-4 h-4 mr-2" /> Alterar senha
           </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Palette className="w-4 h-4 mr-2" /> Tema
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => setTheme('light')}>
+                  <Sun className="w-4 h-4 mr-2" /> Claro
+                  {theme === 'light' && <Check className="w-4 h-4 ml-auto" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                  <Moon className="w-4 h-4 mr-2" /> Escuro
+                  {theme === 'dark' && <Check className="w-4 h-4 ml-auto" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')}>
+                  <Monitor className="w-4 h-4 mr-2" /> Sistema
+                  {theme === 'system' && <Check className="w-4 h-4 ml-auto" />}
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
           {showAdmin && (
             <>
               <DropdownMenuSeparator />
