@@ -19,6 +19,7 @@ export type Database = {
           blocks: Json
           company: string | null
           created_at: string
+          created_by: string | null
           data: Json
           id: string
           name: string
@@ -28,6 +29,7 @@ export type Database = {
           blocks?: Json
           company?: string | null
           created_at?: string
+          created_by?: string | null
           data?: Json
           id?: string
           name: string
@@ -37,12 +39,21 @@ export type Database = {
           blocks?: Json
           company?: string | null
           created_at?: string
+          created_by?: string | null
           data?: Json
           id?: string
           name?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "consulting_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
