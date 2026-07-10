@@ -43,7 +43,7 @@ export function AgendaCEOBlock() {
   useEffect(() => {
     const hasPrioridades = localData.prioridades.length > 0 ? 1 : 0;
     const hasAlocacao = localData.alocacaoTempo.length > 0 ? 1 : 0;
-    const hasFoco = localData.focoTrimestre.trim().length > 0 ? 1 : 0;
+    const hasFoco = String(localData.focoTrimestre ?? '').trim().length > 0 ? 1 : 0;
     const progress = Math.round(((hasPrioridades + hasAlocacao + hasFoco) / 3) * 100);
     updateBlockProgress('agendaCEO', progress);
     
@@ -164,7 +164,7 @@ export function AgendaCEOBlock() {
             className="resize-none"
             rows={3}
           />
-          {!localData.focoTrimestre.trim() && !dismissedSuggestions['focoTrimestre'] && (
+          {!String(localData.focoTrimestre ?? '').trim() && !dismissedSuggestions['focoTrimestre'] && (
             <AISuggestionLoader
               isLoading={isLoading}
               error={error}

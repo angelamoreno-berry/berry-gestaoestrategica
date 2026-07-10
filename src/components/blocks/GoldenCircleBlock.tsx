@@ -29,9 +29,9 @@ export function GoldenCircleBlock() {
   const suggestions = aiSuggestions as unknown as GoldenCircleSuggestions | null;
 
   useEffect(() => {
-    const hasWhy = localData.why.trim().length > 0 ? 1 : 0;
-    const hasHow = localData.how.trim().length > 0 ? 1 : 0;
-    const hasWhat = localData.what.trim().length > 0 ? 1 : 0;
+    const hasWhy = String(localData.why ?? '').trim().length > 0 ? 1 : 0;
+    const hasHow = String(localData.how ?? '').trim().length > 0 ? 1 : 0;
+    const hasWhat = String(localData.what ?? '').trim().length > 0 ? 1 : 0;
     const progress = Math.round(((hasWhy + hasHow + hasWhat) / 3) * 100);
     updateBlockProgress('goldenCircle', progress);
     
@@ -55,7 +55,7 @@ export function GoldenCircleBlock() {
   };
 
   const showSuggestion = (field: string, value: string) => {
-    return !value.trim() && !dismissedSuggestions[field];
+    return !String(value ?? '').trim() && !dismissedSuggestions[field];
   };
 
   return (

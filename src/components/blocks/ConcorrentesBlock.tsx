@@ -35,8 +35,8 @@ export function ConcorrentesBlock() {
   useEffect(() => {
     const hasConcorrentes = localData.concorrentes.length > 0 ? 1 : 0;
     const hasDiferenciais = localData.diferenciais.length > 0 ? 1 : 0;
-    const hasPublico = localData.publicoAlvo.trim().length > 0 ? 1 : 0;
-    const hasProposta = localData.propostaValor.trim().length > 0 ? 1 : 0;
+    const hasPublico = String(localData.publicoAlvo ?? '').trim().length > 0 ? 1 : 0;
+    const hasProposta = String(localData.propostaValor ?? '').trim().length > 0 ? 1 : 0;
     const progress = Math.round(((hasConcorrentes + hasDiferenciais + hasPublico + hasProposta) / 4) * 100);
     updateBlockProgress('concorrentes', progress);
     
@@ -98,7 +98,7 @@ export function ConcorrentesBlock() {
   };
 
   const showSuggestion = (field: string, value: string | string[] | Array<{ nome: string; pontoForte: string; pontoFraco: string }>) => {
-    const isEmpty = Array.isArray(value) ? value.length === 0 : !value.trim();
+    const isEmpty = Array.isArray(value) ? value.length === 0 : !String(value ?? '').trim();
     return isEmpty && !dismissedSuggestions[field];
   };
 
