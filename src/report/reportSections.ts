@@ -5,11 +5,22 @@ const CSS_V2 = `
 :root {
   --cinza: #7A7A7A; --cinza-claro: #F0F0F0; --azul: #60A5FA; --verde: #47C97E;
   --surface-1: rgba(122,122,122,.045); --surface-2: rgba(122,122,122,.08); --surface-3: rgba(122,122,122,.13);
-  --border: rgba(122,122,122,.26); --bg: #0A0A0B;
+  --border: rgba(122,122,122,.26); --bg: #0A0A0B; --txt-claro: #FFFFFF;
+  --btn-fg: #FFFFFF; --btn-bg-inv: #FFFFFF; --btn-fg-inv: #000000;
   --font-display: "IBM Plex Sans", -apple-system, sans-serif;
   --font-body: "Inter", -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
+
+html[data-theme="light"] {
+  --bg: #FFFFFF; --txt-claro: #111111; --cinza: #555555; --cinza-claro: #333333;
+  --surface-1: #F9F9FB; --surface-2: #F0F0F2; --surface-3: #E2E2E5;
+  --border: #D5D5D8; --azul: #1E3A8A; --verde: #15803D;
+  --btn-fg: #111111; --btn-bg-inv: #111111; --btn-fg-inv: #FFFFFF;
+}
+
+.theme-toggle { position: fixed; top: 18px; right: 18px; z-index: 999; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface-2); color: var(--txt-claro); cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.theme-toggle:hover { background: var(--surface-3); }
 
 @media print {
   :root {
@@ -64,7 +75,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 .cover { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 24px; background: radial-gradient(120% 90% at 50% 130%, rgba(13,48,164,.15), transparent 70%); }
 .cover h1 { font-size: clamp(28px, 4.5vw, 44px); margin-bottom: 12px; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
 .cover .sub { color: var(--cinza); margin-bottom: 56px; font-size: 16px; }
-.cover .empresa { font-size: 28px; font-weight: 600; color: #FFF; margin-bottom: 40px; }
+.cover .empresa { font-size: 28px; font-weight: 600; color: var(--txt-claro); margin-bottom: 40px; }
 .cover-meta { display: grid; grid-template-columns: repeat(2, minmax(180px, 220px)); gap: 12px; }
 .cover-meta div { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; text-align: left; }
 .cover-meta label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cinza); display: block; margin-bottom: 6px; }
@@ -73,7 +84,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 /* Seções */
 .section { padding: 80px 0 40px; }
 .kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--verde); margin-bottom: 12px; font-weight: 500; }
-.section h2 { font-size: 26px; color: #FFF; margin-bottom: 12px; font-family: var(--font-display); font-weight: 600; }
+.section h2 { font-size: 26px; color: var(--txt-claro); margin-bottom: 12px; font-family: var(--font-display); font-weight: 600; }
 .section > .wrap > p.lead { color: #AAA; font-size: 15px; max-width: 600px; margin-bottom: 40px; }
 
 /* Resumo */
@@ -84,7 +95,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 
 /* Veredito */
 .veredito-box { background: rgba(71, 201, 126, 0.05); border-left: 4px solid var(--verde); padding: 24px; border-radius: 0 16px 16px 0; margin-bottom: 24px; }
-.veredito-box h4 { font-family: var(--font-display); font-size: 18px; color: #FFF; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.veredito-box h4 { font-family: var(--font-display); font-size: 18px; color: var(--txt-claro); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
 .veredito-box p { font-size: 15px; color: var(--cinza-claro); line-height: 1.6; }
 
 .score-row { display: flex; align-items: baseline; gap: 6px; }
@@ -101,7 +112,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 /* Cadeia de Dependencia */
 .dep-chain { display: flex; align-items: center; justify-content: space-between; background: var(--surface-1); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin: 32px 0; gap: 12px; }
 .dep-node { flex: 1; text-align: center; background: var(--surface-2); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
-.dep-node h5 { font-size: 13px; color: #FFF; margin-bottom: 4px; }
+.dep-node h5 { font-size: 13px; color: var(--txt-claro); margin-bottom: 4px; }
 .dep-node small { font-size: 11px; color: var(--cinza); font-family: var(--font-mono); text-transform: uppercase; }
 .dep-arrow { color: var(--verde); font-weight: 700; font-size: 18px; }
 
@@ -111,7 +122,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 .playbook-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .playbook-horizonte { font-family: var(--font-mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; padding: 6px 14px; border-radius: 999px; }
 .playbook-urgencia { font-size: 13px; color: var(--cinza); font-weight: 500; }
-.playbook-title { font-size: 22px; font-weight: 600; color: #FFF; font-family: var(--font-display); margin-bottom: 16px; }
+.playbook-title { font-size: 22px; font-weight: 600; color: var(--txt-claro); font-family: var(--font-display); margin-bottom: 16px; }
 
 .playbook-grid { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
 .playbook-col { padding: 24px; border-right: 1px solid var(--border); }
@@ -124,12 +135,12 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 .playbook-iniciativa-item { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
 .playbook-iniciativa-item:last-child { margin-bottom: 0; }
 .checkbox-v2 { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; background: var(--surface-1); margin-top: 2px; }
-.playbook-iniciativa-text { font-size: 15px; color: #FFF; font-weight: 500; line-height: 1.5; }
+.playbook-iniciativa-text { font-size: 15px; color: var(--txt-claro); font-weight: 500; line-height: 1.5; }
 
 /* Comparação Hoje vs Amanhã */
 .comparison-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 32px; }
 .comparison-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-.comparison-card h3 { font-size: 18px; color: #FFF; font-family: var(--font-display); margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.comparison-card h3 { font-size: 18px; color: var(--txt-claro); font-family: var(--font-display); margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
 .comparison-list { list-style: none; }
 .comparison-item { display: flex; gap: 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
 .comparison-item .icon { font-size: 16px; flex-shrink: 0; }
@@ -137,7 +148,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--cinza-
 /* Dashboard Card */
 .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 24px; }
 .dash-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
-.dash-card h4 { font-size: 16px; color: #FFF; font-family: var(--font-display); margin-bottom: 12px; }
+.dash-card h4 { font-size: 16px; color: var(--txt-claro); font-family: var(--font-display); margin-bottom: 12px; }
 .dash-card-meta { display: flex; justify-content: space-between; margin-bottom: 16px; background: var(--surface-2); padding: 12px; border-radius: 8px; font-size: 14px; }
 .dash-card-meta label { color: var(--cinza); font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; }
 .dash-card p { font-size: 13px; color: #AAA; line-height: 1.6; }
@@ -149,7 +160,7 @@ footer { padding: 40px 0; text-align: center; color: #666; font-size: 12px; font
 
 /* Barra de Ferramentas */
 .fab-container { position: fixed; top: 24px; right: 24px; display: flex; gap: 12px; z-index: 100; }
-.fab-btn { padding: 10px 18px; background: #FFF; color: #000; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: 0.2s; }
+.fab-btn { padding: 10px 18px; background: var(--btn-bg-inv); color: var(--btn-fg-inv); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size: 13px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: 0.2s; }
 .fab-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
 
 @media (max-width: 640px) {
@@ -200,10 +211,10 @@ function renderCover(data: ConsultingData, project: Project): string {
     <p class="sub">Mapeamento transversal de 14 blocos de diagnóstico e plano de ação estruturado</p>
     <div class="empresa">${esc(nome)}</div>
     <div class="cover-meta">
-      <div><label>Responsável</label><span style="font-weight:500;color:#FFF;">${esc(project.responsavel || data.consultorNome || "-")}</span></div>
-      <div><label>Emissão</label><span style="font-weight:500;color:#FFF;">${fmtDate()}</span></div>
-      ${fat > 0 ? `<div><label>Faturamento</label><span style="font-weight:500;color:#FFF;">${fmtCurrency(fat)}/mês</span></div>` : ""}
-      ${project.quantidadeColaboradores > 0 ? `<div><label>Colaboradores</label><span style="font-weight:500;color:#FFF;">${project.quantidadeColaboradores} pessoas</span></div>` : ""}
+      <div><label>Responsável</label><span style="font-weight:500;color:var(--txt-claro);">${esc(project.responsavel || data.consultorNome || "-")}</span></div>
+      <div><label>Emissão</label><span style="font-weight:500;color:var(--txt-claro);">${fmtDate()}</span></div>
+      ${fat > 0 ? `<div><label>Faturamento</label><span style="font-weight:500;color:var(--txt-claro);">${fmtCurrency(fat)}/mês</span></div>` : ""}
+      ${project.quantidadeColaboradores > 0 ? `<div><label>Colaboradores</label><span style="font-weight:500;color:var(--txt-claro);">${project.quantidadeColaboradores} pessoas</span></div>` : ""}
     </div>
   </div>`;
 }
@@ -239,7 +250,7 @@ function renderResumo(m: any, data: ConsultingData, blocks: BlockStatus[]): stri
           <h3>Maturidade Média</h3>
           <div class="score-row"><span class="score-big">${Math.round(m.avgMaturity*10)/10}</span><span class="score-max">/5</span></div>
           <div class="score-bar"><div class="score-fill" style="width:${(m.avgMaturity/5)*100}%"></div></div>
-          <p class="exp" style="color:#FFF;font-weight:500;margin-top:12px;margin-bottom:4px;">Estágio: ${esc(m.maturityLabel)}</p>
+          <p class="exp" style="color:var(--txt-claro);font-weight:500;margin-top:12px;margin-bottom:4px;">Estágio: ${esc(m.maturityLabel)}</p>
           <p class="exp" style="margin-top:0">${esc(m.maturityBreakdown)}</p>
         </div>
         <div class="exec-card">
@@ -321,7 +332,7 @@ function generateDynamicModule(title: string, color: string, bgHead: string, hor
         <div class="playbook-grid">
           <div class="playbook-col">
             <h5>1. Objetivo Estratégico</h5>
-            <p style="font-size: 16px; color: #FFF; font-weight: 500">${objEstrategico}</p>
+            <p style="font-size: 16px; color: var(--txt-claro); font-weight: 500">${objEstrategico}</p>
           </div>
           <div class="playbook-col">
             <h5>2. Valor Gerado ao Negócio</h5>
@@ -525,7 +536,7 @@ function renderDashboard(data: ConsultingData): string {
           <div class="dash-card">
             <h4>${esc(ind.nome)}</h4>
             <div class="dash-card-meta">
-              <div><label>Hoje</label><div style="font-weight:700; color:#FFF; margin-top:2px">${esc(ind.hoje)}</div></div>
+              <div><label>Hoje</label><div style="font-weight:700; color:var(--txt-claro); margin-top:2px">${esc(ind.hoje)}</div></div>
               <div><label>Meta 12 Meses</label><div style="font-weight:700; color:var(--verde); margin-top:2px">${esc(ind.meta)}</div></div>
             </div>
             <p>${esc(ind.justificativa)}</p>
@@ -563,5 +574,21 @@ export function render(html: string): string {
 
 export function generateReportV2(data: ConsultingData, project: Project, blocks: BlockStatus[]): string {
   const m = getExecutiveMetrics(data);
-  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Plano Executivo · ${esc(project.nomeEmpresa||data.clienteNome)}</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>${CSS_V2}</style></head><body>${renderToolbar()}<div class="wrap">${renderCover(data,project)}${renderResumo(m,data,blocks)}${renderPlaybook(data)}${renderTransformacao(data)}${renderDashboard(data)}${renderFinal()}</div><script>document.title = "Plano Executivo - ${esc(project.nomeEmpresa||data.clienteNome)}";</script></body></html>`;
+  return `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Plano Executivo · ${esc(project.nomeEmpresa||data.clienteNome)}</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>${CSS_V2}</style></head><body><button class="theme-toggle no-print" id="themeToggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>${renderToolbar()}<div class="wrap">${renderCover(data,project)}${renderResumo(m,data,blocks)}${renderPlaybook(data)}${renderTransformacao(data)}${renderDashboard(data)}${renderFinal()}</div><script>
+document.title = "Plano Executivo - ${esc(project.nomeEmpresa||data.clienteNome)}";
+(function(){
+  var KEY = 'berry-report-theme';
+  var root = document.documentElement;
+  function apply(t){ if(t==='light'){ root.setAttribute('data-theme','light'); } else { root.removeAttribute('data-theme'); } }
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch(e) {}
+  apply(saved === 'light' ? 'light' : 'dark');
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var isLight = root.getAttribute('data-theme') === 'light';
+    var next = isLight ? 'dark' : 'light';
+    apply(next);
+    try { localStorage.setItem(KEY, next); } catch(e) {}
+  });
+})();
+</script></body></html>`;
 }
