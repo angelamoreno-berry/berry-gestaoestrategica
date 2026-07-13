@@ -2,7 +2,7 @@ import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting'
 import { getExecutiveMetrics } from "@/report/executiveMetrics";
 import * as ReportSections from "@/report/reportSections";
 import { reportStyles } from './reportStyles';
-import { generateCargoChecklist, generateMaturityInsights, generateActionPlan, generateMotorStrategies, buildRoadmap, URGENCIA_INFO, URGENCIA_ORDEM, Urgencia } from './reportModel';
+import { generateCargoChecklist, generateMaturityInsights, generateActionPlan, generateMotorStrategies, buildStrategicInitiatives, HORIZONTE_INFO, HORIZONTE_ORDEM } from './reportModel';
 
 // Helper function to generate activity checklist suggestions for a position
 export function generateReport(project: Project, data: ConsultingData, blocks: BlockStatus[]) {
@@ -12,11 +12,9 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
   // (substitui a antiga extração por regex sobre o HTML gerado).
   // ============================================================
   interface AcaoItem { texto: string; detalhe: string; tags?: string[]; cond?: boolean; numero?: string }
-  const acoesColetadas: { titulo: string; origem: string }[] = [];
 
   const renderActionPlan = (origem: string, badge: string, styleAttr: string, itens: AcaoItem[]): string => {
     const visiveis = itens.filter(it => it.cond !== false);
-    visiveis.forEach(it => acoesColetadas.push({ titulo: it.texto, origem }));
     const lis = visiveis.map((it, i) => `
             <li class="action-plan-item">
               <span class="action-plan-number">${it.numero ?? String(i + 1)}</span>
@@ -2261,40 +2259,36 @@ ${reportStyles(overallProgress)}
   ].join('');;
 
   // ============================================================
-  // Roadmap de Implementação consolidado — calculado das ações
-  // coletadas durante a geração (renderActionPlan), sem regex.
-  // Dedup e classificação por urgência em reportModel.buildRoadmap.
+  // Roadmap Executivo — 8 iniciativas estratégicas fixas (arquitetura
+  // canônica, D1). Horizonte derivado da maturidade da dimensão
+  // relacionada. Detalhamento operacional vive nos capítulos.
   // ============================================================
-  const roadmapItens = buildRoadmap(acoesColetadas);
+  const iniciativas = buildStrategicInitiatives(data);
 
   const roadmapHtml = `
-    <!-- ===== ROADMAP DE IMPLEMENTAÇÃO ===== -->
+    <!-- ===== ROADMAP EXECUTIVO ===== -->
     <div class="section">
       <div class="section-header">
         <div class="section-badge">
           <span class="section-icon">🗺️</span>
-          Roadmap de Implementação
+          Roadmap Executivo
         </div>
-        <h2 class="section-title">12 meses em 5 horizontes</h2>
-        <p class="section-description">Ações consolidadas de todo o diagnóstico — cada uma aparece uma única vez. A origem indica o capítulo onde ela é detalhada.</p>
+        <h2 class="section-title">A jornada de transformação em 12 meses</h2>
+        <p class="section-description">Oito iniciativas estratégicas derivadas do diagnóstico de maturidade. O horizonte de cada uma reflete a urgência da base que a sustenta; o detalhamento operacional está no capítulo de origem.</p>
       </div>
 
       <div class="roadmap-legend">
-        <span>🔴 Crítica · 30 dias</span>
-        <span>🟠 Alta · 3 meses</span>
-        <span>🟡 Média · 6 meses</span>
-        <span>🟢 Evolução · 9 meses</span>
-        <span>🔵 Estratégica · 12 meses</span>
+        ${HORIZONTE_ORDEM.map(h => `<span>${HORIZONTE_INFO[h].label} · ${HORIZONTE_INFO[h].prazo}</span>`).join('\n        ')}
       </div>
 
-      ${URGENCIA_ORDEM.map(tier => {
-        const itens = roadmapItens.filter(i => i.urgencia === tier);
+      ${HORIZONTE_ORDEM.map(h => {
+        const itens = iniciativas.filter(i => i.horizonte === h);
         if (itens.length === 0) return '';
         return `
-        <div class="roadmap-tier tier-${tier}">
-          <div class="roadmap-tier-head"><span class="dot"></span>${URGENCIA_INFO[tier].label}<small>${URGENCIA_INFO[tier].prazo}</small></div>
+        <div class="roadmap-tier tier-${h}">
+          <div class="roadmap-tier-head"><span class="dot"></span>${HORIZONTE_INFO[h].label}<small>${HORIZONTE_INFO[h].prazo}</small></div>
           ${itens.map(i => `
-            <div class="roadmap-item"><span>${i.titulo}</span><span class="origem">${i.origem}</span></div>
+            <div class="roadmap-item"><span><strong>${i.titulo}</strong><br><small style="opacity:.75">${i.descricao}</small></span><span class="origem">${i.origem}</span></div>
           `).join('')}
         </div>`;
       }).join('')}

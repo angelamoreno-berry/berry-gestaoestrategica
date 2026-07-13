@@ -1675,6 +1675,11 @@ export function reportStyles(overallProgress: number): string {
     .tier-media .dot { background: #EAB308; } .tier-media .roadmap-tier-head { background: #FEFCE8; color: #A16207; }
     .tier-evolucao .dot { background: #22C55E; } .tier-evolucao .roadmap-tier-head { background: #F0FDF4; color: #15803D; }
     .tier-estrategica .dot { background: #3B82F6; } .tier-estrategica .roadmap-tier-head { background: #EFF6FF; color: #1D4ED8; }
+    .tier-h30 .dot { background: #EF4444; } .tier-h30 .roadmap-tier-head { background: #FEF2F2; color: #B91C1C; }
+    .tier-h3 .dot { background: #F97316; } .tier-h3 .roadmap-tier-head { background: #FFF7ED; color: #C2410C; }
+    .tier-h6 .dot { background: #EAB308; } .tier-h6 .roadmap-tier-head { background: #FEFCE8; color: #A16207; }
+    .tier-h9 .dot { background: #22C55E; } .tier-h9 .roadmap-tier-head { background: #F0FDF4; color: #15803D; }
+    .tier-h12 .dot { background: #3B82F6; } .tier-h12 .roadmap-tier-head { background: #EFF6FF; color: #1D4ED8; }
 
     /* === Impressão / PDF: fundo branco garantido === */
     @media print {

@@ -115,6 +115,9 @@ export function SWOTBlock() {
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground">
           Realize uma análise SWOT completa e defina os horizontes de planejamento estratégico.
+          <span className="block text-xs mt-1 text-primary/80">
+            Ordene os itens do mais relevante para o menos — o relatório e o resumo executivo usam os primeiros de cada quadrante.
+          </span>
         </p>
         <Button 
           variant="outline" 

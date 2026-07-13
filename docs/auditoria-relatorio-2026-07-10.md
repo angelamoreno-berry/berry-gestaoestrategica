@@ -24,13 +24,13 @@ O relatório atual implementa bem a **primeira geração** da arquitetura (Resum
 
 | # | Arquitetura | Estado atual | Gravidade |
 |---|---|---|---|
-| D1 | Roadmap = máx. **8 iniciativas estratégicas** amplas | 40 ações operacionais classificadas por keyword em 5 faixas | **Crítica** — é a divergência estrutural central |
+| D1 | Roadmap = máx. **8 iniciativas estratégicas** amplas | ✅ Resolvido em 10/07: 8 iniciativas fixas em `buildStrategicInitiatives`, horizonte por maturidade | Resolvida |
 | D2 | Capítulos abrem com banner "Contribui para / Horizonte / Objetivo" | Nenhum capítulo tem banner (0 ocorrências) | **Crítica** — quebra a amarração capítulo↔plano |
 | D3 | Achados numerados (Achado 1..N) referenciados ao longo do documento | Conceito inexistente; capítulos independentes | Alta |
-| D4 | Classificação de urgência por **severidade do diagnóstico** | Classificação por palavra-chave no título da ação | Alta — mesma família do bug "posição 0" |
-| D5 | Riscos/oportunidades do Resumo por severidade relativa | Usa posições 0-2 dos arrays SWOT em ordem de cadastro (bug conhecido confirmado) | Alta |
-| D6 | TOC removido (decisão reafirmada) | **Presente e ativo** (secTableOfContents) | Média — remoção trivial pós-refactor |
-| D7 | Master Checklist removido (decisão reafirmada) | **Presente e ativo** (secMasterChecklist) | Média — idem |
+| D4 | Classificação de urgência por **severidade do diagnóstico** | ✅ Resolvido em 10/07: horizonte de cada iniciativa deriva do nível de maturidade da dimensão | Resolvida |
+| D5 | Riscos/oportunidades do Resumo por severidade relativa | ✅ Resolvido em 10/07 por convenção: ordem de cadastro = prioridade do consultor, com orientação explícita no bloco SWOT da plataforma | Resolvida (convenção) |
+| D6 | TOC removido (decisão reafirmada) | ✅ Removido em 10/07 | Resolvida |
+| D7 | Master Checklist removido (decisão reafirmada) | ✅ Removido em 10/07 | Resolvida |
 | D8 | Conteúdo educativo −50%, foco "o que fazer" | Parcial: restam menções a Sinek/Harvard e blocos conceituais | Baixa |
 | D9 | Berry Score como âncora comparativa na P2 | Usa `executiveMetrics.berryScore` como "Nota Geral" com ressalva em comentário de que não é o score oficial | Média — depende da decisão pendente da tabela de faixas |
 

@@ -478,3 +478,53 @@ export function buildRoadmap(acoes: { titulo: string; origem: string }[]): Roadm
   }
   return itens;
 }
+
+
+// ============================================================
+// Iniciativas Estratégicas do Roadmap (arquitetura canônica, D1)
+// Conjunto FIXO de 8 categorias — decisão validada por Angela.
+// Só o horizonte varia por empresa, derivado da maturidade da
+// dimensão relacionada (base mais fraca => iniciativa mais urgente).
+// ============================================================
+import { ConsultingData } from '@/types/consulting';
+
+export type Horizonte = 'h30' | 'h3' | 'h6' | 'h9' | 'h12';
+
+export const HORIZONTE_INFO: Record<Horizonte, { label: string; prazo: string }> = {
+  h30: { label: 'Fundação', prazo: 'até 30 dias' },
+  h3: { label: 'Estruturação', prazo: 'até 3 meses' },
+  h6: { label: 'Consolidação', prazo: 'até 6 meses' },
+  h9: { label: 'Evolução', prazo: 'até 9 meses' },
+  h12: { label: 'Expansão', prazo: 'até 12 meses' },
+};
+export const HORIZONTE_ORDEM: Horizonte[] = ['h30', 'h3', 'h6', 'h9', 'h12'];
+
+export interface IniciativaEstrategica {
+  id: string;
+  titulo: string;
+  descricao: string;
+  horizonte: Horizonte;
+  origem: string; // capítulo onde é detalhada
+}
+
+export function buildStrategicInitiatives(data: ConsultingData): IniciativaEstrategica[] {
+  const d = data.diagnostico;
+  const hFinanceiro: Horizonte = d.financas.level <= 1 ? 'h30' : d.financas.level === 2 ? 'h3' : 'h6';
+  const hPrecificacao: Horizonte = d.financas.level <= 1 ? 'h30' : 'h3';
+  const hProcessos: Horizonte = d.processos.level <= 1 ? 'h3' : d.processos.level === 2 ? 'h6' : 'h9';
+  const hMercado: Horizonte = d.mercado.level <= 1 ? 'h3' : d.mercado.level === 2 ? 'h6' : 'h9';
+  const hCrescimento: Horizonte = d.mercado.level <= 1 ? 'h6' : 'h9';
+  const hPessoas: Horizonte = d.pessoas.level <= 1 ? 'h3' : d.pessoas.level === 2 ? 'h6' : 'h9';
+  const hCultura: Horizonte = d.pessoas.level <= 1 ? 'h9' : 'h12';
+
+  return [
+    { id: 'financeiro', titulo: 'Estruturar a gestão financeira', descricao: 'Implantar DRE gerencial e fluxo de caixa para decidir com base em dados, não em percepção.', horizonte: hFinanceiro, origem: 'Análise Financeira' },
+    { id: 'precificacao', titulo: 'Revisar a estratégia de precificação', descricao: 'Recalcular preços pelos três pilares — custo, concorrência e valor percebido — para recuperar margem.', horizonte: hPrecificacao, origem: 'Precificação' },
+    { id: 'processos', titulo: 'Padronizar processos críticos', descricao: 'Documentar e criar indicadores para as operações que hoje dependem só da memória do time.', horizonte: hProcessos, origem: 'Processos Essenciais' },
+    { id: 'posicionamento', titulo: 'Definir posicionamento e cliente ideal', descricao: 'Consolidar o ICP e os diferenciais competitivos numa mensagem clara para o mercado.', horizonte: hMercado, origem: 'Definição de ICP' },
+    { id: 'crescimento', titulo: 'Estruturar motores de crescimento', descricao: 'Escolher e sistematizar os canais de aquisição com maior potencial de retorno.', horizonte: hCrescimento, origem: 'Motores de Crescimento' },
+    { id: 'organizacao', titulo: 'Organizar estrutura e responsabilidades', descricao: 'Formalizar o organograma e as responsabilidades de cada cargo para eliminar dependências de pessoas.', horizonte: hPessoas, origem: 'Estrutura Organizacional' },
+    { id: 'cultura', titulo: 'Fortalecer cultura e liderança', descricao: 'Consolidar identidade, rituais de gestão e desenvolvimento do líder para sustentar o crescimento.', horizonte: hCultura, origem: 'Identidade Organizacional' },
+    { id: 'expansao', titulo: 'Preparar a expansão do negócio', descricao: 'Estruturar as bases — capital, time e processos — para crescer sem quebrar o que já funciona.', horizonte: 'h12', origem: 'Estratégias de Valor' },
+  ];
+}
