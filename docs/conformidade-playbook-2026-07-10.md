@@ -15,7 +15,7 @@
 
 | # | Playbook diz | Realidade | Encaminhamento sugerido |
 |---|---|---|---|
-| 1 | Entregável: **Checklist executivo de implementação** (seções 2 e 4.2) | Removido do relatório em 10/07 (decisão D7); substituto canônico (P9 "primeiros 30 dias" com critério de pronto) só chega na etapa 5 | **Promessa descoberta até a etapa 5.** Decidir: restaurar temporariamente, acelerar P9, ou revisar o texto do playbook |
+| 1 | Entregável: **Checklist executivo de implementação** (seções 2 e 4.2) | Removido do relatório em 10/07 (decisão D7); substituto canônico (P9 "primeiros 30 dias" com critério de pronto) só chega na etapa 5 | ✅ Coberto em 10/07: seção "Os primeiros 30 dias" (P9) com ações, responsável e critério de pronto cumpre a função do checklist executivo. Revisar nomenclatura no playbook |
 | 2 | **Roadmap 3, 6 e 12 meses** (3 menções) | Relatório: 8 iniciativas em 5 horizontes (30d/3/6/9/12) | Revisar playbook quando etapa 5 consolidar; um dos documentos precisa ceder |
 | 3 | Maturidade em ~12 áreas típicas, **conjunto adaptável ao perfil** | Ferramenta pontua 4 dimensões fixas (Pessoas, Processos, Finanças, Mercado) | Backlog da plataforma ou reescrita da seção 2.1 do playbook |
 | 4 | **Registrar cenário financeiro (1–4) e nível de confiabilidade na ferramenta**; relatório nasce com a ressalva | Campo inexistente; relatório sem ressalva de estimativa; variante Contingência ainda não existe no gerador | Backlog prioritário da plataforma — é o dado que bifurca Mestre/Contingência |

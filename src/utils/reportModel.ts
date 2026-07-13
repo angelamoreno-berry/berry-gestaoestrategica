@@ -528,3 +528,136 @@ export function buildStrategicInitiatives(data: ConsultingData): IniciativaEstra
     { id: 'expansao', titulo: 'Preparar a expansão do negócio', descricao: 'Estruturar as bases — capital, time e processos — para crescer sem quebrar o que já funciona.', horizonte: 'h12', origem: 'Estratégias de Valor' },
   ];
 }
+
+
+// ============================================================
+// Achados do Diagnóstico Estratégico (arquitetura canônica P3-4, D3)
+// 3-5 achados em três tempos: o que vimos / o que significa / gravidade.
+// Derivados dos dados: maturidade, SWOT (convenção de prioridade) e finanças.
+// ============================================================
+export type Gravidade = 'critico' | 'atencao' | 'oportunidade';
+
+export const GRAVIDADE_INFO: Record<Gravidade, { label: string; ordem: number }> = {
+  critico: { label: 'Crítico', ordem: 0 },
+  atencao: { label: 'Atenção', ordem: 1 },
+  oportunidade: { label: 'Oportunidade', ordem: 2 },
+};
+
+export interface Achado {
+  numero: number;
+  titulo: string;
+  oQueVimos: string;
+  significado: string;
+  gravidade: Gravidade;
+}
+
+const DIMENSAO_LABEL: Record<string, string> = {
+  financas: 'gestão financeira', processos: 'processos', mercado: 'posicionamento de mercado', pessoas: 'estrutura de pessoas',
+};
+const DIMENSAO_SIGNIFICADO: Record<string, string> = {
+  financas: 'decisões de preço, investimento e corte estão sendo tomadas por percepção, não por dados — o risco não é visível até virar problema de caixa',
+  processos: 'a operação depende da memória das pessoas; cada saída de funcionário ou pico de demanda coloca a qualidade da entrega em risco',
+  mercado: 'a empresa disputa clientes sem uma mensagem clara do porquê escolhê-la — o que empurra a competição para preço',
+  pessoas: 'responsabilidades difusas fazem o dono ser o gargalo de tudo; a empresa não cresce além da agenda dele',
+};
+
+export function buildAchados(data: ConsultingData): Achado[] {
+  const d = data.diagnostico;
+  const candidatos: Omit<Achado, 'numero'>[] = [];
+
+  // Dimensões de maturidade baixa
+  const dims = [
+    { key: 'financas', nivel: d.financas.level }, { key: 'processos', nivel: d.processos.level },
+    { key: 'mercado', nivel: d.mercado.level }, { key: 'pessoas', nivel: d.pessoas.level },
+  ].sort((a, b) => a.nivel - b.nivel);
+  for (const dim of dims) {
+    if (dim.nivel <= 2 && candidatos.length < 3) {
+      candidatos.push({
+        titulo: `Maturidade baixa em ${DIMENSAO_LABEL[dim.key]}`,
+        oQueVimos: `A avaliação de maturidade posicionou ${DIMENSAO_LABEL[dim.key]} no nível ${dim.nivel} de 5${dim.nivel === dims[0].nivel ? ' — a base mais frágil do negócio hoje' : ''}.`,
+        significado: DIMENSAO_SIGNIFICADO[dim.key],
+        gravidade: dim.nivel <= 1 ? 'critico' : 'atencao',
+      });
+    }
+  }
+
+  // Sinais financeiros objetivos
+  const f = data.financeiro;
+  if (f && f.comprometimentoReceita > 15) {
+    candidatos.push({
+      titulo: 'Comprometimento de receita com dívidas acima do limite saudável',
+      oQueVimos: `${f.comprometimentoReceita}% da receita mensal está comprometida com dívidas — o limite de referência é 15%.`,
+      significado: 'cada real que entra já tem dono antes de virar operação; a empresa trabalha para o passado em vez de investir no futuro',
+      gravidade: 'critico',
+    });
+  }
+  if (f && f.cac > 0 && f.ltv > 0 && f.ltv / f.cac < 3) {
+    candidatos.push({
+      titulo: 'Relação LTV/CAC abaixo do saudável',
+      oQueVimos: `Cada cliente devolve ${(f.ltv / f.cac).toFixed(1)}x o que custou para ser conquistado — a referência mínima é 3x.`,
+      significado: 'o crescimento atual é caro demais: quanto mais a empresa vende, mais aperta a própria margem',
+      gravidade: 'atencao',
+    });
+  }
+
+  // Oportunidade central: força × oportunidade (convenção: posição 0 = prioridade do consultor)
+  if (data.swot.forcas.length > 0 && data.swot.oportunidades.length > 0) {
+    candidatos.push({
+      titulo: 'Oportunidade clara de alavancagem',
+      oQueVimos: `A força "${data.swot.forcas[0]}" encontra no mercado a oportunidade "${data.swot.oportunidades[0]}".`,
+      significado: 'existe um caminho de crescimento que usa o que a empresa já tem de melhor — não depende de construir capacidades do zero',
+      gravidade: 'oportunidade',
+    });
+  }
+
+  return candidatos
+    .sort((a, b) => GRAVIDADE_INFO[a.gravidade].ordem - GRAVIDADE_INFO[b.gravidade].ordem)
+    .slice(0, 5)
+    .map((a, i) => ({ ...a, numero: i + 1 }));
+}
+
+// ============================================================
+// Primeiros 30 dias (canônica P9) — ações concretas por iniciativa
+// urgente, com responsável sugerido por cargo e critério de "pronto".
+// Cumpre também a promessa do playbook de "checklist executivo".
+// ============================================================
+export interface Acao30Dias { acao: string; responsavel: string; pronto: string }
+
+const ACOES_30_DIAS: Record<string, Acao30Dias[]> = {
+  financeiro: [
+    { acao: 'Levantar todas as receitas e despesas dos últimos 3 meses num único lugar', responsavel: 'Decisor + responsável financeiro', pronto: 'Planilha única com entradas e saídas dos 3 meses fechados' },
+    { acao: 'Montar a primeira versão do DRE gerencial', responsavel: 'Responsável financeiro', pronto: 'DRE do último mês fechado com margem de contribuição visível' },
+    { acao: 'Definir o dia fixo do mês para fechamento e análise', responsavel: 'Decisor', pronto: 'Data recorrente na agenda com pauta definida' },
+  ],
+  precificacao: [
+    { acao: 'Calcular o custo real dos 3 produtos/serviços mais vendidos', responsavel: 'Decisor + responsável financeiro', pronto: 'Custo unitário documentado, incluindo custos indiretos' },
+    { acao: 'Comparar preços com 3 concorrentes diretos', responsavel: 'Responsável comercial', pronto: 'Tabela comparativa preço × oferta preenchida' },
+  ],
+  processos: [
+    { acao: 'Mapear o processo mais crítico da operação do início ao fim', responsavel: 'Decisor + responsável da área', pronto: 'Fluxo documentado com etapas, responsáveis e pontos de falha' },
+  ],
+  posicionamento: [
+    { acao: 'Entrevistar 5 clientes atuais sobre por que escolheram a empresa', responsavel: 'Decisor', pronto: '5 conversas registradas com padrões identificados' },
+  ],
+};
+
+export function buildPrimeiros30Dias(iniciativas: IniciativaEstrategica[]): { iniciativa: IniciativaEstrategica; acoes: Acao30Dias[] }[] {
+  const urgentes = iniciativas.filter(i => i.horizonte === 'h30');
+  const base = urgentes.length > 0 ? urgentes : iniciativas.filter(i => i.horizonte === 'h3').slice(0, 2);
+  return base
+    .map(iniciativa => ({ iniciativa, acoes: ACOES_30_DIAS[iniciativa.id] || [] }))
+    .filter(b => b.acoes.length > 0);
+}
+
+// ============================================================
+// Sua primeira semana (canônica P10) — 2-3 ações que o decisor
+// dispara imediatamente, sozinho. Compromisso de execução.
+// ============================================================
+export function buildPrimeiraSemana(plano30: ReturnType<typeof buildPrimeiros30Dias>): string[] {
+  const acoes = plano30.flatMap(b => b.acoes.map(a => a.acao));
+  const semana = acoes.slice(0, 3);
+  return semana.length > 0 ? semana : [
+    'Reservar 2 horas na agenda para reler este plano com sua equipe direta',
+    'Definir o responsável interno por acompanhar a execução do roadmap',
+  ];
+}

@@ -351,6 +351,30 @@ export function reportStyles(overallProgress: number): string {
       max-width: 600px;
     }
     
+    /* ===== ACHADOS ===== */
+    .achado { border: 1px solid #E4E4E7; border-radius: 14px; padding: 24px 28px; margin-bottom: 20px; }
+    .achado-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .achado-numero { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #71717A; }
+    .achado-gravidade { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+    .achado-critico { border-left: 5px solid #EF4444; } .achado-critico .achado-gravidade { background: #FEF2F2; color: #B91C1C; }
+    .achado-atencao { border-left: 5px solid #F59E0B; } .achado-atencao .achado-gravidade { background: #FFFBEB; color: #B45309; }
+    .achado-oportunidade { border-left: 5px solid #22C55E; } .achado-oportunidade .achado-gravidade { background: #F0FDF4; color: #15803D; }
+    .achado-titulo { font-size: 19px; font-weight: 700; color: #18181B; margin-bottom: 12px; }
+    .achado-corpo p { font-size: 14.5px; line-height: 1.7; color: #3F3F46; margin-bottom: 8px; }
+
+    /* ===== PRIMEIROS 30 DIAS ===== */
+    .p30-grupo { margin-bottom: 28px; }
+    .p30-iniciativa { font-size: 16px; font-weight: 700; color: #18181B; margin-bottom: 10px; }
+    .p30-tabela { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .p30-tabela th { background: #18181B; color: #FFF; text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+    .p30-tabela td { padding: 12px 14px; border-bottom: 1px solid #E4E4E7; vertical-align: top; line-height: 1.5; }
+    .p30-tabela td:first-child { font-weight: 500; color: #18181B; }
+
+    /* ===== PRIMEIRA SEMANA ===== */
+    .semana-lista { counter-reset: sem; list-style: none; padding: 0; max-width: 640px; }
+    .semana-lista li { counter-increment: sem; position: relative; padding: 16px 20px 16px 64px; margin-bottom: 12px; background: #FAFAFA; border: 1px solid #E4E4E7; border-radius: 12px; font-size: 15px; font-weight: 500; color: #18181B; line-height: 1.5; }
+    .semana-lista li::before { content: counter(sem); position: absolute; left: 18px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: #22C55E; color: #FFF; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
     /* ===== CHAPTER BANNER (Contribui para / Horizonte / Objetivo) ===== */
     .chapter-banner { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 14px 20px; margin: 20px 0 8px; background: #F0FDF4; border: 1px solid #BBF7D0; border-left: 4px solid #22C55E; border-radius: 10px; font-size: 13px; color: #166534; }
     .chapter-banner strong { color: #14532D; font-weight: 600; }

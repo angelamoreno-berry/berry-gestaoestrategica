@@ -26,7 +26,7 @@ O relatório atual implementa bem a **primeira geração** da arquitetura (Resum
 |---|---|---|---|
 | D1 | Roadmap = máx. **8 iniciativas estratégicas** amplas | ✅ Resolvido em 10/07: 8 iniciativas fixas em `buildStrategicInitiatives`, horizonte por maturidade | Resolvida |
 | D2 | Capítulos abrem com banner "Contribui para / Horizonte / Objetivo" | ✅ Resolvido em 10/07: banner dinâmico em 14 capítulos; SWOT e Diagnóstico apontam para a iniciativa da dimensão de menor maturidade | Resolvida |
-| D3 | Achados numerados (Achado 1..N) referenciados ao longo do documento | Conceito inexistente; capítulos independentes | Alta |
+| D3 | Achados numerados (Achado 1..N) referenciados ao longo do documento | ✅ Resolvido em 10/07: seção "Onde sua empresa está" com 3–5 achados em três tempos (o que vimos/significa/gravidade), derivados de maturidade, finanças e SWOT | Resolvida |
 | D4 | Classificação de urgência por **severidade do diagnóstico** | ✅ Resolvido em 10/07: horizonte de cada iniciativa deriva do nível de maturidade da dimensão | Resolvida |
 | D5 | Riscos/oportunidades do Resumo por severidade relativa | ✅ Resolvido em 10/07 por convenção: ordem de cadastro = prioridade do consultor, com orientação explícita no bloco SWOT da plataforma | Resolvida (convenção) |
 | D6 | TOC removido (decisão reafirmada) | ✅ Removido em 10/07 | Resolvida |

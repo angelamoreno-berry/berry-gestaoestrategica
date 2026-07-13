@@ -2,7 +2,7 @@ import { ConsultingData, BlockStatus, Project, Cargo } from '@/types/consulting'
 import { getExecutiveMetrics } from "@/report/executiveMetrics";
 import * as ReportSections from "@/report/reportSections";
 import { reportStyles } from './reportStyles';
-import { generateCargoChecklist, generateMaturityInsights, generateActionPlan, generateMotorStrategies, buildStrategicInitiatives, HORIZONTE_INFO, HORIZONTE_ORDEM } from './reportModel';
+import { generateCargoChecklist, generateMaturityInsights, generateActionPlan, generateMotorStrategies, buildStrategicInitiatives, HORIZONTE_INFO, HORIZONTE_ORDEM, buildAchados, GRAVIDADE_INFO, buildPrimeiros30Dias, buildPrimeiraSemana } from './reportModel';
 
 // Helper function to generate activity checklist suggestions for a position
 export function generateReport(project: Project, data: ConsultingData, blocks: BlockStatus[]) {
@@ -118,6 +118,10 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
     { key: 'pessoas', nivel: data.diagnostico.pessoas.level, iniciativa: 'organizacao' },
   ];
   const menorDimensao = dimensoesMaturidade.reduce((min, d) => d.nivel < min.nivel ? d : min, dimensoesMaturidade[0]);
+
+  const achados = buildAchados(data);
+  const plano30 = buildPrimeiros30Dias(iniciativas);
+  const primeiraSemana = buildPrimeiraSemana(plano30);
 
   const chapterBanner = (iniciativaId: string): string => {
     const id = iniciativaId === '__menor__' ? menorDimensao.iniciativa : iniciativaId;
@@ -299,6 +303,79 @@ ${reportStyles(overallProgress)}
     <div id="__ROADMAP_PLACEHOLDER__"></div>
 
       `;
+  const secAchados = () => `<!-- ===== ACHADOS (Diagnóstico Estratégico) ===== -->
+    <div class="section page-break">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-icon">🔎</span>
+          Diagnóstico Estratégico
+        </div>
+        <h2 class="section-title">Onde sua empresa está</h2>
+        <p class="section-description">Os achados centrais do diagnóstico, do mais crítico ao mais promissor. Cada um é referenciado ao longo do documento e endereçado por uma iniciativa do Roadmap.</p>
+      </div>
+
+      ${achados.map(a => `
+      <div class="achado achado-${a.gravidade}">
+        <div class="achado-head">
+          <span class="achado-numero">Achado ${a.numero}</span>
+          <span class="achado-gravidade">${GRAVIDADE_INFO[a.gravidade].label}</span>
+        </div>
+        <h3 class="achado-titulo">${a.titulo}</h3>
+        <div class="achado-corpo">
+          <p><strong>O que vimos:</strong> ${a.oQueVimos}</p>
+          <p><strong>O que isso significa:</strong> ${a.significado.charAt(0).toUpperCase() + a.significado.slice(1)}.</p>
+        </div>
+      </div>`).join('')}
+    </div>
+  `;
+
+  const secPrimeiros30Dias = () => plano30.length === 0 ? '' : `<!-- ===== PRIMEIROS 30 DIAS ===== -->
+    <div class="section page-break">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-icon">🚀</span>
+          Execução
+        </div>
+        <h2 class="section-title">Os primeiros 30 dias</h2>
+        <p class="section-description">As ações que destravam o plano, com responsável sugerido e critério objetivo de conclusão. Um plano com segunda-feira definida é um plano que começa.</p>
+      </div>
+
+      ${plano30.map(b => `
+      <div class="p30-grupo">
+        <h3 class="p30-iniciativa">${b.iniciativa.titulo}</h3>
+        <table class="p30-tabela">
+          <thead><tr><th>Ação</th><th>Responsável sugerido</th><th>Está pronto quando</th></tr></thead>
+          <tbody>
+            ${b.acoes.map(a => `<tr><td>${a.acao}</td><td>${a.responsavel}</td><td>${a.pronto}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`).join('')}
+    </div>
+  `;
+
+  const secPrimeiraSemana = () => `<!-- ===== SUA PRIMEIRA SEMANA ===== -->
+    <div class="section page-break">
+      <div class="section-header">
+        <div class="section-badge">
+          <span class="section-icon">✳️</span>
+          Compromisso
+        </div>
+        <h2 class="section-title">Sua primeira semana</h2>
+        <p class="section-description">Este plano é seu. As ações abaixo não dependem de ninguém além de você — e são o suficiente para colocá-lo em movimento ainda esta semana.</p>
+      </div>
+
+      <ol class="semana-lista">
+        ${primeiraSemana.map(a => `<li>${a}</li>`).join('')}
+      </ol>
+
+      <div class="insight-box" style="margin-top: 24px;">
+        <div class="insight-box-text">
+          O diagnóstico definiu a direção; a execução define o resultado. Use este documento como referência viva dos próximos 12 meses — e conte com a Berry nos pontos em que o plano indicar apoio externo.
+        </div>
+      </div>
+    </div>
+  `;
+
   const secCompanyInfo = () => `<!-- ===== COMPANY INFO ===== -->
       <div class="section">
         <div class="section-header">
@@ -2191,64 +2268,6 @@ ${reportStyles(overallProgress)}
       ` : ''}
       
       `;
-  const secProximosPassos = () => `<!-- ===== PRÓXIMOS PASSOS ===== -->
-      <div class="section page-break">
-        <div class="section-header">
-          <div class="section-badge">
-            <span class="section-icon">📋</span>
-            Encerramento
-          </div>
-          <h2 class="section-title">Próximos Passos</h2>
-        </div>
-
-        <div class="insight-box">
-          <div class="insight-box-text">
-            O diagnóstico identifica oportunidades e define uma direção estratégica para a empresa.<br><br>
-            Os melhores resultados são obtidos quando as ações são implementadas de forma disciplinada, acompanhadas periodicamente e ajustadas conforme os indicadores evoluem.<br><br>
-            Este relatório deve ser utilizado como referência para orientar as decisões dos próximos 12 meses.
-          </div>
-        </div>
-        
-        <div class="visual-example">
-          <div class="visual-example-header">
-            <div class="visual-example-icon">📊</div>
-            <div>
-              <div class="visual-example-title">Panorama Geral</div>
-              <div class="visual-example-subtitle">Status atual da ${project.nomeEmpresa}</div>
-            </div>
-          </div>
-          <div class="visual-example-content">
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center;">
-              <div style="padding: 20px; background: var(--background); border-radius: 12px;">
-                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${overallProgress}%</div>
-                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Diagnóstico Completo</div>
-              </div>
-              <div style="padding: 20px; background: var(--background); border-radius: 12px;">
-                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${avgMaturity}</div>
-                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Maturidade Média</div>
-              </div>
-              <div style="padding: 20px; background: var(--background); border-radius: 12px;">
-                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${blocks.filter(b => b.progress === 100).length}</div>
-                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Blocos Completos</div>
-              </div>
-              <div style="padding: 20px; background: var(--background); border-radius: 12px;">
-                <div style="font-size: 32px; font-weight: 900; color: var(--primary);">${blocks.length}</div>
-                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;">Total de Blocos</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="insight-box" style="margin-top: 32px;">
-          <div class="insight-box-title">💡 Lembre-se</div>
-          <div class="insight-box-text">
-            Este documento é um <strong>ponto de partida</strong>, não um ponto final. A execução disciplinada das ações propostas é o que transforma diagnóstico em resultado.<br><br>
-            <strong>Sugestão:</strong> Revise este documento mensalmente. Marque o que foi feito, ajuste o que precisa e comemore as vitórias.
-          </div>
-        </div>
-      </div>
-      
-      `;
   const secFooter = () => `<!-- ===== FOOTER ===== -->
     <div class="footer">
       <div class="footer-logo">📊</div>
@@ -2268,6 +2287,7 @@ ${reportStyles(overallProgress)}
     secCoverPage(),
     secContent(),
     secResumoExecutivo(),
+    secAchados(),
     secRoadmapDeImplementacao(),
     secCompanyInfo(),
     secGoldenCircle(),
@@ -2284,7 +2304,8 @@ ${reportStyles(overallProgress)}
     secFinanceiro(),
     secSwotPessoal(),
     secAgendaCeo(),
-    secProximosPassos(),
+    secPrimeiros30Dias(),
+    secPrimeiraSemana(),
     secFooter()
   ].join('');;
 
