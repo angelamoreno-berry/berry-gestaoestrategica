@@ -351,6 +351,11 @@ export function reportStyles(overallProgress: number): string {
       max-width: 600px;
     }
     
+    /* ===== CHAPTER BANNER (Contribui para / Horizonte / Objetivo) ===== */
+    .chapter-banner { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 14px 20px; margin: 20px 0 8px; background: #F0FDF4; border: 1px solid #BBF7D0; border-left: 4px solid #22C55E; border-radius: 10px; font-size: 13px; color: #166534; }
+    .chapter-banner strong { color: #14532D; font-weight: 600; }
+    @media print { .chapter-banner { background: #F0FDF4 !important; -webkit-print-color-adjust: exact; } }
+
     /* ===== INFO BOXES ===== */
     .info-box {
       background: var(--primary-lighter);

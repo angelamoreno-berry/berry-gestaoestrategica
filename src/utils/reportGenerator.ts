@@ -103,6 +103,36 @@ export function generateReport(project: Project, data: ConsultingData, blocks: B
 
 
   // ============================================================
+  // Iniciativas Estratégicas (usadas pelo Roadmap e pelos banners
+  // de capítulo). Calculadas antes das seções.
+  // ============================================================
+  const iniciativas = buildStrategicInitiatives(data);
+  const iniciativaPorId = Object.fromEntries(iniciativas.map(i => [i.id, i]));
+
+  // Dimensão de menor maturidade -> iniciativa correspondente
+  // (capítulos transversais como SWOT e Diagnóstico apontam para ela)
+  const dimensoesMaturidade = [
+    { key: 'financas', nivel: data.diagnostico.financas.level, iniciativa: 'financeiro' },
+    { key: 'processos', nivel: data.diagnostico.processos.level, iniciativa: 'processos' },
+    { key: 'mercado', nivel: data.diagnostico.mercado.level, iniciativa: 'posicionamento' },
+    { key: 'pessoas', nivel: data.diagnostico.pessoas.level, iniciativa: 'organizacao' },
+  ];
+  const menorDimensao = dimensoesMaturidade.reduce((min, d) => d.nivel < min.nivel ? d : min, dimensoesMaturidade[0]);
+
+  const chapterBanner = (iniciativaId: string): string => {
+    const id = iniciativaId === '__menor__' ? menorDimensao.iniciativa : iniciativaId;
+    const ini = iniciativaPorId[id];
+    if (!ini) return '';
+    const h = HORIZONTE_INFO[ini.horizonte];
+    return `
+        <div class="chapter-banner">
+          <span><strong>Contribui para:</strong> ${ini.titulo}</span>
+          <span><strong>Horizonte:</strong> ${h.label} · ${h.prazo}</span>
+          <span><strong>Objetivo:</strong> ${ini.descricao}</span>
+        </div>`;
+  };
+
+  // ============================================================
   // Seções do documento — renderizadores individuais (etapa 3).
   // Cada função devolve o HTML de uma seção; a ordem de concatenação
   // define a ordem do documento.
@@ -372,7 +402,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Golden Circle - Círculo Dourado</h2>
           <p class="section-description">Metodologia criada por Simon Sinek que define o propósito, processo e entrega da organização. Empresas que comunicam do "porquê" para o "o quê" criam conexões emocionais mais fortes com clientes.</p>
-        </div>
+        </div>${chapterBanner(`cultura`)}
         
         <div class="info-box">
           <div class="info-box-header">
@@ -487,7 +517,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Identidade Organizacional</h2>
           <p class="section-description">Os pilares que definem quem a empresa é, para onde vai e quais princípios guiam suas decisões. Uma identidade clara aumenta engajamento de colaboradores em até 67% (Gallup).</p>
-        </div>
+        </div>${chapterBanner(`cultura`)}
         
         ${data.identidade.visao ? `
         <div class="card">
@@ -593,7 +623,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Matriz SWOT</h2>
           <p class="section-description">Análise dos fatores internos (Forças e Fraquezas) e externos (Oportunidades e Ameaças) que impactam o negócio. Esta ferramenta é base para definição de estratégias.</p>
-        </div>
+        </div>${chapterBanner(`__menor__`)}
         
         <div class="info-box">
           <div class="info-box-header">
@@ -722,7 +752,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Diagnóstico de Maturidade</h2>
           <p class="section-description">Avaliação do nível de maturidade em cada área crítica do negócio. Esta análise identifica gaps e prioridades de desenvolvimento.</p>
-        </div>
+        </div>${chapterBanner(`__menor__`)}
         
         <div class="info-box">
           <div class="info-box-header">
@@ -880,7 +910,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Perfil do Cliente Ideal (ICP)</h2>
           <p class="section-description">Definição detalhada do cliente que mais se beneficia das suas soluções e gera maior valor para o negócio. Empresas com ICP claro têm 68% mais eficiência comercial.</p>
-        </div>
+        </div>${chapterBanner(`posicionamento`)}
         
         ${data.icp.descricao ? `
         <div class="card">
@@ -1001,7 +1031,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Análise Competitiva</h2>
           <p class="section-description">Mapeamento dos principais concorrentes e definição dos seus diferenciais competitivos. Conhecer a concorrência é fundamental para se posicionar de forma única.</p>
-        </div>
+        </div>${chapterBanner(`posicionamento`)}
         
         ${data.concorrentes.principais.length > 0 ? `
         <div class="card">
@@ -1134,7 +1164,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Estratégia de Precificação</h2>
           <p class="section-description">Análise dos produtos/serviços e estratégias para maximização de valor percebido e receita.</p>
-        </div>
+        </div>${chapterBanner(`precificacao`)}
         
         <div class="info-box">
           <div class="info-box-header">
@@ -1252,7 +1282,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Estratégias de Valor</h2>
           <p class="section-description">Novas formas de agregar valor e expandir o portfólio de ofertas para os clientes.</p>
-        </div>
+        </div>${chapterBanner(`expansao`)}
         
         ${data.estrategiasValor.novasOfertas.length > 0 ? `
         <div class="card">
@@ -1347,7 +1377,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Motores de Crescimento</h2>
           <p class="section-description">Os principais vetores que impulsionam o crescimento do negócio e os canais de aquisição de clientes.</p>
-        </div>
+        </div>${chapterBanner(`crescimento`)}
         
         ${data.motoresCrescimento.motoresPrincipais.length > 0 ? `
         <div class="card">
@@ -1494,7 +1524,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Estrutura Organizacional</h2>
           <p class="section-description">Desenho da estrutura de cargos, responsabilidades e indicadores de cada posição.</p>
-        </div>
+        </div>${chapterBanner(`organizacao`)}
         
         <div class="org-chart">
           ${[1, 2, 3].map(nivel => {
@@ -1563,7 +1593,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Processos Operacionais</h2>
           <p class="section-description">Mapeamento dos processos-chave do negócio, suas frequências e responsáveis.</p>
-        </div>
+        </div>${chapterBanner(`processos`)}
         
         <div class="info-box">
           <div class="info-box-header">
@@ -1608,7 +1638,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Análise Financeira Completa</h2>
           <p class="section-description">Visão abrangente da saúde financeira, indicadores de desempenho e análise de endividamento.</p>
-        </div>
+        </div>${chapterBanner(`financeiro`)}
         
         <!-- Indicadores Principais -->
         <div class="card" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); margin-bottom: 24px;">
@@ -1938,7 +1968,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">SWOT Pessoal do Líder</h2>
           <p class="section-description">Análise das forças, fraquezas, oportunidades e ameaças do líder/empreendedor como pessoa.</p>
-        </div>
+        </div>${chapterBanner(`cultura`)}
         
         <div class="info-box">
           <div class="info-box-header">
@@ -2033,7 +2063,7 @@ ${reportStyles(overallProgress)}
           </div>
           <h2 class="section-title">Agenda Estratégica do CEO</h2>
           <p class="section-description">Prioridades, rotinas e delegações definidas para maximizar o impacto do líder no negócio.</p>
-        </div>
+        </div>${chapterBanner(`cultura`)}
         
         ${data.agendaCEO.prioridades.length > 0 ? `
         <div class="card">
@@ -2263,8 +2293,6 @@ ${reportStyles(overallProgress)}
   // canônica, D1). Horizonte derivado da maturidade da dimensão
   // relacionada. Detalhamento operacional vive nos capítulos.
   // ============================================================
-  const iniciativas = buildStrategicInitiatives(data);
-
   const roadmapHtml = `
     <!-- ===== ROADMAP EXECUTIVO ===== -->
     <div class="section">
